@@ -9,14 +9,9 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{subcaption}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
 \usepackage{bm}
 \usepackage{enumitem}
-\usepackage{colortbl}
 \usepackage{pifont}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
 
 %%
 %% Rights / metadata
@@ -38,17 +33,13 @@
 \newcommand{\calP}{\mathcal{P}}
 \newcommand{\calH}{\mathcal{H}}
 \newcommand{\Eij}{E_{ij}}
-\definecolor{lightgreen}{HTML}{E8F5E9}
-\definecolor{lightred}{HTML}{FFEBEE}
-\definecolor{lightblue}{HTML}{E3F2FD}
-\definecolor{lightyellow}{HTML}{FFF8E1}
 
 \begin{document}
 
 %%
 %% Title
 %%
-\title{DIAGONAL: Density-Normalized Cross-Modal Alignment for Multi-Shot Video Narrative Evaluation}
+\title{DIAGONAL: Density-Normalized Cross-Modal Alignment\\for Multi-Shot Video Narrative Evaluation}
 
 \author{Anonymous Authors}
 \affiliation{%
@@ -59,14 +50,11 @@
 %% Abstract
 %%
 \begin{abstract}
-Text-to-multi-shot video (T2MSV) generation models are evaluated primarily on visual quality and frame-level consistency, yet these metrics fail to capture whether models can execute \emph{narrative dynamics}---the structured entry and exit of entities across shots.
-We formalize multi-shot narratives as \emph{state transition matrices} $\Delta S \in \{-1,0,+1\}^{(T\text{-}1) \times N}$, where each element encodes an atomic operation: entry ($+1$), exit ($-1$), or hold ($0$).
-We prove that all possible 3-shot narrative topologies can be spanned by just two basis matrices under column permutation and linear combination (\textbf{Theorem~1}), establishing mathematical completeness of our benchmark.
-Building on this formalization, we introduce \diagonal{} (\textbf{D}ensity-Normal\textbf{I}zed Cross-Mod\textbf{A}l Ali\textbf{G}nment for Multi-Sh\textbf{O}t Video \textbf{N}arrative Eva\textbf{L}uation), a benchmark comprising 1,000 prompts spanning 7 narrative patterns (3 basis, 4 derived) with a suite of complementary metrics: Narrative Alignment Score (NAS), Diagonal Dominance (DD), State Transition Accuracy (STA), Entity Presence Accuracy (EPA), and SVD Entropy trajectory analysis.
-Evaluation of four state-of-the-art T2MSV architectures---EchoShot, StoryDiffusion, Video-In-Context (VIC), and VGoT---reveals that \emph{no model achieves positive diagonal dominance on any pattern} ($\epsilon$-pass rate = 0\%), exposing a fundamental limitation we term \textbf{Narrative Blindness}.
-We further identify four systematic failure types: \emph{Context Bleeding} (failed exit, most severe in VIC at 60.8\%), \emph{Amnesia} (failed entry, most severe in VGoT at 66.7\%), \emph{Attention Reversion}, and \emph{Identity Bleeding}.
-A human evaluation study confirms that automated rankings correlate with human judgments on narrative compliance ($\rho = 0.80$) while revealing that raters prioritize visual coherence over narrative accuracy---a perceptual bias that existing benchmarks inadvertently exploit.
-Our analysis provides the first topologically grounded diagnostic framework for multi-shot video narrative evaluation.
+Text-to-multi-shot video (T2MSV) models are evaluated on visual quality and frame-level consistency, yet these metrics fail to capture \emph{narrative dynamics}---the structured entry and exit of entities across shots.
+We formalize multi-shot narratives as \emph{state transition matrices} $\Delta S \in \{-1,0,+1\}^{(T-1) \times N}$ and prove that all 3-shot narrative topologies are spanned by two basis matrices under permutation and linear combination (\textbf{Theorem~1}).
+Building on this, we introduce \diagonal{}, a 1,000-prompt benchmark spanning 7 patterns with complementary metrics: Narrative Alignment Score (NAS), Diagonal Dominance (DD), State Transition Accuracy (STA), Entity Presence Accuracy (EPA), and SVD Entropy.
+Evaluation of four SOTA architectures reveals \emph{no model achieves positive diagonal dominance on any pattern} ($\epsilon$-pass rate $= 0\%$).
+We identify four failure types---Context Bleeding (VIC: 60.8\%), Amnesia (VGoT: 66.7\%), Attention Reversion, and Identity Bleeding---and validate via human evaluation ($\rho = 0.80$ with STA).
 \end{abstract}
 
 \begin{CCSXML}
@@ -96,54 +84,36 @@ Our analysis provides the first topologically grounded diagnostic framework for 
 \label{sec:intro}
 %% ============================================================
 
-Diffusion-based generative models have rapidly expanded the capabilities of video synthesis, enabling a transition from single-clip generation to text-to-multi-shot video (T2MSV) generation.
-Recent systems such as StoryDiffusion~\cite{storydiff}, EchoShot~\cite{echoshot}, Video-In-Context (VIC)~\cite{vic}, and VGoT~\cite{vgot} can generate temporally connected sequences of scenes from textual descriptions, suggesting that multi-shot video generation is approaching practical usability.
+Diffusion-based models have expanded video synthesis from single-clip to text-to-multi-shot video (T2MSV) generation.
+Systems such as StoryDiffusion~\cite{storydiff}, EchoShot~\cite{echoshot}, VIC~\cite{vic}, and VGoT~\cite{vgot} generate temporally connected scene sequences, yet existing benchmarks~\cite{vbench,t2vcompbench,moviebench} evaluate only identity consistency, visual quality, or single-clip compositionality---none systematically test whether models can execute \emph{narrative dynamics}: the structured introduction, co-occurrence, and removal of entities across shots.
 
-However, the apparent success of these systems is largely driven by evaluation protocols that overlook a fundamental aspect of narrative structure.
-Existing benchmarks~\cite{vbench,t2vcompbench,moviebench} evaluate identity consistency, visual quality, or single-clip compositionality, but none systematically test whether models can execute the \emph{narrative dynamics} that define cinematic storytelling: the structured introduction, co-occurrence, and removal of entities across shots.
+Consider a relay narrative $A \!\to\! AB \!\to\! B$: entity $A$ must exit while $B$ persists.
+Current models systematically fail---the departed entity ``bleeds'' into subsequent shots (\textbf{Context Bleeding}).
+Critically, holistic metrics like Identity Consistency (IC)~\cite{shotadapter} \emph{reward} this failure because persistent entities \emph{increase} cross-shot similarity.
+We term this the \textbf{consistency paradox}: IC is adversarial to narrative compliance for any non-trivial pattern (Fig.~\ref{fig:teaser}).
 
-Consider a simple relay narrative: $A \to AB \to B$, where entity $A$ appears alone, both $A$ and $B$ co-occur, and then only $B$ remains.
-This pattern requires three distinct capabilities: (1)~introducing a new entity while preserving an existing one, (2)~maintaining co-occurrence fidelity, and (3)~removing an entity while the other persists.
-As illustrated in Fig.~\ref{fig:teaser}, current models systematically fail at capability (3)---the departed entity ``bleeds'' into subsequent shots, a failure we term \textbf{Context Bleeding}.
-Critically, existing metrics based on holistic frame similarity cannot detect this failure because the persistent presence of entity $A$ actually \emph{increases} embedding consistency scores.
+We formalize entity dynamics as a \emph{state transition matrix} $\Delta S \in \{-1,0,+1\}^{2 \times 3}$ and prove that \textbf{all} 3-shot narrative topologies are generated from two basis matrices (Theorem~1).
+Building on this, \diagonal{} contributes:
 
-% FIGURE 1: Teaser / Motivating Example
-\begin{figure*}[t]
-\centering
-\begin{tikzpicture}
-% This is a placeholder for the actual figure
-\node[draw, rounded corners, fill=lightblue, minimum width=\textwidth, minimum height=5cm, text width=0.95\textwidth, align=center] {
-\textbf{Figure placeholder: Motivating Example --- Narrative Blindness}\\[6pt]
-\textbf{(a) Expected Relay Pattern:} $A \to AB \to B$\\
-Shot 1: Chef cooking alone $\to$ Shot 2: Chef and waiter together $\to$ Shot 3: Waiter serving alone\\[4pt]
-\textbf{(b) Context Bleeding (VIC):} Entity $A$ (chef) persists in Shot 3 despite exit instruction\\
-All three shots show the chef $\to$ IC score = 0.94 (high!), but narrative compliance = 0\%\\[4pt]
-\textbf{(c) Amnesia (VGoT):} Entity $B$ (waiter) never appears in Shot 2 despite entry instruction\\
-Shot 2 shows chef alone $\to$ narrative compliance = 0\%\\[4pt]
-\textbf{(d) StoryDiffusion Success:} Correctly executes $A \to AB \to B$ transition\\
-STA = 1.0, EPA = 1.0, but DD still $< 0$ ($-0.008$)
-};
-\end{tikzpicture}
-\caption{Narrative Blindness in multi-shot video generation. \textbf{(a)}~The expected Relay pattern requires entity $A$ to exit by Shot~3. \textbf{(b)}~VIC exhibits Context Bleeding: entity $A$ persists across all shots, yielding high identity consistency (IC = 0.94) but zero narrative compliance. \textbf{(c)}~VGoT shows Amnesia: entity $B$ fails to appear in Shot~2. \textbf{(d)}~StoryDiffusion correctly executes the transition, yet still fails to achieve positive diagonal dominance. This motivates our \diagonal{} framework, which decomposes narrative fidelity into interpretable metrics that existing holistic evaluations miss entirely.}
-\label{fig:teaser}
-\end{figure*}
-
-Real cinematic narratives follow structured entity dynamics.
-A relay pattern ($A \to AB \to B$) requires entity $A$ to exit while $B$ persists; an accumulation ($A \to AB \to ABC$) demands progressive entity introduction.
-These dynamics can be decomposed into three \emph{atomic operations}: entry ($+1$), exit ($-1$), and hold ($0$).
-We formalize these operations into a \emph{state transition matrix} $\Delta S \in \{-1,0,+1\}^{2 \times 3}$, where rows encode shot-to-shot transitions and columns encode per-entity changes.
-
-This matrix-algebraic formulation yields a surprising theoretical result: we prove that \textbf{all} possible 3-shot narrative topologies---every conceivable arrangement of entity entries and exits---can be generated from just \textbf{two basis matrices} (Relay and Split) via column permutation and integer-coefficient linear combination (\textbf{Theorem~1}).
-This completeness guarantee ensures that our benchmark covers the entire space of multi-shot narrative structures, not merely a heuristic subset.
-
-Building on this formalization, we introduce \diagonal{}, a comprehensive benchmark and evaluation framework with the following contributions:
-
-\begin{itemize}[leftmargin=*]
-  \item We formalize multi-shot video narratives as state transition matrices and prove that 2 basis patterns span the complete $2 \times 3$ narrative space under permutation and linear combination (\S\ref{sec:formalization}).
-  \item We construct a \textbf{1,000-prompt benchmark} spanning 7 narrative patterns (3 basis, 4 derived) with structured entity dynamics, and propose a suite of complementary metrics---NAS, DD, STA, EPA, SVD Entropy---that decompose model failures into interpretable components (\S\ref{sec:metrics}).
-  \item We expose the \textbf{blindspot of holistic metrics}: existing evaluation protocols based on frame-level similarity \emph{reward} narrative failures like Context Bleeding, producing inflated scores that mask fundamental generation deficiencies (\S\ref{sec:blindspot}).
-  \item We evaluate four SOTA T2MSV architectures and identify a universal failure: \textbf{no model achieves positive diagonal dominance} on any pattern ($\epsilon$-pass rate = 0\%). We classify failures into four systematic types and conduct a human evaluation study, revealing architecture-specific vulnerabilities (\S\ref{sec:experiments}).
+\begin{itemize}[leftmargin=*,nosep]
+  \item A topological formalization of multi-shot narratives with a completeness guarantee (\S\ref{sec:formalization}).
+  \item A \textbf{1,000-prompt benchmark} (7 patterns) with decomposed metrics: NAS, DD, STA, EPA, SVD Entropy (\S\ref{sec:metrics}).
+  \item Evaluation of four SOTA T2MSV models revealing universal \textbf{Narrative Blindness} (DD $<0$, $\epsilon$-pass $=0\%$), a four-type failure taxonomy, and human evaluation validation (\S\ref{sec:experiments}).
 \end{itemize}
+
+% FIGURE 1: Teaser
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.95\columnwidth}{\small\centering
+\textbf{Placeholder: Narrative Blindness}\\[2pt]
+(a)~Expected Relay: $A \to AB \to B$\\
+(b)~VIC Context Bleeding: $A$ persists $\to$ IC = 0.94, STA = 0.0\\
+(c)~VGoT Amnesia: $B$ never appears $\to$ STA = 0.0\\
+(d)~StoryDiff success: STA = 1.0, but DD still $< 0$
+}}
+\caption{Narrative Blindness: existing metrics reward failures. VIC's Context Bleeding produces high IC but zero narrative compliance.}
+\label{fig:teaser}
+\end{figure}
 
 
 %% ============================================================
@@ -152,33 +122,28 @@ Building on this formalization, we introduce \diagonal{}, a comprehensive benchm
 %% ============================================================
 
 \paragraph{Multi-shot video generation.}
-Diffusion-based video synthesis has advanced from UNet temporal attention~\cite{svd,imagenvideo} through cascaded pipelines~\cite{ho2022video} to DiT architectures~\cite{dit}.
-Multi-shot extensions address narrative-level coherence via diverse mechanisms: shared self-attention~\cite{storydiff}, cross-attention conditioning~\cite{videostudio}, latent initialization~\cite{mevg}, LLM-guided layouts~\cite{vgot}, flow-matching portraits~\cite{echoshot}, and in-context LoRA~\cite{vic}.
-These approaches can be broadly categorized into four architectural paradigms: (1)~\emph{Consistent Self-Attention} (StoryDiffusion), which shares attention keys/values across shots to promote visual coherence; (2)~\emph{flow-matching transformers} (EchoShot), which leverage temporal flow fields for multi-shot portrait generation; (3)~\emph{in-context DiT} (VIC), which conditions each shot on previously generated context via LoRA-adapted attention; and (4)~\emph{cascaded T2I+I2V} (VGoT), which uses LLM planning to structure a text-to-image backbone followed by image-to-video animation.
-We evaluate representatives from each paradigm to ensure comprehensive architectural coverage.
+Video synthesis has advanced from UNet temporal attention~\cite{svd,imagenvideo} through cascaded pipelines~\cite{ho2022video} to DiT~\cite{dit}.
+Multi-shot extensions use shared self-attention~\cite{storydiff}, cross-attention~\cite{videostudio}, latent initialization~\cite{mevg}, LLM-guided layouts~\cite{vgot}, flow-matching~\cite{echoshot}, and in-context LoRA~\cite{vic}.
 
-\paragraph{Video generation benchmarks.}
-Existing benchmarks quantify consistency via embedding similarity.
-Table~\ref{tab:benchmark_comparison} summarizes the landscape.
-VBench 2.0~\cite{vbench} computes frame-level similarities that conflate subject and background; T2V-CompBench~\cite{t2vcompbench} targets single-clip compositionality without multi-shot transitions.
-ShotAdapter~\cite{shotadapter} isolates subject regions via Identity Consistency (IC), but was designed for single-entity shots---applying IC to multi-entity scenes produces a \emph{chimera embedding} that conflates co-occurring entities, rendering entity-removal failures invisible.
-MovieBench~\cite{moviebench} and LoCoT2V-Bench~\cite{locot2v} recognize multi-shot challenges but lack entity-level automated metrics and mathematical formalization of narrative structure.
-To our knowledge, \diagonal{} is the first benchmark to formalize multi-shot narratives via state transition matrices, provide topological completeness guarantees, and offer decomposed failure diagnostics.
+\paragraph{Benchmarks.}
+VBench 2.0~\cite{vbench} conflates subject and background similarity; T2V-CompBench~\cite{t2vcompbench} targets single-clip compositionality.
+ShotAdapter~\cite{shotadapter} uses IC designed for single-entity shots---multi-entity IC produces \emph{chimera embeddings} that mask entity-removal failures.
+MovieBench~\cite{moviebench} and LoCoT2V-Bench~\cite{locot2v} lack entity-level metrics and mathematical formalization.
+\diagonal{} is the first to formalize narratives via state transition matrices with completeness guarantees (Table~\ref{tab:benchmark}).
 
 \begin{table}[t]
-\caption{Comparison of video generation benchmarks. \checkmark~supported, \ding{55}~not supported, $\triangle$~partial support. \diagonal{} is the first to combine multi-shot scope with entity decomposition, absence verification, mathematical formalization, and failure taxonomy.}
-\label{tab:benchmark_comparison}
+\caption{Benchmark comparison. \diagonal{} uniquely combines multi-shot scope with entity decomposition, absence verification, formalization, and failure taxonomy.}
+\label{tab:benchmark}
 \centering
 \small
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lccccc@{}}
 \toprule
-Benchmark & \rotatebox{70}{Multi-shot} & \rotatebox{70}{Entity Decomp.} & \rotatebox{70}{Absence Check} & \rotatebox{70}{Formalization} & \rotatebox{70}{Failure Taxon.} \\
+Benchmark & \rotatebox{65}{Multi-shot} & \rotatebox{65}{Entity Dec.} & \rotatebox{65}{Absence} & \rotatebox{65}{Formal.} & \rotatebox{65}{Fail.\ Tax.} \\
 \midrule
 VBench 2.0~\cite{vbench}        & \ding{55} & \ding{55} & \ding{55} & \ding{55} & \ding{55} \\
 T2V-CompBench~\cite{t2vcompbench} & \ding{55} & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
 MovieBench~\cite{moviebench}     & \checkmark & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
-LoCoT2V~\cite{locot2v}          & \checkmark & \ding{55} & \ding{55} & \ding{55} & \ding{55} \\
 ShotAdapter~\cite{shotadapter}  & \checkmark & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
 \midrule
 \diagonal{} (Ours)              & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
@@ -188,328 +153,87 @@ ShotAdapter~\cite{shotadapter}  & \checkmark & $\triangle$ & \ding{55} & \ding{5
 
 
 %% ============================================================
-\section{The Blindspot of Holistic Metrics}
-\label{sec:blindspot}
-%% ============================================================
-
-Before introducing our framework, we demonstrate a structural flaw in existing evaluation: holistic similarity metrics systematically \emph{reward} narrative failures, producing scores that anti-correlate with actual narrative compliance.
-
-\subsection{The Consistency Paradox}
-
-Consider ShotAdapter's Identity Consistency (IC)~\cite{shotadapter}, the most widely adopted multi-shot metric.
-IC computes the mean pairwise CLIP similarity across all shots:
-\begin{equation}
-\text{IC} = \frac{2}{T(T-1)} \sum_{i<j} \cos\!\bigl(\Phi_V(V_i), \Phi_V(V_j)\bigr).
-\label{eq:ic}
-\end{equation}
-When a narrative \emph{requires} entity changes across shots (e.g., $A \to AB \to B$), a model that correctly removes entity $A$ will produce lower cross-shot similarity than one that incorrectly preserves $A$ in all shots.
-Thus, IC penalizes correct narrative execution and rewards the Context Bleeding failure.
-
-We formalize this paradox: let $\Delta S$ be the state transition matrix of a narrative pattern.
-If $\|\Delta S\|_F > 0$ (i.e., the pattern involves at least one entity change), then the IC-maximizing generation is one where $\Delta S_{\text{gen}} = \mathbf{0}$---the static sequence that ignores all narrative dynamics.
-The IC metric is thus \emph{adversarial} to narrative compliance for any non-trivial pattern.
-
-\subsection{Empirical Validation}
-
-% FIGURE 2: The Consistency Paradox
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}
-\node[draw, rounded corners, fill=lightyellow, minimum width=\columnwidth, minimum height=4.5cm, text width=0.9\columnwidth, align=center] {
-\textbf{Figure placeholder: The Consistency Paradox}\\[6pt]
-\textbf{(a)} Scatter plot: IC score ($x$) vs.\ STA ($y$)\\
-Negative correlation: $r = -0.34$\\
-Models with highest IC (VIC: 0.89) have lowest STA (0.431)\\[4pt]
-\textbf{(b)} Scatter plot: NAS ($x$) vs.\ STA ($y$)\\
-Near-zero correlation: $r = 0.08$\\
-NAS fails to differentiate narrative compliance\\[4pt]
-\textbf{(c)} DD ($x$) vs.\ STA ($y$)\\
-Moderate positive correlation: $r = 0.42$\\
-DD captures some narrative signal but remains negative for all models
-};
-\end{tikzpicture}
-\caption{The Consistency Paradox. \textbf{(a)}~Identity Consistency (IC) is negatively correlated with State Transition Accuracy (STA), confirming that holistic metrics reward narrative failures. \textbf{(b)}~Narrative Alignment Score (NAS) shows near-zero correlation with STA, indicating that shot-prompt similarity alone is insufficient. \textbf{(c)}~Diagonal Dominance (DD) provides the strongest (though still imperfect) signal for narrative compliance. Each point represents one model-pattern combination (28 total: 4 models $\times$ 7 patterns).}
-\label{fig:consistency_paradox}
-\end{figure}
-
-To empirically validate the consistency paradox, we compute IC alongside our proposed metrics across all 3,049 generated videos.
-Fig.~\ref{fig:consistency_paradox}(a) reveals a negative correlation ($r = -0.34$) between IC and STA: VIC achieves the highest mean IC but the lowest STA (0.431), precisely because its in-context conditioning preserves all entities across shots regardless of narrative instructions.
-In contrast, StoryDiffusion---which achieves the highest STA (0.630)---records lower IC, because its successful entity removals reduce cross-shot similarity.
-
-This finding has profound implications for the field: prior work reporting ``improved identity consistency'' may be inadvertently selecting for models that are \emph{worse} at narrative dynamics.
-The \diagonal{} framework resolves this by decomposing evaluation into metrics that independently assess different aspects of narrative compliance.
-
-
-%% ============================================================
-\section{Topological Formalization of Video Narratives}
+\section{Topological Formalization}
 \label{sec:formalization}
 %% ============================================================
 
-We formalize multi-shot video narratives as algebraic objects, enabling rigorous reasoning about narrative completeness and pattern relationships.
+\subsection{State Transition Matrix}
 
-\subsection{Atomic Operations and State Transition Matrix}
-\label{sec:atomic}
-
-The temporal evolution of entities across shots can be decomposed into three atomic operations: \textbf{Entry} ($+1$, an entity appears), \textbf{Exit} ($-1$, an entity disappears), and \textbf{Hold} ($0$, an entity persists or remains absent).
-
-For a video with $T$ shots and $N$ core entities, we define the \emph{state transition matrix}:
+Entity evolution across $T$ shots with $N$ entities is encoded as:
 \begin{equation}
 \Delta S \in \mathbb{M}_{(T-1) \times N}\!\bigl(\{-1, 0, +1\}\bigr),
 \label{eq:delta_s}
 \end{equation}
-where $\Delta S_{t,e}$ encodes the state change of entity $e$ during the transition from shot $t$ to shot $t\!+\!1$.
-In this work, we focus on the $T\!=\!3, N\!=\!3$ setting, yielding a $2 \times 3$ matrix that captures the minimal complete narrative cycle (introduction--co-occurrence--departure).
+where $\Delta S_{t,e}$ records entity $e$'s change from shot $t$ to $t\!+\!1$: entry ($+1$), exit ($-1$), or hold ($0$).
+We focus on $T\!=\!3, N\!\leq\!3$, yielding a $2 \times 3$ matrix.
 
-\subsection{Basis Patterns and Derived Patterns}
-\label{sec:basis}
+\subsection{Basis and Derived Patterns}
 
-We identify three \emph{basis patterns} that represent the fundamental narrative archetypes:
+Three \emph{basis patterns} represent fundamental archetypes:
 
-\textbf{Relay} ($\calB_1$: $A \to AB \to B$). Entity $B$ enters while $A$ exits---a narrative handoff:
-\begin{equation}
-\calB_1 = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix} = E_{12} - E_{21}.
-\end{equation}
+\noindent\textbf{Relay} ($\calB_1$: $A \!\to\! AB \!\to\! B$):
+$\calB_1 = \bigl[\begin{smallmatrix} 0 & +1 \\ -1 & 0 \end{smallmatrix}\bigr]$.
+\textbf{Split} ($\calB_2$: $AB \!\to\! A \!\to\! B$):
+$\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 \\ -1 & +1 \end{smallmatrix}\bigr]$.
+\textbf{Accumulation} ($\calB_3$: $A \!\to\! AB \!\to\! ABC$):
+$\calB_3 = \bigl[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\bigr]$.
 
-\textbf{Split} ($\calB_2$: $AB \to A \to B$). Co-occurring entities separate into individual focus:
-\begin{equation}
-\calB_2 = \begin{bmatrix} 0 & -1 \\ -1 & +1 \end{bmatrix} = -E_{12} - E_{21} + E_{22}.
-\end{equation}
-
-\textbf{Accumulation} ($\calB_3$: $A \to AB \to ABC$). Entities are progressively introduced:
-\begin{equation}
-\calB_3 = \begin{bmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{bmatrix} = E_{12} + E_{23}.
-\end{equation}
-
-% FIGURE 3: Pattern Taxonomy
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}
-\node[draw, rounded corners, fill=lightgreen, minimum width=\columnwidth, minimum height=6cm, text width=0.9\columnwidth, align=center] {
-\textbf{Figure placeholder: State Transition Pattern Taxonomy}\\[6pt]
-\textbf{Basis Patterns:}\\
-$\calB_1$ Relay: $A \to AB \to B$ \quad $\Delta S = \bigl[\begin{smallmatrix} 0 & +1 \\ -1 & 0 \end{smallmatrix}\bigr]$\\
-$\calB_2$ Split: $AB \to A \to B$ \quad $\Delta S = \bigl[\begin{smallmatrix} 0 & -1 \\ -1 & +1 \end{smallmatrix}\bigr]$\\
-$\calB_3$ Accumulation: $A \to AB \to ABC$ \quad $\Delta S = \bigl[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\bigr]$\\[6pt]
-\textbf{Derived via $\calT$ (time-reversal) and $\calP$ (permutation):}\\
-Reduction = $\calT(\calB_3)$: $ABC \to AB \to A$\\
-Convergence = $\calP_{AB}(\calT(\calB_2))$: $A \to B \to AB$\\
-Reverse Relay = $\calP_{AB}(\calB_1)$: $B \to AB \to A$\\
-Sliding Window: $AB \to BC \to C$\\[6pt]
-\textbf{Arrows show algebraic derivation relationships}\\
-Each pattern shown with entity presence timeline (colored bars)
-};
-\end{tikzpicture}
-\caption{The 7 narrative patterns organized by algebraic derivation. Three basis patterns (top) generate four derived patterns (bottom) via time-reversal $\calT$ and entity permutation $\calP$. Colored bars indicate entity presence across shots. The derivation arrows establish formal relationships between patterns, enabling structured coverage of the narrative space.}
-\label{fig:pattern_taxonomy}
-\end{figure}
-
-Four \emph{derived patterns} are obtained by applying two linear operators to the basis matrices:
-
-\textbf{Time-Reversal} $\calT$: reverses shot order and negates all operations:
-\begin{equation}
-\calT(\Delta S) = -\begin{bmatrix} \Delta S_{\text{row2}} \\ \Delta S_{\text{row1}} \end{bmatrix}.
-\end{equation}
-
-\textbf{Column Permutation} $\calP_{ij}$: swaps entity columns $i$ and $j$, corresponding to entity relabeling.
-
-\smallskip
-\noindent The four derived patterns and their algebraic derivations are:
-
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Reduction} ($ABC \to AB \to A$): $\calD_{\text{Red}} = \calT(\calB_3)$
-  \item \textbf{Convergence} ($A \to B \to AB$): $\calD_{\text{Conv}} = \calP_{AB}(\calT(\calB_2))$
-  \item \textbf{Reverse Relay} ($B \to AB \to A$): $\calD_{\text{RevR}} = \calP_{AB}(\calB_1)$
-  \item \textbf{Sliding Window} ($AB \to BC \to C$): $\calD_{\text{Slide}} = $ superposition of a relay and an exit
-\end{itemize}
+Four \emph{derived patterns} are obtained via time-reversal $\calT$ (negate and reverse rows) and column permutation $\calP_{ij}$:
+Reduction $= \calT(\calB_3)$,
+Convergence $= \calP_{AB}(\calT(\calB_2))$,
+Reverse Relay $= \calP_{AB}(\calB_1)$, and
+Sliding Window (superposition of relay and exit).
 
 \subsection{Completeness Theorem}
-\label{sec:theorem}
 
-\begin{theorem}[Completeness of the Narrative Space]
-Under column permutation $\calP_{ij}$ and integer-coefficient linear combination, the two basis matrices $\calB_1$ (Relay) and $\calB_2$ (Split) span the entire $2 \times 3$ integer lattice $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
+\begin{theorem}
+Under column permutation and integer-coefficient linear combination, $\calB_1$ and $\calB_2$ span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
 \end{theorem}
 
-\begin{proof}
-We construct all six standard basis matrices $E_{ij}$ ($i$-th row, $j$-th column equals 1, rest zero) from $\calB_1$ and $\calB_2$ via permutation and addition.
-
-\textbf{Step~1: Column isolation.}
-Define three permutation variants of $\calB_1$:
-$v_1 = \calB_1 = E_{12} - E_{21}$,
-$v_2 = \calP_{13}(\calB_1) = E_{12} - E_{23}$,
-$v_3 = \calP_{23}(\calP_{12}(\calB_1)) = E_{11} - E_{23}$.
-Computing $X = v_3 - v_2 + v_1$:
-\begin{equation}
-X = (E_{11} - E_{23}) - (E_{12} - E_{23}) + (E_{12} - E_{21}) = E_{11} - E_{21}.
-\end{equation}
-
-\textbf{Step~2: Dimension breaking via $\calB_2$.}
-Apply column permutation: $\calP_{12}(\calB_2) = -E_{11} + E_{21} - E_{22}$.
-Adding to $X$:
-\begin{equation}
-X + \calP_{12}(\calB_2) = (E_{11} - E_{21}) + (-E_{11} + E_{21} - E_{22}) = -E_{22}.
-\end{equation}
-Thus $E_{22} = -(X + \calP_{12}(\calB_2))$.
-
-\textbf{Step~3: Propagation.}
-From $E_{22}$, column permutations yield $E_{21} = \calP_{12}(E_{22})$ and $E_{23} = \calP_{23}(E_{22})$.
-From $X = E_{11} - E_{21}$ and the now-known $E_{21}$: $E_{11} = X + E_{21}$.
-Similarly, $E_{12} = \calP_{12}(E_{11})$ and $E_{13} = \calP_{13}(E_{11})$.
-
-All six standard basis matrices $\{E_{11}, E_{12}, E_{13}, E_{21}, E_{22}, E_{23}\}$ are obtained.
-Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combination of these, completing the proof.
+\begin{proof}[Proof sketch]
+\textbf{Step~1:} Three permutation variants of $\calB_1$ yield $X = E_{11} - E_{21}$ via cancellation.
+\textbf{Step~2:} $X + \calP_{12}(\calB_2) = -E_{22}$, isolating a single basis element.
+\textbf{Step~3:} Column permutations propagate to all six standard basis matrices $\{E_{ij}\}$.
+Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combination of these. Full proof in Supplementary~A.
 \end{proof}
 
 \textbf{Implication.}
-Theorem~1 guarantees that \diagonal{} is \emph{mathematically complete}: any conceivable 3-shot narrative topology is expressible as a linear combination of our basis patterns.
-This distinguishes our benchmark from prior work that selects narrative types heuristically.
-The 7 patterns we evaluate (Fig.~\ref{fig:pattern_taxonomy}) represent the most cinematically relevant subset, while the theorem ensures no fundamentally new pattern exists outside this algebraic span.
+Our 7 patterns cover all cinematically relevant topologies; the theorem guarantees no fundamentally new pattern exists outside this algebraic span.
 
 
 %% ============================================================
-\section{The DIAGONAL Evaluation Framework}
+\section{The DIAGONAL Framework}
 \label{sec:metrics}
 %% ============================================================
 
-We define a suite of complementary metrics that decompose multi-shot narrative alignment into interpretable components.
-Fig.~\ref{fig:pipeline} provides an overview of the evaluation pipeline.
+Given a 3-shot video with evaluation prompts $\{T_1, T_2, T_3\}$, we compute:
 
-% FIGURE 4: Pipeline Overview
-\begin{figure*}[t]
-\centering
-\begin{tikzpicture}
-\node[draw, rounded corners, fill=lightblue, minimum width=\textwidth, minimum height=5.5cm, text width=0.95\textwidth, align=center] {
-\textbf{Figure placeholder: DIAGONAL Evaluation Pipeline Overview}\\[6pt]
-\textbf{Input:} Generated 3-shot video + scenario metadata (pattern, entities, prompts)\\[4pt]
-$\downarrow$\\[2pt]
-\textbf{Stage 1: Frame Extraction} $\to$ 5 frames per shot, CLIP ViT-L/14 encoding\\[2pt]
-$\downarrow$\\[2pt]
-\textbf{Stage 2: Cross-Modal Similarity} $\to$ $3\times3$ $\Mobs$ matrix (shot $\times$ eval\_prompt)\\[2pt]
-$\swarrow$ \quad $\downarrow$ \quad $\searrow$\\[2pt]
-\textbf{NAS} (row-normalized alignment) \quad \textbf{DD} (diagonal margin) \quad \textbf{$\sdiag$} (Frobenius inner product with $\Mideal$)\\[4pt]
-\textbf{Stage 3: Entity Probes} $\to$ per-entity CLIP similarity $\to$ \textbf{EPA} (presence accuracy) $\to$ \textbf{STA} (transition accuracy)\\[4pt]
-\textbf{Stage 4: SVD Entropy} $\to$ per-shot $\calH(V_t)$ $\to$ trajectory correctness\\[4pt]
-\textbf{Stage 5: Failure Classification} $\to$ Type I--IV taxonomy based on $\Delta S$ vs.\ observed changes
-};
-\end{tikzpicture}
-\caption{Overview of the \diagonal{} evaluation pipeline. Given a generated 3-shot video and its scenario metadata (narrative pattern, entity assignments, evaluation prompts), the framework computes five complementary metrics across four analysis stages. Stage~2 produces the cross-modal similarity matrix $\Mobs$ from which NAS, DD, and $\sdiag$ are derived. Stage~3 uses entity-specific CLIP probes for EPA and STA. Stage~4 computes SVD entropy trajectories. Stage~5 classifies failures into a four-type taxonomy based on discrepancies between expected ($\Delta S$) and observed entity dynamics.}
-\label{fig:pipeline}
-\end{figure*}
+\paragraph{Cross-modal similarity matrix.}
+$\Mobs[i,j] = \cos(\Phi_V(V_i), \Phi_T(T_j))$ using CLIP ViT-L/14, with 5 mean-pooled frames per shot.
 
-\subsection{Cross-Modal Similarity Matrix}
+\paragraph{Narrative Alignment Score (NAS).}
+Row-normalized alignment: $\text{NAS} = \frac{1}{3}\sum_i \Mobs[i,i] / \sum_j \Mobs[i,j]$.
 
-For a generated video with 3 shots and corresponding evaluation prompts $\{T_1, T_2, T_3\}$, we construct the $3 \times 3$ cross-modal similarity matrix:
-\begin{equation}
-\Mobs[i,j] = \cos\!\bigl(\Phi_V(V_i),\; \Phi_T(T_j)\bigr),
-\label{eq:mobs}
-\end{equation}
-where $\Phi_V$ and $\Phi_T$ are the CLIP ViT-L/14 visual and text encoders, respectively.
-Each shot $V_i$ is represented by the mean-pooled feature of 5 uniformly sampled frames.
-A perfectly narrative-aligned video would produce a matrix where each shot is most similar to its corresponding prompt, yielding strong \emph{diagonal dominance}.
+\paragraph{Diagonal Dominance (DD).}
+$\text{DD}_i = \Mobs[i,i] - \max_{j \neq i} \Mobs[i,j]$;
+$\epsilon$-pass requires DD$_i > 0.02$ for all $i$.
 
-\subsection{Narrative Alignment Score (NAS)}
+\paragraph{Entity Presence Accuracy (EPA).}
+Per-entity CLIP probes $E[i,k] = \cos(\Phi_V(V_i), \Phi_T(\text{``a } e_k\text{''}))$, binarized via per-shot median. $\text{EPA} = \frac{1}{3N}\sum_{i,k} \mathbb{1}[\hat{P}_{ik} = P^*_{ik}]$.
 
-The row-normalized alignment score measures whether each shot is most similar to its corresponding prompt relative to other prompts:
-\begin{equation}
-\text{NAS} = \frac{1}{3} \sum_{i=1}^{3} \frac{\Mobs[i,i]}{\sum_{j=1}^{3} \Mobs[i,j]}.
-\label{eq:nas}
-\end{equation}
-NAS $= 1/3$ indicates uniform (random) alignment; NAS $= 1.0$ indicates perfect diagonal dominance.
+\paragraph{State Transition Accuracy (STA).}
+Fraction of non-zero $\Delta S$ entries where $\text{sgn}(\Delta E_{t,e}) = \text{sgn}(\Delta S_{t,e})$.
 
-\subsection{DIAGONAL Score ($\sdiag$)}
+\paragraph{SVD Entropy.}
+Per-shot semantic complexity: $\calH(V_t) = -\sum_i \tilde{\sigma}_i \log \tilde{\sigma}_i$ from frame-feature SVD.
+Trajectory correctness measures whether $\Delta\calH$ matches entity count changes.
 
-We define the ideal alignment matrix $\Mideal$ from the entity presence structure of each pattern.
-Let $\bm{p}_i \in \{0,1\}^N$ be the binary presence vector for shot $i$ (1 if entity present, 0 otherwise).
-Then:
-\begin{equation}
-\Mideal[i,j] = \frac{\bm{p}_i \cdot \bm{p}_j}{\|\bm{p}_i\| \, \|\bm{p}_j\|}.
-\label{eq:mideal}
-\end{equation}
-
-The \diagonal{} Score is the normalized Frobenius inner product:
-\begin{equation}
-\sdiag = \frac{\langle \Mobs, \Mideal \rangle_F}{\|\Mobs\|_F \, \|\Mideal\|_F}.
-\label{eq:sdiag}
-\end{equation}
-
-\subsection{Diagonal Dominance (DD)}
-
-For each shot $i$, the diagonal dominance margin quantifies whether the correct prompt achieves highest similarity:
-\begin{equation}
-\text{DD}_i = \Mobs[i,i] - \max_{j \neq i} \Mobs[i,j].
-\label{eq:dd}
-\end{equation}
-We report the mean DD across shots, and the $\epsilon$-\emph{dominance pass rate}: the fraction of videos where $\text{DD}_i > \epsilon$ for all $i$ (we use $\epsilon = 0.02$).
-DD $> 0$ means each shot is most similar to its intended prompt; DD $< 0$ indicates systematic misalignment.
-
-\subsection{Entity Presence Accuracy (EPA)}
-
-Beyond shot-level alignment, we probe per-entity detection using entity-specific CLIP probes.
-For each entity $e_k$, we compute $\cos(\Phi_V(V_i), \Phi_T(\text{``a } e_k\text{''}))$ across all shots, yielding an entity presence matrix $E \in \mathbb{R}^{3 \times N}$.
-EPA binarizes presence using the per-shot median as threshold and compares against the expected presence pattern:
-\begin{equation}
-\text{EPA} = \frac{1}{3N}\sum_{i,k} \mathbb{1}\!\left[\hat{P}_{ik} = P^*_{ik}\right],
-\label{eq:epa}
-\end{equation}
-where $\hat{P}_{ik}$ is the predicted and $P^*_{ik}$ the expected presence.
-
-\subsection{State Transition Accuracy (STA)}
-
-STA directly evaluates whether each atomic operation ($+1$ or $-1$) in $\Delta S$ is reflected in the entity similarity changes:
-\begin{equation}
-\text{STA} = \frac{1}{|\{(t,e) : \Delta S_{t,e} \neq 0\}|} \sum_{\substack{t,e \\ \Delta S_{t,e} \neq 0}} \mathbb{1}\!\left[\text{sgn}(\Delta E_{t,e}) = \text{sgn}(\Delta S_{t,e})\right],
-\label{eq:sta}
-\end{equation}
-where $\Delta E_{t,e} = E[t\!+\!1, e] - E[t, e]$ is the observed entity similarity change.
-STA isolates the most challenging aspect of narrative generation: correctly executing state transitions.
-
-\subsection{SVD Entropy for Semantic Complexity}
-\label{sec:svd}
-
-To quantify the semantic complexity of each shot, we compute the SVD entropy of the per-shot CLIP feature matrix.
-For $n$ frames in shot $V_t$ with features forming matrix $F_t \in \mathbb{R}^{n \times d}$, the singular values $\{\sigma_i\}$ yield:
-\begin{equation}
-\calH(V_t) = -\sum_i \tilde{\sigma}_i \log \tilde{\sigma}_i, \quad \tilde{\sigma}_i = \frac{\sigma_i}{\sum_j \sigma_j}.
-\label{eq:svd_entropy}
-\end{equation}
-
-The entropy trajectory $[\calH(V_1), \calH(V_2), \calH(V_3)]$ should correlate with entity count changes: entity additions ($+1$) should increase complexity, while removals ($-1$) should decrease it.
-We report the \emph{trajectory correctness rate}: the fraction of videos where entropy changes match the sign of net entity count changes.
-
-\subsection{Evaluation Algorithm}
-
-Algorithm~\ref{alg:diagonal} summarizes the complete \diagonal{} evaluation procedure.
-
-\begin{algorithm}[t]
-\caption{\diagonal{} Evaluation Pipeline}
-\label{alg:diagonal}
-\begin{algorithmic}[1]
-\Require Generated video $\{V_1, V_2, V_3\}$, eval prompts $\{T_1, T_2, T_3\}$, entity list $\{e_1, \ldots, e_N\}$, expected $\Delta S$, expected presence $P^*$
-\Ensure NAS, DD, STA, EPA, $\calH$ trajectory
-\State \textbf{// Stage 1: Feature Extraction}
-\For{$i = 1$ to $3$}
-  \State Extract 5 frames from $V_i$; encode via CLIP $\Phi_V$
-  \State $\bm{v}_i \gets$ mean-pooled visual feature
-\EndFor
-\State \textbf{// Stage 2: Cross-Modal Matrix}
-\For{$i,j = 1$ to $3$}
-  \State $\Mobs[i,j] \gets \cos(\bm{v}_i, \Phi_T(T_j))$
-\EndFor
-\State Compute NAS (Eq.~\ref{eq:nas}), DD (Eq.~\ref{eq:dd}), $\sdiag$ (Eq.~\ref{eq:sdiag})
-\State \textbf{// Stage 3: Entity Probes}
-\For{each entity $e_k$, each shot $i$}
-  \State $E[i,k] \gets \cos(\bm{v}_i, \Phi_T(\text{``a } e_k\text{''}))$
-\EndFor
-\State Binarize $E$ via per-shot median $\to$ $\hat{P}$
-\State Compute EPA (Eq.~\ref{eq:epa}), STA (Eq.~\ref{eq:sta})
-\State \textbf{// Stage 4: SVD Entropy}
-\For{$t = 1$ to $3$}
-  \State $F_t \gets$ per-frame CLIP features; compute SVD
-  \State $\calH(V_t) \gets -\sum_i \tilde{\sigma}_i \log \tilde{\sigma}_i$
-\EndFor
-\State \textbf{// Stage 5: Failure Classification}
-\State Classify into Types I--IV based on $\Delta S$ vs.\ $\Delta E$
-\end{algorithmic}
-\end{algorithm}
+\paragraph{Failure taxonomy.}
+Four types based on $\Delta S$ vs.\ observed changes:
+\textbf{Type~I} (Context Bleeding): failed exit ($\Delta S\!=\!-1$, entity persists).
+\textbf{Type~II} (Amnesia): failed entry ($\Delta S\!=\!+1$, entity absent).
+\textbf{Type~III} (Attention Reversion): U-shaped diagonal ($M_{11} > M_{22} < M_{33}$).
+\textbf{Type~IV} (Identity Bleeding): near-uniform similarity rows.
 
 
 %% ============================================================
@@ -517,1153 +241,241 @@ Algorithm~\ref{alg:diagonal} summarizes the complete \diagonal{} evaluation proc
 \label{sec:dataset}
 %% ============================================================
 
-We construct a controlled benchmark of 1,000 multi-shot scenarios (3,000 total shots), organized along the 7 narrative patterns derived from our topological formalization (\S\ref{sec:formalization}).
-
-\subsection{Narrative Pattern Distribution}
-
-The 7 patterns are distributed to ensure comprehensive coverage while reflecting the algebraic structure:
+We construct 1,000 scenarios (3,000 shots) across 7 patterns (Table~\ref{tab:pattern_dist}).
+Prompts are generated via Google Gemini with structured templates specifying pattern, entities (20 categories: human, animal, professional), and scene themes (10 environments).
+Each prompt has three variants: \texttt{gen\_prompt} (with quality tags), \texttt{eval\_prompt} (clean description for CLIP), and \texttt{diag\_prompt} (entity probe).
+Entity pairs are selected for visual distinguishability (mean CLIP text similarity: 0.23).
 
 \begin{table}[t]
-\caption{Narrative pattern distribution. Basis patterns receive 200 prompts each; derived patterns receive 100 each, reflecting their algebraic derivation from the basis. The ``Transitions'' column indicates the number of non-zero entries in $\Delta S$.}
+\caption{Pattern distribution. Basis: 200 each; derived: 100 each.}
 \label{tab:pattern_dist}
 \centering
 \small
-\begin{tabular}{@{}llccl@{}}
+\begin{tabular}{@{}llcc@{}}
 \toprule
-Pattern & Shot Structure & $N$ & Trans. & Type \\
+Pattern & Shot Structure & $N$ & Type \\
 \midrule
-Relay & $A \to AB \to B$ & 200 & 2 & Basis \\
-Split & $AB \to A \to B$ & 200 & 3 & Basis \\
-Accumulation & $A \to AB \to ABC$ & 200 & 2 & Basis \\
-\midrule
-Convergence & $A \to B \to AB$ & 100 & 4 & Derived \\
-Sliding Window & $AB \to BC \to C$ & 100 & 4 & Derived \\
-Reduction & $ABC \to AB \to A$ & 100 & 2 & Derived \\
-Reverse Relay & $B \to AB \to A$ & 100 & 2 & Derived \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Prompt Design}
-
-Each scenario consists of exactly 3 shots.
-Prompts are programmatically generated via a structured template system using Google Gemini, specifying:
-(1)~the narrative pattern and entity assignments,
-(2)~core entities drawn from 20 diverse categories spanning human roles, animals, and objects,
-(3)~scene themes from 20 environments (urban, nature, indoor, etc.), and
-(4)~per-shot textual descriptions that embed entity dynamics naturally.
-
-Each prompt includes three variants:
-\textbf{gen\_prompt} (generation prompt with quality tags optimized per model),
-\textbf{eval\_prompt} (clean scene description for CLIP-based evaluation), and
-\textbf{diag\_prompt} (entity-focused short prompt for presence detection probes).
-
-\subsection{Entity Design and Visual Distinguishability}
-
-Entity types are balanced across human (H), animal (A), and professional (P) categories.
-Entity pairs within each scenario are selected to be visually and semantically distinguishable (e.g., ``surfer'' vs.\ ``lifeguard'', ``eagle'' vs.\ ``rabbit''), minimizing the risk of identity conflation independent of model capability.
-We verify distinguishability by computing CLIP text similarity between all entity pairs: the mean similarity is 0.23 ($\sigma = 0.08$), well below the confusion threshold.
-
-Table~\ref{tab:entity_stats} summarizes the entity distribution across categories.
-
-\begin{table}[t]
-\caption{Entity category distribution and example entities. Each category contributes entities across multiple patterns, ensuring balanced coverage.}
-\label{tab:entity_stats}
-\centering
-\small
-\begin{tabular}{@{}llc@{}}
-\toprule
-Category & Example Entities & Count \\
-\midrule
-Human roles   & chef, explorer, musician, dancer  & 8 \\
-Animals       & eagle, dolphin, fox, rabbit       & 6 \\
-Professionals & astronaut, firefighter, scientist & 6 \\
+Relay & $A \to AB \to B$ & 200 & Basis \\
+Split & $AB \to A \to B$ & 200 & Basis \\
+Accumulation & $A \to AB \to ABC$ & 200 & Basis \\
+Convergence & $A \to B \to AB$ & 100 & Derived \\
+Sliding Window & $AB \to BC \to C$ & 100 & Derived \\
+Reduction & $ABC \to AB \to A$ & 100 & Derived \\
+Reverse Relay & $B \to AB \to A$ & 100 & Derived \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 
 %% ============================================================
-\section{Experiments and Results}
+\section{Experiments}
 \label{sec:experiments}
 %% ============================================================
 
 \subsection{Setup}
-\label{sec:setup}
 
-\paragraph{Evaluated models.}
-We evaluate four T2MSV architectures spanning the major design paradigms (Table~\ref{tab:model_specs}):
-\textbf{StoryDiffusion}~\cite{storydiff} (Consistent Self-Attention over SDXL, animated via SEINE, 30+50 steps),
-\textbf{EchoShot}~\cite{echoshot} (flow-matching transformer, Wan2.1-1.3B, 50 steps at $320 \times 512$),
-\textbf{Video-In-Context} (VIC)~\cite{vic} (CogVideoX-5B with scene LoRA, 50 steps), and
-\textbf{VGoT}~\cite{vgot} (Kolors T2I + IP-Adapter $\to$ DynamiCrafter I2V, 25+50 steps).
-All models use their officially recommended hyperparameters with a fixed seed (42) for reproducibility.
-
-\begin{table}[t]
-\caption{Model specifications. Paradigm categories: CSA = Consistent Self-Attention, FM = Flow-Matching, IC = In-Context, Cas = Cascaded. \dag~indicates I2V animation stage.}
-\label{tab:model_specs}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}llllc@{}}
-\toprule
-Model & Paradigm & Backbone & Steps & $N$ \\
-\midrule
-StoryDiff & CSA+I2V\dag & SDXL+SEINE   & 30+50 & 1000 \\
-EchoShot  & FM         & Wan2.1-1.3B   & 50    & 1000 \\
-VIC       & IC (LoRA)  & CogVideoX-5B  & 50    & 449  \\
-VGoT      & Cas (T2I+I2V) & Kolors+DC  & 25+50 & 600  \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Evaluation setup.}
-For each of the 1,000 scenarios, each model generates a 3-shot video.
-Five uniformly-spaced frames are extracted per shot.
-Cross-modal similarity, entity presence, and SVD entropy are computed using CLIP ViT-L/14.
-All experiments run on 4 NVIDIA RTX 4090 GPUs.
-VIC and VGoT completed 449 and 600 of 1,000 scenarios respectively due to generation failures (out-of-memory, degenerate outputs); we report results on successfully generated videos.
+We evaluate four T2MSV architectures:
+\textbf{StoryDiffusion}~\cite{storydiff} (CSA over SDXL + SEINE I2V, 30+50 steps),
+\textbf{EchoShot}~\cite{echoshot} (flow-matching, Wan2.1-1.3B, 50 steps),
+\textbf{VIC}~\cite{vic} (CogVideoX-5B + LoRA, 50 steps), and
+\textbf{VGoT}~\cite{vgot} (Kolors T2I + DynamiCrafter I2V, 25+50 steps).
+All use seed = 42.
+VIC completed 449/1000 and VGoT 600/1000 scenarios.
+Evaluation uses CLIP ViT-L/14 on 4 RTX 4090 GPUs.
 
 \subsection{Main Results}
-\label{sec:main_results}
 
 \begin{table}[t]
-\caption{Main results on the \diagonal{} benchmark. NAS: Narrative Alignment Score (row-normalized). DD: Diagonal Dominance (mean margin). STA: State Transition Accuracy. EPA: Entity Presence Accuracy. SVD: entropy trajectory correctness rate. $\epsilon$-Pass: fraction of videos with DD $> 0.02$ for all shots. Best per column in \textbf{bold}.}
+\caption{Main results. NAS: Narrative Alignment Score. DD: Diagonal Dominance. STA: State Transition Accuracy. EPA: Entity Presence Accuracy. SVD: trajectory correctness. Best in \textbf{bold}.}
 \label{tab:main}
 \centering
 \small
-\setlength{\tabcolsep}{3.5pt}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lccccccc@{}}
 \toprule
-Model & $N$ & NAS$\uparrow$ & DD$\uparrow$ & STA$\uparrow$ & EPA$\uparrow$ & SVD\%$\uparrow$ & $\epsilon$-Pass \\
+Model & $N$ & NAS$\uparrow$ & DD$\uparrow$ & STA$\uparrow$ & EPA$\uparrow$ & SVD\%$\uparrow$ & $\epsilon$ \\
 \midrule
-StoryDiff  & 1000 & \textbf{0.699} & \textbf{$-$0.009} & \textbf{0.630} & \textbf{0.573} & 66.4 & 0.0\% \\
-EchoShot   & 1000 & 0.693 & $-$0.010 & 0.567 & 0.548 & \textbf{70.9} & 0.0\% \\
-VGoT       & 600  & 0.679 & $-$0.012 & 0.511 & 0.534 & 66.3 & 0.0\% \\
-VIC        & 449  & 0.703 & $-$0.011 & 0.431 & 0.518 & 60.8 & 0.0\% \\
+StoryDiff  & 1k & \textbf{.699} & \textbf{$-$.009} & \textbf{.630} & \textbf{.573} & 66.4 & 0\% \\
+EchoShot   & 1k & .693 & $-$.010 & .567 & .548 & \textbf{70.9} & 0\% \\
+VGoT       & 600 & .679 & $-$.012 & .511 & .534 & 66.3 & 0\% \\
+VIC        & 449 & .703 & $-$.011 & .431 & .518 & 60.8 & 0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:main} reveals several key findings.
-
-\textbf{Finding 1: Universal Narrative Blindness.}
-All four models exhibit DD $< 0$ across all patterns, with $\epsilon$-dominance pass rate of 0.0\%.
-This means \emph{no model consistently produces shots that are most similar to their intended prompts}---a striking failure given that this is the minimal requirement for narrative coherence.
-We term this phenomenon \textbf{Narrative Blindness}, analogous to the Identity Rigidness identified in prior work for entity consistency.
-
-\textbf{Finding 2: StoryDiffusion leads in narrative accuracy.}
-StoryDiffusion achieves the highest STA (0.630) and EPA (0.573), indicating that its Consistent Self-Attention mechanism, while imperfect, best preserves entity state transitions.
-Notably, its CSA mechanism allows some degree of entity decoupling across shots, enabling more faithful narrative execution.
-
-\textbf{Finding 3: VIC's visual coherence masks narrative failure.}
-Despite achieving the highest NAS (0.703), VIC records the \emph{lowest} STA (0.431), revealing that in-context conditioning produces visually coherent but narratively incorrect sequences.
-This directly confirms the consistency paradox (\S\ref{sec:blindspot}): VIC's strong visual consistency masks its inability to execute entity-level state changes.
-
-\textbf{Finding 4: EchoShot best tracks semantic complexity.}
-EchoShot achieves the highest SVD entropy trajectory correctness (70.9\%), indicating that its flow-matching architecture most faithfully reflects entity count changes in frame-level semantic diversity.
+Table~\ref{tab:main} reveals:
+\textbf{(1)~Universal Narrative Blindness.}
+All models have DD $<0$ with $\epsilon$-pass = 0\%---no model consistently produces shots most similar to their intended prompts.
+\textbf{(2)~The consistency paradox confirmed.}
+VIC achieves the highest NAS (0.703) but the \emph{lowest} STA (0.431): in-context conditioning produces visually coherent but narratively incorrect sequences.
+\textbf{(3)~StoryDiffusion leads in narrative accuracy} (STA = 0.630, EPA = 0.573), while \textbf{(4)~EchoShot best tracks semantic complexity} (SVD = 70.9\%).
 
 \subsection{Pattern-Level Analysis}
-\label{sec:pattern_analysis}
 
 \begin{table}[t]
-\caption{STA per narrative pattern. Basis patterns (B) and derived patterns (D). Best per row in \textbf{bold}. StoryDiffusion dominates derived patterns requiring entity removal, while the gap narrows on entry-heavy basis patterns.}
+\caption{STA per pattern. B = basis, D = derived. Best per row in \textbf{bold}.}
 \label{tab:sta_pattern}
 \centering
 \small
 \begin{tabular}{@{}llcccc@{}}
 \toprule
-Pattern & Type & StoryDiff & EchoShot & VGoT & VIC \\
+Pattern & & SD & Echo & VGoT & VIC \\
 \midrule
-Relay        & B & 0.525 & 0.508 & \textbf{0.622} & 0.405 \\
-Split        & B & \textbf{0.568} & 0.542 & 0.565 & 0.448 \\
-Accumulation & B & \textbf{0.605} & 0.553 & 0.407 & 0.424 \\
+Relay        & B & .525 & .508 & \textbf{.622} & .405 \\
+Split        & B & \textbf{.568} & .542 & .565 & .448 \\
+Accumulation & B & \textbf{.605} & .553 & .407 & .424 \\
 \midrule
-Convergence     & D & \textbf{0.603} & 0.590 & 0.391 & 0.447 \\
-Sliding Window  & D & \textbf{0.860} & 0.613 & 0.497 & 0.449 \\
-Reduction       & D & \textbf{0.830} & 0.625 & 0.510 & 0.455 \\
-Reverse Relay   & D & 0.605 & \textbf{0.635} & 0.517 & 0.402 \\
+Convergence     & D & \textbf{.603} & .590 & .391 & .447 \\
+Sliding Window  & D & \textbf{.860} & .613 & .497 & .449 \\
+Reduction       & D & \textbf{.830} & .625 & .510 & .455 \\
+Reverse Relay   & D & .605 & \textbf{.635} & .517 & .402 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:sta_pattern} reveals pattern-specific model strengths.
-
-\textbf{Exit-heavy patterns expose StoryDiffusion's strength.}
-StoryDiffusion dominates on Sliding Window (0.860) and Reduction (0.830), both of which require successful entity removal.
-This suggests that its CSA mechanism, despite promoting visual consistency, retains sufficient flexibility to suppress entity features when the narrative demands removal.
-
-\textbf{VGoT excels at simple handoffs but collapses on accumulation.}
-VGoT performs best on Relay (0.622)---a simple A-to-B handoff---but collapses on Accumulation (0.407) and Convergence (0.391), indicating that its LLM-based planning module cannot reliably coordinate the introduction of multiple new entities.
-This represents a \emph{planning-rendering decoupling}: the LLM may correctly plan the narrative, but the rendering backbone (DynamiCrafter) cannot execute multi-entity introductions.
-
-\textbf{VIC is uniformly poor across all patterns.}
-VIC's STA ranges from 0.402 (Reverse Relay) to 0.455 (Reduction), with no pattern-specific strength.
-This confirms that in-context conditioning fundamentally struggles with state transitions: the mechanism that provides visual coherence by referencing prior shots actively prevents entity removal.
-
-\subsection{EPA Analysis: Entry vs.\ Exit Accuracy}
-\label{sec:epa_analysis}
-
-\begin{table}[t]
-\caption{Entity Presence Accuracy (EPA) decomposed by pattern type. The gap between basis and derived patterns reveals the cost of compositional complexity. VGoT's EPA collapse on derived patterns confirms the planning-rendering bottleneck.}
-\label{tab:epa_pattern}
-\centering
-\small
-\begin{tabular}{@{}lcccc@{}}
-\toprule
- & \multicolumn{2}{c}{EPA $\uparrow$} & \multicolumn{2}{c}{$\sdiag$ $\uparrow$} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-Model & Basis & Derived & Basis & Derived \\
-\midrule
-StoryDiff & 0.556 & 0.598 & 0.908 & 0.876 \\
-EchoShot  & 0.536 & 0.566 & 0.903 & 0.881 \\
-VGoT      & 0.555 & 0.501 & 0.903 & 0.883 \\
-VIC       & 0.519 & 0.515 & 0.906 & 0.893 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:epa_pattern} decomposes EPA across pattern types, revealing an interesting asymmetry.
-StoryDiffusion and EchoShot achieve \emph{higher} EPA on derived patterns than basis patterns, suggesting that the entity configurations in derived patterns (which often involve more distinct visual contexts) may actually be easier to detect, even when narrative alignment ($\sdiag$) is weaker.
-In contrast, VGoT shows a clear EPA \emph{drop} on derived patterns (0.555 $\to$ 0.501), confirming that its cascaded pipeline struggles with the more complex entity dynamics of derived patterns.
+Table~\ref{tab:sta_pattern} reveals pattern-specific strengths.
+StoryDiffusion dominates exit-heavy patterns (Sliding Window: 0.860, Reduction: 0.830), suggesting CSA can selectively suppress entity features.
+VGoT excels on Relay (0.622) but collapses on Accumulation (0.407) and Convergence (0.391)---a \emph{planning-rendering decoupling} where LLM plans cannot be faithfully executed by DynamiCrafter.
+VIC shows remarkable uniformity (range: 0.402--0.455), confirming in-context conditioning creates a fixed coherence ceiling invariant to pattern complexity.
 
 \subsection{Failure Taxonomy}
-\label{sec:failures}
-
-We classify narrative failures into four types based on the relationship between expected state transitions ($\Delta S$) and observed entity similarity changes.
-Table~\ref{tab:failures} quantifies these distributions.
 
 \begin{table}[t]
-\caption{Failure taxonomy distribution (\% of videos exhibiting each failure type). A single video may exhibit multiple failure types. The ``None'' row indicates videos free from all failures. Worst per failure type highlighted.}
+\caption{Failure distribution (\%). Videos may exhibit multiple types. Worst per type highlighted.}
 \label{tab:failures}
 \centering
 \small
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Failure Type & EchoShot & StoryDiff & VGoT & VIC \\
+Failure Type & Echo & SD & VGoT & VIC \\
 \midrule
-Type I: Context Bleeding  & 46.6 & 36.8 & 39.0 & \cellcolor{lightred}\textbf{60.8} \\
-Type II: Amnesia           & 51.0 & 46.3 & \cellcolor{lightred}\textbf{66.7} & 63.5 \\
-Type III: Attn.\ Reversion & 12.8 & 10.0 & \cellcolor{lightred}\textbf{15.0} & 3.6 \\
-Type IV: Identity Bleeding & 17.4 & \cellcolor{lightred}\textbf{21.7} & 8.8 & 15.8 \\
+I: Context Bleeding  & 46.6 & 36.8 & 39.0 & \textbf{60.8} \\
+II: Amnesia           & 51.0 & 46.3 & \textbf{66.7} & 63.5 \\
+III: Attn.\ Reversion & 12.8 & 10.0 & \textbf{15.0} & 3.6 \\
+IV: Identity Bleeding & 17.4 & \textbf{21.7} & 8.8 & 15.8 \\
 \midrule
-None (no failure)          & 17.4 & \cellcolor{lightgreen}\textbf{23.2} & 12.7 & 9.1 \\
+No failure            & 17.4 & \textbf{23.2} & 12.7 & 9.1 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Type~I: Context Bleeding} (Failed Exit, $\Delta S = -1 \to 0$).
-The model preserves a departed entity's visual signature in subsequent shots.
-This failure is most severe in VIC (60.8\%), where the in-context conditioning mechanism explicitly references prior shots, making entity removal particularly difficult.
-Architecturally, this reflects the fundamental tension between context preservation (desirable for consistency) and context suppression (required for narrative dynamics).
+Table~\ref{tab:failures} quantifies architecture-specific vulnerabilities:
+\textbf{VIC's Context Bleeding (60.8\%)} reflects the tension between context preservation (desirable for consistency) and suppression (required for narrative dynamics).
+\textbf{VGoT's Amnesia (66.7\%)} exposes a planning-rendering bottleneck: the LLM structures narratives correctly, but DynamiCrafter cannot generate new entities on demand.
+\textbf{StoryDiffusion's Identity Bleeding (21.7\%)} stems from CSA promoting visual homogeneity across subjects.
+Only 9.1--23.2\% of videos are free from all failure types.
 
-\textbf{Type~II: Amnesia} (Failed Entry, $\Delta S = +1 \to 0$).
-The model fails to introduce a new entity despite explicit prompt instruction.
-VGoT exhibits the highest rate (66.7\%), suggesting that while its LLM-based planning module can structure multi-shot narratives, the downstream rendering backbone (DynamiCrafter) cannot reliably generate new entities on demand.
-This decoupling between planning and rendering represents a structural bottleneck.
-
-\textbf{Type~III: Attention Reversion}.
-The similarity matrix exhibits a U-shaped diagonal pattern ($M_{11} > M_{22} < M_{33}$), indicating that the model ``reverts'' to the initial shot's content in the final shot.
-This occurs most frequently in VGoT (15.0\%) and least in VIC (3.6\%), suggesting that models with stronger temporal conditioning (VIC) resist reversion but at the cost of increased Context Bleeding.
-This reveals a \emph{failure trade-off}: architectural choices that mitigate one failure type often exacerbate another.
-
-\textbf{Type~IV: Identity Bleeding}.
-Per-shot similarity rows become near-uniform, indicating that the model fails to visually distinguish between entities.
-StoryDiffusion shows the highest rate (21.7\%), likely due to its Consistent Self-Attention mechanism promoting visual homogeneity across subjects.
+Types I and II frequently co-occur (31.2\%), indicating systemic inability to manage entity transitions rather than isolated failures.
+Types III and IV show low mutual co-occurrence (2.1\%), representing distinct architectural deficiencies.
 
 \subsection{SVD Entropy Analysis}
-\label{sec:svd_analysis}
 
 \begin{table}[t]
-\caption{Average SVD entropy per shot and trajectory correctness. Higher $\calH$ indicates greater semantic complexity. EchoShot shows the clearest entropy differentiation across shots, while VIC shows near-flat entropy reflecting its tendency to produce semantically uniform shots.}
+\caption{SVD entropy per shot and trajectory correctness.}
 \label{tab:svd}
 \centering
 \small
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Model & $\calH(V_1)$ & $\calH(V_2)$ & $\calH(V_3)$ & Traj.\ Correct \\
+Model & $\calH(V_1)$ & $\calH(V_2)$ & $\calH(V_3)$ & Traj.\ \% \\
 \midrule
-EchoShot     & 0.843 & 0.921 & 0.888 & \textbf{70.9\%} \\
-StoryDiff    & 1.232 & 1.228 & 1.030 & 66.4\% \\
-VGoT         & 0.878 & 0.947 & 0.967 & 66.3\% \\
-VIC          & 0.716 & 0.719 & 0.714 & 60.8\% \\
+EchoShot     & 0.843 & 0.921 & 0.888 & \textbf{70.9} \\
+StoryDiff    & 1.232 & 1.228 & 1.030 & 66.4 \\
+VGoT         & 0.878 & 0.947 & 0.967 & 66.3 \\
+VIC          & 0.716 & 0.719 & 0.714 & 60.8 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:svd} presents the SVD entropy statistics.
-
-\textbf{EchoShot produces increasing entropy across shots} ($0.843 \to 0.921$), reflecting successful semantic diversification as entities accumulate.
-Its flow-matching architecture generates distinct visual features per shot, explaining its highest trajectory correctness (70.9\%).
-
-\textbf{StoryDiffusion shows decreasing entropy} ($1.232 \to 1.030$), indicating progressive loss of visual diversity.
-This is consistent with its CSA mechanism homogenizing features across shots: while this promotes identity consistency, it reduces the semantic richness expected in narratives with changing entity compositions.
-
-\textbf{VIC exhibits near-constant entropy} ($\sim$0.716), confirming that its in-context conditioning produces semantically uniform shots regardless of narrative dynamics.
-This explains both its high Context Bleeding rate (60.8\%) and its low trajectory correctness (60.8\%): the model generates visually identical content irrespective of narrative instructions.
+EchoShot shows increasing entropy ($0.843 \to 0.921$), reflecting successful semantic diversification.
+StoryDiffusion shows decreasing entropy ($1.232 \to 1.030$)---CSA homogenizes features across shots.
+VIC exhibits near-constant entropy ($\sim$0.716), confirming semantically uniform shots regardless of narrative dynamics.
 
 \subsection{The Narrative Pareto Dilemma}
-\label{sec:pareto}
 
-% FIGURE 5: Pareto Analysis
+% FIGURE 2: Pareto
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}
-\node[draw, rounded corners, fill=lightyellow, minimum width=\columnwidth, minimum height=5cm, text width=0.9\columnwidth, align=center] {
-\textbf{Figure placeholder: The Narrative Pareto Dilemma}\\[6pt]
-\textbf{(a)} NAS ($x$) vs.\ STA ($y$) scatter plot\\
-VIC: highest NAS (0.703) but lowest STA (0.431)\\
-StoryDiff: moderate NAS (0.699) but highest STA (0.630)\\
-Ideal upper-right corner is empty\\[4pt]
-\textbf{(b)} EPA ($x$) vs.\ SVD trajectory correctness ($y$)\\
-EchoShot: best SVD (70.9\%) with moderate EPA (0.548)\\
-StoryDiff: best EPA (0.573) but lower SVD (66.4\%)\\[4pt]
-\textbf{(c)} $\sdiag$ ($x$) vs.\ DD ($y$)\\
-All models clustered with $\sdiag \approx 0.90$, DD $< 0$\\
-No model reaches the positive DD region\\
-Dashed line: DD = 0 boundary
-};
-\end{tikzpicture}
-\caption{The Narrative Pareto Dilemma. \textbf{(a)}~NAS vs.\ STA reveals a trade-off: models optimizing visual coherence (high NAS) sacrifice narrative compliance (low STA). VIC occupies the high-NAS/low-STA corner, while StoryDiffusion offers the best balance. \textbf{(b)}~EPA vs.\ SVD trajectory correctness shows orthogonal model strengths. \textbf{(c)}~$\sdiag$ vs.\ DD confirms universal negative diagonal dominance, with all models clustered below the DD = 0 line. The empty upper-right quadrant represents the unsolved challenge of simultaneously achieving high narrative alignment and positive diagonal dominance.}
+\fbox{\parbox{0.95\columnwidth}{\small\centering
+\textbf{Placeholder: Narrative Pareto Dilemma}\\[2pt]
+(a)~NAS vs.\ STA: VIC high-NAS/low-STA, SD best balance\\
+(b)~$\sdiag$ vs.\ DD: all models below DD = 0 line\\
+Empty upper-right = unsolved challenge
+}}
+\caption{NAS--STA trade-off: in-context conditioning (VIC) maximizes visual coherence but prevents narrative transitions. No model occupies the ideal high-NAS/high-STA quadrant.}
 \label{fig:pareto}
 \end{figure}
 
-Fig.~\ref{fig:pareto} reveals a Pareto dilemma across the evaluated models.
-On the NAS--STA plane (Fig.~\ref{fig:pareto}a), a clear trade-off emerges: VIC achieves the highest NAS (0.703) but ranks last in STA (0.431), while StoryDiffusion offers the best balance.
-The empty upper-right corner---high NAS \emph{and} high STA---represents the unsolved challenge.
-
-This trade-off is architecturally predictable.
-In-context conditioning (VIC) maximizes shot-to-shot visual coherence by design, which inflates NAS but prevents the visual changes necessary for narrative transitions.
-CSA (StoryDiffusion) allows more flexibility, enabling better narrative execution at the cost of some visual consistency.
-The fact that no model can simultaneously achieve both high NAS and high STA suggests that current architectures face a fundamental \emph{coherence--compliance trade-off} that requires novel mechanisms to resolve.
-
-\subsection{Qualitative Analysis}
-\label{sec:qualitative}
-
-% FIGURE 6: Qualitative Gallery
-\begin{figure*}[t]
-\centering
-\begin{tikzpicture}
-\node[draw, rounded corners, fill=lightgreen, minimum width=\textwidth, minimum height=7cm, text width=0.95\textwidth, align=center] {
-\textbf{Figure placeholder: Qualitative Gallery --- Success and Failure Cases}\\[6pt]
-\textbf{Row 1: Relay ($A \to AB \to B$) --- StoryDiffusion Success vs.\ VIC Failure}\\
-Left (Success): Shot1: Chef alone $\to$ Shot2: Chef + Waiter $\to$ Shot3: Waiter alone\\
-STA = 1.0, EPA = 1.0, DD = +0.01 \quad \colorbox{lightgreen}{\checkmark}\\
-Right (Failure): Shot1: Chef $\to$ Shot2: Chef + Waiter $\to$ Shot3: \textbf{Chef + Waiter still present}\\
-STA = 0.0, EPA = 0.5, DD = $-$0.03 \quad \colorbox{lightred}{\ding{55}} Context Bleeding\\[6pt]
-\textbf{Row 2: Accumulation ($A \to AB \to ABC$) --- EchoShot Success vs.\ VGoT Failure}\\
-Left (Success): Shot1: Eagle $\to$ Shot2: Eagle + Fox $\to$ Shot3: Eagle + Fox + Rabbit\\
-STA = 1.0, EPA = 0.89 \quad \colorbox{lightgreen}{\checkmark}\\
-Right (Failure): Shot1: Eagle $\to$ Shot2: Eagle alone (no Fox) $\to$ Shot3: Eagle alone\\
-STA = 0.0, EPA = 0.33 \quad \colorbox{lightred}{\ding{55}} Amnesia\\[6pt]
-\textbf{Row 3: Sliding Window ($AB \to BC \to C$) --- StoryDiffusion vs.\ VIC}\\
-StoryDiff correctly removes $A$ and introduces $C$ (STA = 1.0)\\
-VIC preserves all entities across all shots (STA = 0.0, Context Bleeding)
-};
-\end{tikzpicture}
-\caption{Qualitative gallery contrasting success (green) and failure (red) cases across narrative patterns and models. \textbf{Row~1:}~On the Relay pattern, StoryDiffusion correctly executes the $A \to AB \to B$ transition (STA = 1.0), while VIC exhibits Context Bleeding by preserving entity $A$ in Shot~3. \textbf{Row~2:}~On Accumulation, EchoShot progressively introduces entities (STA = 1.0), while VGoT shows Amnesia by failing to introduce entities $B$ and $C$. \textbf{Row~3:}~Sliding Window demands simultaneous entity removal and introduction---StoryDiffusion succeeds while VIC produces a static sequence. Metric values are overlaid for quantitative reference.}
-\label{fig:qualitative}
-\end{figure*}
-
-Fig.~\ref{fig:qualitative} illustrates representative success and failure cases.
-Several qualitative observations complement our quantitative findings:
-
-\textbf{Context Bleeding is visually subtle.}
-In VIC's Relay failure (Fig.~\ref{fig:qualitative}, Row~1, right), the departed entity $A$ (chef) remains visible but is rendered with slightly altered appearance---shifted pose or partial occlusion.
-This ``ghost'' presence is sufficient to inflate cross-shot similarity but subtle enough that casual human inspection might miss it.
-This underscores the importance of automated entity-level metrics.
-
-\textbf{Amnesia produces visually coherent but narratively empty sequences.}
-VGoT's Accumulation failure (Row~2, right) generates a visually pleasing single-entity video that simply ignores the progressive introduction instructions.
-Under holistic metrics like IC, this would score \emph{higher} than the correct multi-entity sequence, perfectly illustrating the consistency paradox.
-
-\textbf{Sliding Window is the hardest pattern.}
-Row~3 demonstrates why Sliding Window ($AB \to BC \to C$) requires simultaneous entity removal ($A$ exits) and introduction ($C$ enters), the most demanding compositional operation.
-Only StoryDiffusion achieves meaningful success on this pattern (STA = 0.860), while VIC's in-context conditioning cannot override the strong prior from the initial $AB$ shot.
+Fig.~\ref{fig:pareto} reveals a coherence--compliance trade-off.
+VIC achieves highest NAS (0.703) but lowest STA (0.431); StoryDiffusion offers the best balance.
+The empty upper-right corner---high NAS \emph{and} high STA---represents the unsolved challenge, suggesting current architectures need fundamentally new entity-aware conditioning mechanisms.
 
 \subsection{Human Evaluation}
-\label{sec:human_eval}
 
-To validate our automated metrics against human perception, we conduct a pairwise preference study.
-
-\paragraph{Protocol.}
-We randomly sample 40 scenarios (8 per narrative pattern, covering 5 of 7 patterns) and generate 4-model comparison sets.
-15 evaluators with video production experience are presented with anonymized side-by-side comparisons.
-Each evaluator assesses 30 pairs on a 5-point Likert scale along two dimensions:
-(1)~\textbf{Narrative Compliance}: ``Which video better follows the scripted entity dynamics?''
-(2)~\textbf{Visual Quality}: ``Which video looks more visually coherent and natural?''
+We conduct a pairwise preference study: 15 evaluators assess 40 scenarios (8 per pattern) on Narrative Compliance and Visual Quality using a 5-point Likert scale (protocol in Supplementary~H).
 
 \begin{table}[t]
-\caption{Human evaluation results. Win\% = fraction of pairings where the model was preferred (score $\neq$ tie). \textbf{Narrative} and \textbf{Visual} columns show win rates on each dimension separately. Spearman $\rho$ measures rank correlation between human rankings and automated metric rankings.}
+\caption{Human evaluation. Win\%: fraction preferred (excl.\ ties). STA correlates strongly with human narrative judgment ($\rho = 0.80$).}
 \label{tab:human_eval}
 \centering
 \small
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-& \multicolumn{2}{c}{Win \% $\uparrow$} & \multicolumn{2}{c}{Correlation ($\rho$)} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-Model & Narrative & Visual & w/ STA & w/ NAS \\
+Model & Narrative Win\%$\uparrow$ & Visual Win\%$\uparrow$ \\
 \midrule
-StoryDiff  & \textbf{38.2} & 31.4 & & \\
-EchoShot   & 35.7 & 30.9 & & \\
-VIC        & 17.6 & \textbf{39.8} & & \\
-VGoT       & 23.1 & 32.9 & & \\
+StoryDiff  & \textbf{38.2} & 31.4 \\
+EchoShot   & 35.7 & 30.9 \\
+VIC        & 17.6 & \textbf{39.8} \\
+VGoT       & 23.1 & 32.9 \\
 \midrule
-\multicolumn{3}{@{}l}{Human--STA rank corr. ($\rho$)} & \multicolumn{2}{c}{\textbf{0.80}} \\
-\multicolumn{3}{@{}l}{Human--NAS rank corr. ($\rho$)} & \multicolumn{2}{c}{0.40} \\
-\multicolumn{3}{@{}l}{Tie rate (Narrative)} & \multicolumn{2}{c}{42.3\%} \\
-\multicolumn{3}{@{}l}{Tie rate (Visual)} & \multicolumn{2}{c}{26.0\%} \\
+\multicolumn{2}{@{}l}{Human--STA $\rho$} & \textbf{0.80} \\
+\multicolumn{2}{@{}l}{Narrative tie rate} & 42.3\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Results.}
-Table~\ref{tab:human_eval} reveals three key findings:
+Table~\ref{tab:human_eval} reveals:
+\textbf{(1)} STA rankings match human narrative judgments ($\rho = 0.80$), validating STA as a reliable proxy.
+\textbf{(2)} Visual quality rankings diverge: VIC ranks last in narrative (17.6\%) but first in visual quality (39.8\%), confirming the consistency paradox at the perceptual level.
+\textbf{(3)} The high narrative tie rate (42.3\% vs.\ 26.0\% visual) independently confirms that all models produce comparably poor entity dynamics.
 
-\textbf{(1) STA correlates strongly with human narrative judgment} ($\rho = 0.80$).
-StoryDiffusion leads in narrative compliance win rate (38.2\%), followed by EchoShot (35.7\%), matching STA rankings.
-This validates STA as a reliable proxy for human-perceived narrative fidelity.
-
-\textbf{(2) Visual quality rankings diverge from narrative rankings.}
-VIC ranks last in narrative win rate (17.6\%) but first in visual quality (39.8\%), confirming that its in-context conditioning produces aesthetically superior but narratively non-compliant outputs.
-This divergence is architecturally diagnostic: VIC's LoRA-adapted CogVideoX-5B backbone is the largest model evaluated, producing higher-fidelity frames that win on visual quality while fundamentally failing at narrative structure.
-
-\textbf{(3) Narrative ties are frequent (42.3\%).}
-The high tie rate on narrative compliance---compared to 26.0\% on visual quality---reflects the difficulty of human evaluation when all models produce comparably poor entity dynamics.
-This independently confirms \diagonal{}'s finding that current T2MSV models are fundamentally limited in narrative execution.
-
-\subsection{Failure Trade-off Analysis}
-\label{sec:tradeoff}
-
-\begin{table}[t]
-\caption{Failure co-occurrence matrix. Each cell shows the percentage of videos exhibiting both failure types simultaneously. High co-occurrence of Types I and II suggests a systemic inability to manage entity transitions, not merely isolated failures.}
-\label{tab:failure_cooccurrence}
+% FIGURE 3: Qualitative
+\begin{figure*}[t]
 \centering
-\small
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-& Type I & Type II & Type III & Type IV \\
-\midrule
-Type I  & --- & 31.2 & 5.8 & 8.4 \\
-Type II & 31.2 & --- & 7.3 & 9.1 \\
-Type III & 5.8 & 7.3 & --- & 2.1 \\
-Type IV & 8.4 & 9.1 & 2.1 & --- \\
-\bottomrule
-\end{tabular}
-\end{table}
+\fbox{\parbox{0.95\textwidth}{\small\centering
+\textbf{Placeholder: Qualitative Gallery}\\[2pt]
+\textbf{Row 1 (Relay):} StoryDiff success (STA=1.0) vs.\ VIC Context Bleeding (STA=0.0)\\
+\textbf{Row 2 (Accumulation):} EchoShot success vs.\ VGoT Amnesia\\
+\textbf{Row 3 (Sliding Window):} StoryDiff removes $A$, introduces $C$ (STA=1.0) vs.\ VIC static sequence
+}}
+\caption{Success and failure cases. Context Bleeding (VIC) and Amnesia (VGoT) are visually subtle but detectable by \diagonal{}'s decomposed metrics.}
+\label{fig:qualitative}
+\end{figure*}
 
-Table~\ref{tab:failure_cooccurrence} reveals that Types I (Context Bleeding) and II (Amnesia) frequently co-occur (31.2\%), indicating that when a model fails to remove one entity, it simultaneously fails to introduce another.
-This \emph{compound failure} mode accounts for the majority of zero-STA videos and suggests a systemic inability to dynamically manage entity sets, rather than isolated failures on individual operations.
+Fig.~\ref{fig:qualitative} illustrates that Context Bleeding is visually subtle---departed entities persist with altered appearance---while Amnesia produces visually coherent but narratively empty sequences.
+Under holistic metrics, both failures would score \emph{higher} than correct narrative execution.
 
-Conversely, Types III (Attention Reversion) and IV (Identity Bleeding) show low co-occurrence with each other (2.1\%) and moderate co-occurrence with Types I/II, suggesting they represent distinct architectural deficiencies rather than symptoms of the same underlying problem.
-
-
-%% ============================================================
-\section{Discussion}
-\label{sec:discussion}
-%% ============================================================
-
-\paragraph{Architectural implications.}
-Our results reveal a fundamental architectural trade-off: mechanisms that promote visual coherence (shared attention, in-context conditioning) systematically impair narrative compliance.
-This suggests that progress requires \emph{entity-aware conditioning}---mechanisms that can independently control the introduction, persistence, and removal of individual entities within a unified generation framework.
-Potential directions include entity-specific attention masks, narrative-conditioned classifier-free guidance, and entity slot architectures that decouple identity from presence.
-
-\paragraph{Why DD is universally negative.}
-The universal negative diagonal dominance merits deeper analysis.
-CLIP embeddings capture holistic scene semantics: when prompts for adjacent shots share entities (e.g., Shot~2's ``chef and waiter cooking'' vs.\ Shot~1's ``chef cooking alone''), their text embeddings are highly similar, making it inherently difficult for any shot to be \emph{most} similar to its own prompt.
-This suggests that DD $> 0$ may require either (1)~more discriminative evaluation encoders, or (2)~more visually distinctive shot compositions.
-Nonetheless, DD effectively \emph{ranks} models and patterns, even though absolute values remain negative.
-
-\paragraph{Limitations.}
-\diagonal{} currently evaluates 3-shot sequences with up to 3 entities; extending to variable-length narratives with branching entity timelines is a natural next step.
-Our CLIP-based metrics, while automated and reproducible, capture only coarse-grained entity presence and may miss fine-grained identity preservation; combining with detection-based methods (e.g., GroundingDINO) could improve granularity.
-The benchmark focuses on entity dynamics and does not evaluate other narrative elements such as camera motion, emotional arc, or dialogue coherence.
-VIC (449/1000) and VGoT (600/1000) did not complete all scenarios; results on these models should be interpreted with this caveat.
 
 %% ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
 %% ============================================================
 
-We have presented \diagonal{}, a topologically grounded evaluation framework for multi-shot video generation that formalizes narrative dynamics as state transition matrices.
-Our key theoretical contribution---proving that two basis patterns span the complete narrative space---provides the first mathematical completeness guarantee for a video generation benchmark.
+We presented \diagonal{}, a topologically grounded evaluation framework that formalizes narrative dynamics as state transition matrices.
+Theorem~1 provides the first mathematical completeness guarantee for a video generation benchmark.
+Evaluation reveals universal \textbf{Narrative Blindness}: no model achieves DD $> 0$, and 77--91\% of videos exhibit at least one systematic failure.
+The consistency paradox---holistic metrics rewarding narrative failures---is confirmed both analytically and via human evaluation ($\rho = 0.80$).
+Progress requires entity-aware conditioning that independently manages entity introduction, persistence, and removal.
 
-Evaluation of four SOTA architectures reveals a universal failure we term \textbf{Narrative Blindness}: no model achieves positive diagonal dominance on any pattern, and 77--91\% of generated videos exhibit at least one systematic failure type.
-The failure taxonomy identifies architecture-specific vulnerabilities: VIC suffers from Context Bleeding (60.8\%), VGoT from Amnesia (66.7\%), and StoryDiffusion from Identity Bleeding (21.7\%).
-We further expose the \emph{consistency paradox}---existing holistic metrics like Identity Consistency actively reward narrative failures---and validate our framework through human evaluation ($\rho = 0.80$ with STA).
-
-Our results suggest that progress requires fundamentally new approaches to compositional entity control---mechanisms that can independently manage entity introduction, persistence, and removal within a unified generation framework, rather than relying on holistic conditioning that conflates narrative structure with visual consistency.
-
-\paragraph{Broader impact.}
-By formalizing video narrative evaluation, \diagonal{} provides a principled foundation for developing T2MSV systems that can execute structured storytelling---a prerequisite for applications in filmmaking, education, and accessibility.
-We release our 1,000-prompt benchmark, evaluation code, and all generated videos to facilitate reproducible research.
+\paragraph{Limitations.}
+\diagonal{} evaluates 3-shot, $\leq$3-entity sequences; extension to variable-length narratives is future work.
+CLIP-based metrics capture coarse-grained entity presence; combining with detection-based methods could improve granularity.
+VIC (449/1000) and VGoT (600/1000) did not complete all scenarios.
 
 %%
 %% Bibliography
 %%
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
-
-\clearpage
-\appendix
-
-%% ============================================================
-%% APPENDIX
-%% ============================================================
-
-\section{Dataset Construction Details}
-\label{app:dataset}
-
-Table~\ref{tab:full_composition} provides the complete composition of the \diagonal{} benchmark.
-
-\begin{table}[h]
-\caption{Complete composition of the \diagonal{} benchmark (1,000 scenarios, 3,000 shots). Each scenario consists of exactly 3 shots. Basis patterns receive 200 prompts; derived patterns receive 100.}
-\label{tab:full_composition}
-\centering
-\small
-\begin{tabular}{@{}llccc@{}}
-\toprule
-Type & Pattern & Formula & Scenarios & Shots \\
-\midrule
-\multirow{3}{*}{Basis}
-  & Relay         & $A \to AB \to B$     & 200 & 600 \\
-  & Split         & $AB \to A \to B$     & 200 & 600 \\
-  & Accumulation  & $A \to AB \to ABC$   & 200 & 600 \\
-\midrule
-\multirow{4}{*}{Derived}
-  & Convergence      & $A \to B \to AB$     & 100 & 300 \\
-  & Sliding Window   & $AB \to BC \to C$    & 100 & 300 \\
-  & Reduction        & $ABC \to AB \to A$   & 100 & 300 \\
-  & Reverse Relay    & $B \to AB \to A$     & 100 & 300 \\
-\midrule
-\multicolumn{2}{l}{Total} & & 1,000 & 3,000 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Prompt generation.}
-All prompts are generated via Google Gemini (temperature 0.7) using structured templates that specify the narrative pattern, entity descriptions, style prefix, and background/scene description for each shot.
-The system prompt instructs the model to produce vivid, unambiguous entity descriptions with sufficient visual detail for zero-shot CLIP detection.
-Of the initial 1,200 generated candidates, 200 (16.7\%) were discarded during manual filtering for: ambiguous entity descriptions that could refer to multiple visual concepts, visually indistinguishable entity pairs within the same scenario, and degenerate backgrounds that semantically overlap with entity descriptions.
-
-\paragraph{Scene themes.}
-Scenarios are distributed across 10 environmental themes to ensure visual diversity:
-Domestic\_LivingRoom, Domestic\_Kitchen, Urban\_Caf\'{e}, Urban\_Library, Urban\_Street, Nature\_Forest, Nature\_Beach, Nature\_Park, Professional\_Office, and Professional\_Hospital.
-Each theme contributes approximately 100 scenarios, balanced across narrative patterns.
-
-\paragraph{Entity type distribution.}
-Table~\ref{tab:entity_type_combos} shows the distribution of entity type combinations across the benchmark.
-Three entity categories are used: Human (H), Professional (P), and Animal (A).
-
-\begin{table}[h]
-\caption{Entity type combination distribution across the 1,000 scenarios. H = Human, P = Professional, A = Animal. The most common combination (H, P) represents cross-category interactions that maximize visual distinguishability.}
-\label{tab:entity_type_combos}
-\centering
-\small
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Entity Types & Count & \% \\
-\midrule
-(H, P)       & 268 & 26.8 \\
-(H, P, P)    & 169 & 16.9 \\
-(P, P)       & 110 & 11.0 \\
-(H, H)       & 96  & 9.6 \\
-(H, H, P)    & 93  & 9.3 \\
-(A, H)        & 72  & 7.2 \\
-(A, A)        & 54  & 5.4 \\
-(P, P, P)    & 45  & 4.5 \\
-(A, A, A)    & 38  & 3.8 \\
-(A, A, H)    & 35  & 3.5 \\
-(H, H, H)    & 20  & 2.0 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-%% ============================================================
-\section{Sample Prompts}
-\label{app:prompts}
-
-Tables~\ref{tab:prompt_relay}--\ref{tab:prompt_sliding} present representative prompt examples for each narrative pattern type.
-Each prompt follows a consistent template: \textit{[entity description] + [scene/background description]}.
-Three prompt variants are generated per shot:
-\textbf{gen\_prompt} appends quality tags (``masterpiece, cinematic lighting, 4k resolution, photorealistic''),
-\textbf{eval\_prompt} contains the clean scene description used for CLIP evaluation, and
-\textbf{diag\_prompt} contains entity-focused short probes (e.g., ``a toddler'', ``a toddler and a mother together'').
-
-\begin{table}[h]
-\caption{Relay pattern sample ($A \to AB \to B$). Entity $A$ (toddler) exits after Shot~2; entity $B$ (mother) enters at Shot~2. The eval\_prompt captures the full scene; the diag\_prompt isolates entity presence for EPA computation.}
-\label{tab:prompt_relay}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.5cm}@{}}
-\toprule
-Shot & Field & Prompt \\
-\midrule
-\multirow{3}{*}{1}
-  & eval & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
-  & diag & a toddler \\
-  & gen  & [eval] + quality tags \\
-\midrule
-\multirow{3}{*}{2}
-  & eval & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
-  & diag & a toddler and a mother together \\
-  & gen  & [eval] + quality tags \\
-\midrule
-\multirow{3}{*}{3}
-  & eval & A mother tidying up the scattered blocks on the rug, the toddler no longer present \\
-  & diag & a mother \\
-  & gen  & [eval] + quality tags \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h]
-\caption{Accumulation pattern sample ($A \to AB \to ABC$). Three entities are progressively introduced. This pattern tests the model's ability to generate increasingly complex multi-entity compositions.}
-\label{tab:prompt_accum}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.5cm}@{}}
-\toprule
-Shot & Field & Prompt \\
-\midrule
-\multirow{2}{*}{1}
-  & eval & A lone eagle soaring above a dense forest canopy at dawn, wings spread wide \\
-  & diag & an eagle \\
-\midrule
-\multirow{2}{*}{2}
-  & eval & An eagle and a fox standing at the edge of a forest clearing, the fox looking up \\
-  & diag & an eagle and a fox \\
-\midrule
-\multirow{2}{*}{3}
-  & eval & An eagle perched on a branch, a fox sitting below, and a rabbit cautiously emerging from undergrowth \\
-  & diag & an eagle, a fox, and a rabbit \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h]
-\caption{Sliding Window pattern sample ($AB \to BC \to C$). This pattern requires simultaneous entity removal ($A$ exits) and introduction ($C$ enters) between consecutive shots---the most demanding compositional operation.}
-\label{tab:prompt_sliding}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.5cm}@{}}
-\toprule
-Shot & Field & Prompt \\
-\midrule
-\multirow{2}{*}{1}
-  & eval & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
-  & diag & a chef and a waiter \\
-\midrule
-\multirow{2}{*}{2}
-  & eval & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
-  & diag & a waiter and a sommelier \\
-\midrule
-\multirow{2}{*}{3}
-  & eval & A sommelier carefully examining a wine bottle under warm chandelier light, alone \\
-  & diag & a sommelier \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-%% ============================================================
-\section{Model Implementation Details}
-\label{app:models}
-
-Table~\ref{tab:model_full_specs} summarizes the inference configuration of each evaluated model.
-All models were run with their officially recommended hyperparameters.
-
-\begin{table}[h]
-\caption{Inference specifications for the four evaluated models. ``T2I$\to$I2V'' denotes a two-stage pipeline. $^\dagger$T2I uses 30 inference steps; I2V uses 50. $^\ddagger$T2I generates at 512$\times$512; SEINE I2V resizes to 512$\times$320.}
-\label{tab:model_full_specs}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lllllc@{}}
-\toprule
-Model & Backbone & Paradigm & Steps & Resolution & Frames \\
-\midrule
-StoryDiff & SDXL+SEINE & T2I$\to$I2V$^\dagger$ & 30+50 & 512$\times$512$^\ddagger$ & 16 \\
-EchoShot  & Wan2.1-1.3B & T2V (FM) & 50 & 832$\times$480 & 93 \\
-VIC       & CogVideoX-5B & In-context (DiT) & 50 & 720$\times$480 & 49 \\
-VGoT      & Kolors+DC & T2I$\to$I2V & 25+50 & 512$\times$512 & 16 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{StoryDiffusion~\cite{storydiff}.}
-Uses Consistent Self-Attention (CSA) over SDXL~\cite{sdxl} to generate keyframes, then animates transitions via SEINE~\cite{seine} I2V.
-CSA shares attention keys and values across shots, promoting visual consistency.
-The T2I stage generates at 512$\times$512 resolution with 30 DDIM steps.
-The SEINE I2V module uses 50 steps to produce 16-frame clips at 512$\times$320.
-
-\paragraph{EchoShot~\cite{echoshot}.}
-A flow-matching transformer based on Wan2.1-1.3B that generates multi-shot portrait videos.
-Uses 50 inference steps at 832$\times$480 resolution, producing 93 frames per shot.
-The flow-matching architecture provides strong temporal coherence within each shot while allowing entity variations across shots.
-
-\paragraph{Video-In-Context (VIC)~\cite{vic}.}
-Adapts CogVideoX-5B~\cite{cogvideox} with scene-specific LoRA weights, conditioning each shot on previously generated context via in-context attention.
-Uses 50 inference steps at 720$\times$480 resolution, producing 49 frames per shot.
-The in-context mechanism explicitly references prior shot features, which promotes visual coherence but makes entity removal particularly difficult.
-
-\paragraph{VGoT~\cite{vgot}.}
-A cascaded pipeline: Kolors T2I generates keyframes, IP-Adapter transfers identity to DynamiCrafter I2V for animation.
-An LLM planning module structures the multi-shot narrative before generation.
-T2I uses 25 steps; I2V uses 50 steps.
-The planning-rendering decoupling means narrative intentions may not be faithfully executed.
-
-\paragraph{Common settings.}
-All models use seed = 42 for reproducibility.
-Negative prompts are standardized: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark''.
-Generation runs on 4 NVIDIA RTX 4090 GPUs (24GB each).
-VIC completed 449/1000 scenarios (44.9\%) and VGoT completed 600/1000 (60.0\%) due to out-of-memory errors and degenerate outputs.
-
-
-%% ============================================================
-\section{Evaluation Implementation Details}
-\label{app:eval_details}
-
-\paragraph{CLIP model.}
-All similarity computations use CLIP ViT-L/14 (\texttt{openai/clip-vit-large-patch14}).
-Features are extracted and L2-normalized before cosine similarity computation.
-Five uniformly-spaced frames are sampled per shot (15 frames total per 3-shot video).
-Shot features are mean-pooled across the 5 per-shot frames.
-
-\paragraph{Threshold specifications.}
-The \diagonal{} evaluation pipeline uses the following thresholds:
-
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Diagonal Dominance $\epsilon$-pass}: $\epsilon = 0.02$. A video passes only if DD$_i > \epsilon$ for all $i \in \{1,2,3\}$.
-  \item \textbf{Entity presence binarization}: Per-shot median of entity similarities. Entity $e_k$ is deemed ``present'' in shot $i$ if $E[i,k] > \text{median}_k(E[i,:])$.
-  \item \textbf{STA transition detection}: A state change is correctly detected if $\text{sgn}(\Delta E_{t,e})$ matches $\text{sgn}(\Delta S_{t,e})$, with a tolerance of $|\Delta E_{t,e}| > 0.001$.
-  \item \textbf{SVD entropy trajectory}: Entropy increase is accepted if $\Delta\calH \geq -0.05$ when entities are added; decrease is accepted if $\Delta\calH \leq 0.05$ when entities are removed. These relaxed thresholds account for noise in frame-level features.
-\end{itemize}
-
-\paragraph{Failure classification thresholds.}
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Type~I (Context Bleeding)}: Entity $e$ should exit ($\Delta S_{t,e} = -1$) but $E[t\!+\!1, e] \geq E[t, e] - 0.002$.
-  \item \textbf{Type~II (Amnesia)}: Entity $e$ should enter ($\Delta S_{t,e} = +1$) but $E[t\!+\!1, e] \leq E[t, e] + 0.002$.
-  \item \textbf{Type~III (Attention Reversion)}: Diagonal of $\Mobs$ shows a U-shape: $M_{11} > M_{22}$ and $M_{33} > M_{22}$ with $|M_{11} - M_{22}| > 0.01$.
-  \item \textbf{Type~IV (Identity Bleeding)}: Any row $i$ of $\Mobs$ has range $< 0.01$: $\max_j M_{ij} - \min_j M_{ij} < 0.01$.
-\end{itemize}
-
-
-%% ============================================================
-\section{State Transition Matrix Definitions}
-\label{app:delta_s}
-
-For reference, Table~\ref{tab:delta_s_all} lists the complete $\Delta S$ matrices and entity presence patterns for all 7 narrative patterns.
-
-\begin{table}[h]
-\caption{Complete $\Delta S$ matrices and presence patterns for all 7 narrative patterns. $P$ denotes the entity presence matrix ($P[i,e] = 1$ if entity $e$ is present in shot $i$).}
-\label{tab:delta_s_all}
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lll@{}}
-\toprule
-Pattern & $\Delta S$ & $P$ (presence) \\
-\midrule
-Relay & $\bigl[\begin{smallmatrix} 0 & +1 \\ -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[8pt]
-Split & $\bigl[\begin{smallmatrix} 0 & -1 \\ -1 & +1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[8pt]
-Accumulation & $\bigl[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{smallmatrix}\bigr]$ \\[8pt]
-Convergence & $\bigl[\begin{smallmatrix} -1 & +1 \\ +1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{smallmatrix}\bigr]$ \\[8pt]
-Sliding Win. & $\bigl[\begin{smallmatrix} -1 & 0 & +1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{smallmatrix}\bigr]$ \\[8pt]
-Reduction & $\bigl[\begin{smallmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 & 1 \\ 1 & 1 & 0 \\ 1 & 0 & 0 \end{smallmatrix}\bigr]$ \\[8pt]
-Rev.\ Relay & $\bigl[\begin{smallmatrix} +1 & 0 \\ 0 & -1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{smallmatrix}\bigr]$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-%% ============================================================
-\section{Full Per-Pattern Results}
-\label{app:per_pattern}
-
-Table~\ref{tab:full_pattern_results} provides the complete per-pattern breakdown of all metrics for all four models.
-
-\begin{table*}[h]
-\caption{Complete per-pattern results for all models and metrics. $n$: number of successfully generated videos. $\sdiag$: DIAGONAL Score. EPA: Entity Presence Accuracy. STA: State Transition Accuracy. Best per pattern in \textbf{bold}.}
-\label{tab:full_pattern_results}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|ccc|ccc|ccc|ccc@{}}
-\toprule
-& & \multicolumn{3}{c|}{StoryDiffusion} & \multicolumn{3}{c|}{EchoShot} & \multicolumn{3}{c|}{VGoT} & \multicolumn{3}{c}{VIC} \\
-Pattern & $n$ & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA \\
-\midrule
-Relay       & 200/200/119/84   & .876 & .530 & .525 & .873 & .508 & .508 & .867 & .534 & \textbf{.622} & .873 & .504 & .405 \\
-Split       & 200/200/128/93   & \textbf{.868} & \textbf{.555} & .568 & .858 & .538 & .542 & .864 & .513 & \textbf{.565} & .862 & .504 & .448 \\
-Accum.      & 200/200/124/92   & \textbf{.982} & .583 & \textbf{.605} & .979 & .561 & .553 & .976 & \textbf{.618} & .407 & .979 & .548 & .424 \\
-\midrule
-Converg.    & 100/100/58/44    & .870 & \textbf{.587} & \textbf{.603} & \textbf{.870} & .543 & .590 & .858 & .506 & .391 & .869 & .508 & .447 \\
-Slid.\ Win. & 100/100/61/46   & .802 & \textbf{.631} & \textbf{.860} & .821 & .600 & .613 & .851 & .472 & .497 & .858 & .483 & .449 \\
-Reduction   & 100/100/52/44    & \textbf{.975} & .602 & \textbf{.830} & .969 & .571 & .625 & .968 & .539 & .510 & .977 & \textbf{.551} & .455 \\
-Rev.\ Relay & 100/100/58/46   & .859 & .573 & .605 & .865 & .550 & \textbf{.635} & .867 & .494 & .517 & .871 & .522 & .402 \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-Key observations from the per-pattern analysis:
-
-\begin{enumerate}[leftmargin=*]
-  \item \textbf{Accumulation is easiest for $\sdiag$, hardest for STA.}
-  All models achieve $\sdiag > 0.976$ on Accumulation because the progressive entity addition creates naturally distinctive shot compositions.
-  However, VGoT's STA drops to 0.407, indicating difficulty generating new entities on demand despite favorable structural alignment.
-
-  \item \textbf{Sliding Window is the diagnostic pattern.}
-  The 4-transition Sliding Window pattern ($AB \to BC \to C$) produces the widest STA spread (0.449--0.860), making it the most discriminative test.
-  StoryDiffusion's dominance here (0.860 vs.\ next-best 0.613) reflects its CSA mechanism's ability to selectively suppress entity features.
-
-  \item \textbf{Convergence challenges planning-based models.}
-  VGoT's STA collapse on Convergence (0.391) is the lowest per-pattern score for any model, confirming that the $A \to B \to AB$ pattern---requiring complete entity replacement followed by co-occurrence---defeats LLM-based planning architectures.
-
-  \item \textbf{VIC shows remarkable uniformity.}
-  VIC's STA spans only 0.402--0.455 across all patterns (range = 0.053), the narrowest of any model.
-  This uniformity suggests that in-context conditioning creates a fixed ``coherence ceiling'' that is invariant to pattern complexity.
-\end{enumerate}
-
-
-%% ============================================================
-\section{Per-Pattern Failure Analysis}
-\label{app:failure_pattern}
-
-Table~\ref{tab:failure_per_pattern} breaks down the failure taxonomy by narrative pattern, aggregated across all models.
-
-\begin{table}[h]
-\caption{Failure type distribution (\%) per narrative pattern, aggregated across all 4 models. ``Transitions'' indicates the number of non-zero entries in $\Delta S$; more transitions generally increase failure rates. Patterns with 4 transitions (Convergence, Sliding Window) show the highest compound failure rates.}
-\label{tab:failure_per_pattern}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lccccc@{}}
-\toprule
-Pattern & Trans. & Type I & Type II & Type III & Type IV \\
-\midrule
-Relay         & 2 & 38.2 & 52.1 & 9.8  & 16.3 \\
-Split         & 3 & 44.7 & 48.8 & 11.5 & 18.2 \\
-Accumulation  & 2 & 35.1 & 58.3 & 8.4  & 14.7 \\
-Convergence   & 4 & 51.3 & 61.2 & 14.6 & 19.5 \\
-Sliding Win.  & 4 & 53.8 & 55.4 & 13.2 & 17.1 \\
-Reduction     & 2 & 39.6 & 47.2 & 12.4 & 15.8 \\
-Rev.\ Relay   & 2 & 40.1 & 50.6 & 10.7 & 16.9 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Transition count correlates with failure rate.}
-Patterns with 4 transitions (Convergence, Sliding Window) exhibit the highest Type~I (51.3\%, 53.8\%) and Type~II (61.2\%, 55.4\%) rates.
-This confirms that the number of required state changes is the primary driver of narrative failure, independent of pattern type.
-
-\paragraph{Amnesia dominates across all patterns.}
-Type~II (failed entry) is the most common failure type for every pattern except Sliding Window, where Type~I and Type~II are nearly equal.
-This suggests that generating new entities is systematically harder than removing existing ones---a finding with direct architectural implications for conditioning mechanism design.
-
-
-%% ============================================================
-\section{Human Evaluation Protocol}
-\label{app:human_eval}
-
-This section provides the full protocol for the human evaluation study summarized in \S\ref{sec:human_eval}.
-
-\paragraph{Platform and interface.}
-The study was conducted via a custom web application built with Streamlit.
-Each trial displayed two anonymized model outputs (``Video A'' and ``Video B'') side by side, each represented by three keyframes (one per shot).
-Per-shot narrative annotations (entity presence/absence patterns) were shown below the keyframes.
-Model identities were hidden.
-Left/right assignment was randomized per pair.
-
-\paragraph{Response scale.}
-A 5-point Likert scale: 1 = ``A is clearly better'', 2 = ``A is slightly better'', 3 = ``Similar'', 4 = ``B is slightly better'', 5 = ``B is clearly better''.
-Evaluators assessed each pair on two dimensions independently: Narrative Compliance and Visual Quality.
-
-\paragraph{Evaluation criteria.}
-Two dimensions were evaluated:
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Narrative Compliance}: ``Which video better follows the scripted entity dynamics? Focus on whether the correct entities appear and disappear at the right times.''
-  \item \textbf{Visual Quality}: ``Which video looks more visually coherent, natural, and aesthetically pleasing? Ignore narrative correctness.''
-\end{itemize}
-Evaluators were explicitly instructed to assess \emph{only} the target criterion and to ignore general image quality or resolution when evaluating narrative compliance.
-
-\paragraph{Orientation, practice, and sanity checks.}
-Each participant completed a structured orientation briefing ($\sim$3 min) with illustrated examples showing successful and failed narrative executions, followed by three practice trials with immediate feedback (not counted toward results).
-Two attention-check trials were embedded in the main evaluation, pairing real keyframes against random noise images.
-All 15 evaluators passed both sanity checks (100\% pass rate).
-
-\paragraph{Stimulus design.}
-A total of 120 pairwise comparisons (40 scenarios $\times$ $\binom{4}{2} = 6$ model pairs) were constructed.
-Each evaluator was assigned 30 main pairs via a rotating-window scheme ensuring 3 independent raters per pair.
-Within each block, pair order was shuffled per evaluator.
-
-\paragraph{Participants.}
-Fifteen participants (graduate students in computer science and media studies) completed the study (median completion time: $\sim$25 minutes for all 30 pairs plus sanity checks).
-All participants received compensation consistent with institutional guidelines.
-
-\paragraph{Score distributions.}
-Table~\ref{tab:human_score_dist} provides the full score distributions.
-
-\begin{table}[h]
-\caption{Human evaluation score distributions by dimension (120 judgments per dimension, 3 raters each). Narrative Compliance shows higher tie rates (score = 3) than Visual Quality, reflecting the difficulty of distinguishing comparably poor narrative execution.}
-\label{tab:human_score_dist}
-\centering
-\small
-\begin{tabular}{@{}lccccccc@{}}
-\toprule
-& \multicolumn{5}{c}{Score Distribution (\%)} & \multicolumn{2}{c}{Summary} \\
-Dimension & 1 & 2 & 3 & 4 & 5 & Mean & $\sigma$ \\
-\midrule
-Narrative  & 12.3 & 14.8 & 42.3 & 17.1 & 13.5 & 3.05 & 1.18 \\
-Visual     & 16.7 & 18.2 & 26.0 & 22.4 & 16.7 & 3.04 & 1.34 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Inter-rater reliability.}
-Fleiss' $\kappa$ for Narrative Compliance is 0.18 (slight agreement) and for Visual Quality is 0.24 (fair agreement).
-The lower agreement on narrative compliance is expected: when all models produce comparably poor entity dynamics, raters struggle to identify a clear winner.
-This high tie rate (42.3\%) independently validates \diagonal{}'s finding that current T2MSV models are fundamentally limited in narrative execution.
-
-\paragraph{Head-to-head results.}
-Table~\ref{tab:head_to_head} provides the complete pairwise preference matrix.
-
-\begin{table}[h]
-\caption{Head-to-head human preference (\%). Each cell shows M1 win / Tie / M2 win for narrative compliance. StoryDiffusion vs.\ VIC shows the clearest separation (38/24/38 on narrative but 21/33/46 on visual), confirming the narrative--visual trade-off.}
-\label{tab:head_to_head}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lccc@{}}
-\toprule
-Matchup & Narr.\ (M1/Tie/M2) & Visual (M1/Tie/M2) \\
-\midrule
-StoryDiff vs.\ Echo  & 32 / 43 / 25 & 28 / 31 / 41 \\
-StoryDiff vs.\ VIC   & 38 / 24 / 38 & 21 / 33 / 46 \\
-StoryDiff vs.\ VGoT  & 35 / 40 / 25 & 30 / 28 / 42 \\
-Echo vs.\ VIC        & 42 / 38 / 20 & 22 / 27 / 51 \\
-Echo vs.\ VGoT       & 37 / 42 / 21 & 31 / 30 / 39 \\
-VIC vs.\ VGoT        & 25 / 45 / 30 & 43 / 25 / 32 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-%% ============================================================
-\section{Bootstrap Confidence Intervals}
-\label{app:bootstrap}
-
-To quantify the reliability of all reported metrics, we compute 95\% bootstrap confidence intervals ($B = 10{,}000$ iterations, percentile method) for every cell in the main results table (Table~\ref{tab:main}).
-
-\begin{table}[h]
-\caption{Main results with 95\% bootstrap confidence intervals. Intervals are computed per-video over each model's full dataset. Best per row in \textbf{bold}. All inter-model differences on STA are statistically significant ($p < 0.01$).}
-\label{tab:bootstrap}
-\centering
-\small
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Metric & StoryDiff & EchoShot & VGoT & VIC \\
-\midrule
-NAS   & \textbf{.699}\tiny{[.693,.706]} & .693\tiny{[.687,.699]} & .679\tiny{[.671,.687]} & .703\tiny{[.695,.711]} \\
-DD    & \textbf{$-$.009}\tiny{[$-$.010,$-$.008]} & $-$.010\tiny{[$-$.011,$-$.009]} & $-$.012\tiny{[$-$.013,$-$.011]} & $-$.011\tiny{[$-$.012,$-$.010]} \\
-STA   & \textbf{.630}\tiny{[.610,.649]} & .567\tiny{[.547,.587]} & .511\tiny{[.486,.535]} & .431\tiny{[.401,.460]} \\
-EPA   & \textbf{.573}\tiny{[.564,.582]} & .548\tiny{[.539,.558]} & .534\tiny{[.524,.544]} & .518\tiny{[.507,.528]} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-All confidence intervals are narrow relative to inter-model differences, confirming that the reported rankings are statistically robust.
-Notably, the STA confidence intervals are non-overlapping for all model pairs except StoryDiffusion vs.\ EchoShot (marginal overlap), confirming statistically significant differences at $p < 0.01$.
-
-
-%% ============================================================
-\section{Statistical Significance of Model Differences}
-\label{app:significance}
-
-Table~\ref{tab:significance} reports pairwise paired-bootstrap significance tests ($B = 10{,}000$) for all six model pairs on STA and EPA.
-Each test computes the proportion of bootstrap replicates where the observed mean difference reverses sign.
-
-\begin{table}[h]
-\caption{Pairwise paired-bootstrap significance tests. In each matchup ``M1 vs.\ M2,'' M1 is the first-listed model and M2 the second. $\Delta$ = mean difference (M1 $-$ M2; positive favors M1). $p$-value: fraction of bootstrap replicates with reversed sign. $^{***}$ $p<0.001$, $^{**}$ $p<0.01$, $^{*}$ $p<0.05$, n.s. = not significant.}
-\label{tab:significance}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-& \multicolumn{2}{c}{STA} & \multicolumn{2}{c}{EPA} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-Matchup & $\Delta$ & $p$ & $\Delta$ & $p$ \\
-\midrule
-StoryDiff vs.\ EchoShot & $+$0.063 & .008$^{**}$ & $+$0.025 & .003$^{**}$ \\
-StoryDiff vs.\ VIC      & $+$0.199 & .000$^{***}$ & $+$0.055 & .000$^{***}$ \\
-StoryDiff vs.\ VGoT     & $+$0.119 & .000$^{***}$ & $+$0.039 & .000$^{***}$ \\
-EchoShot vs.\ VIC       & $+$0.136 & .000$^{***}$ & $+$0.030 & .000$^{***}$ \\
-EchoShot vs.\ VGoT      & $+$0.056 & .005$^{**}$ & $+$0.014 & .047$^{*}$ \\
-VIC vs.\ VGoT            & $-$0.080 & .000$^{***}$ & $-$0.017 & .023$^{*}$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Three key patterns emerge: (1)~On STA, StoryDiffusion $>$ EchoShot $>$ VGoT $>$ VIC, with all pairwise differences significant at $p < 0.01$.
-(2)~On EPA, the same ranking holds but the EchoShot--VGoT gap is marginally significant ($p = 0.047$).
-(3)~VIC vs.\ VGoT shows VGoT \emph{outperforming} VIC on both STA ($\Delta = +0.080$, $p < 0.001$) and EPA ($\Delta = +0.017$, $p = 0.023$), despite VGoT's higher Amnesia rate---suggesting that VGoT's failures are more concentrated while VIC's failures are more uniformly distributed.
-
-
-%% ============================================================
-\section{Dataset Size Sensitivity}
-\label{app:dataset_size}
-
-A natural question is whether 1,000 scenarios are necessary to establish reliable rankings.
-Table~\ref{tab:rank_stability} addresses this via subsampling: for subset sizes $n \in \{50, 100, 200, 300, 500, 750, 1000\}$, we randomly sample $n$ scenarios (50 trials per size), compute per-model STA and EPA means, and measure Kendall's $\tau$ rank correlation against the full-dataset ranking.
-
-\begin{table}[h]
-\caption{Rank stability as a function of dataset size. $\tau$: Kendall's rank correlation (mean $\pm$ std over 50 trials) against the 1,000-scenario ranking. STA rankings stabilize fastest ($\tau = 1.0$ at $n \geq 200$); EPA rankings require $n \geq 300$.}
-\label{tab:rank_stability}
-\centering
-\small
-\begin{tabular}{@{}rcccc@{}}
-\toprule
-& \multicolumn{2}{c}{STA} & \multicolumn{2}{c}{EPA} \\
-$n$ & $\tau$ & $\sigma$ & $\tau$ & $\sigma$ \\
-\midrule
-50  & 0.73 & 0.24 & 0.67 & 0.28 \\
-100 & 0.87 & 0.15 & 0.80 & 0.19 \\
-200 & 1.00 & 0.00 & 0.87 & 0.15 \\
-300 & 1.00 & 0.00 & 0.93 & 0.12 \\
-500 & 1.00 & 0.00 & 1.00 & 0.00 \\
-750 & 1.00 & 0.00 & 1.00 & 0.00 \\
-1000 & 1.00 & 0.00 & 1.00 & 0.00 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-STA rankings stabilize fastest, achieving perfect correlation ($\tau = 1.0$) at just $n = 200$ due to large inter-model gaps (0.431--0.630).
-EPA rankings require $n \geq 500$ for perfect recovery because inter-model EPA differences are smaller (0.518--0.573).
-The full 1,000-scenario evaluation ensures $\tau = 1.0$ for all metrics, confirming that our benchmark size provides robust rankings with room to spare.
-
-
-%% ============================================================
-\section{Threshold Sensitivity Analysis}
-\label{app:threshold}
-
-\diagonal{} uses several thresholds (Appendix~\ref{app:eval_details}).
-We verify that our results are robust to these choices by sweeping each threshold independently.
-
-\paragraph{EPA binarization threshold.}
-The default EPA threshold uses the per-shot median.
-We compare against fixed thresholds $\tau \in \{0.20, 0.22, 0.24, 0.26, 0.28, 0.30\}$.
-Table~\ref{tab:epa_threshold} shows that model rankings are perfectly preserved across the $[0.20, 0.28]$ range, confirming that the median-based adaptive threshold is not cherry-picked.
-
-\begin{table}[h]
-\caption{EPA sensitivity to binarization threshold (fixed thresholds). Model rankings are preserved across the stable range $[0.20, 0.28]$. Rankings collapse at extreme thresholds ($\geq 0.30$) where all entities are classified as absent.}
-\label{tab:epa_threshold}
-\centering
-\small
-\begin{tabular}{@{}ccccc@{}}
-\toprule
-$\tau$ & StoryDiff & EchoShot & VGoT & VIC \\
-\midrule
-0.20 & \textbf{0.581} & 0.556 & 0.541 & 0.524 \\
-0.22 & \textbf{0.578} & 0.553 & 0.539 & 0.521 \\
-0.24 & \textbf{0.575} & 0.550 & 0.536 & 0.519 \\
-0.26 & \textbf{0.571} & 0.546 & 0.533 & 0.516 \\
-0.28 & \textbf{0.567} & 0.541 & 0.528 & 0.511 \\
-0.30 & \textbf{0.558} & 0.531 & 0.519 & 0.502 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Failure classification thresholds.}
-We sweep the Context Bleeding tolerance $\delta \in \{0.001, 0.002, 0.005, 0.01\}$ (default: 0.002).
-Table~\ref{tab:failure_threshold} confirms that while absolute failure rates change, the \emph{relative rankings} are invariant: VIC always shows the highest Context Bleeding, VGoT always shows the highest Amnesia, and StoryDiffusion consistently has the most failure-free videos.
-
-\begin{table}[h]
-\caption{Failure rate sensitivity to Context Bleeding tolerance $\delta$. The model with the worst Context Bleeding (VIC) is invariant to $\delta$; absolute rates decrease as tolerance increases but rankings are perfectly preserved.}
-\label{tab:failure_threshold}
-\centering
-\small
-\begin{tabular}{@{}ccccc@{}}
-\toprule
-$\delta$ & StoryDiff & EchoShot & VGoT & VIC \\
-\midrule
-0.001 & 39.2 & 49.1 & 41.5 & \textbf{63.4} \\
-0.002 & 36.8 & 46.6 & 39.0 & \textbf{60.8} \\
-0.005 & 31.5 & 41.2 & 34.7 & \textbf{55.1} \\
-0.010 & 24.8 & 34.3 & 28.2 & \textbf{47.9} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Diagonal Dominance $\epsilon$.}
-We sweep $\epsilon \in \{0.00, 0.01, 0.02, 0.03, 0.05\}$.
-At $\epsilon = 0.00$ (strict: each shot must be \emph{maximally} similar to its own prompt), the pass rate remains 0.0\% for all models.
-This confirms that the $\epsilon$-pass rate finding is not an artifact of a strict threshold but reflects genuine misalignment: no shot in any video achieves maximal similarity to its corresponding prompt.
-
-
-%% ============================================================
-\section{CLIP Backbone Ablation}
-\label{app:clip_ablation}
-
-Our evaluation uses CLIP ViT-L/14 (304M parameters, 768-dim features).
-We verify that model rankings are stable when switching to the smaller CLIP ViT-B/32 (151M parameters, 512-dim features).
-
-\begin{table}[h]
-\caption{CLIP backbone ablation. Rankings are identical across both backbones for all metrics. ViT-B/32 produces slightly higher absolute scores due to its lower-dimensional feature space capturing coarser semantics, but relative ordering is preserved.}
-\label{tab:clip_ablation}
-\centering
-\small
-\begin{tabular}{@{}llcccc@{}}
-\toprule
-Backbone & Metric & StoryDiff & EchoShot & VGoT & VIC \\
-\midrule
-\multirow{2}{*}{ViT-L/14}
-  & STA & \textbf{0.630} & 0.567 & 0.511 & 0.431 \\
-  & EPA & \textbf{0.573} & 0.548 & 0.534 & 0.518 \\
-\midrule
-\multirow{2}{*}{ViT-B/32}
-  & STA & \textbf{0.618} & 0.554 & 0.498 & 0.419 \\
-  & EPA & \textbf{0.582} & 0.559 & 0.543 & 0.527 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Model rankings are identical across both backbones for every metric (Table~\ref{tab:clip_ablation}).
-The choice of ViT-L/14 is conservative: it provides finer-grained semantic discrimination without inflating absolute scores.
-
-
-%% ============================================================
-\section{Per-Video Score Distributions}
-\label{app:distributions}
-
-Beyond aggregate means, the per-video score distributions reveal important structural patterns.
-
-\paragraph{STA distribution is bimodal.}
-Fig.~\ref{fig:sta_dist_placeholder} (to be included) shows that STA scores cluster at 0.0 and 1.0 for all models, with few intermediate values.
-This bimodality indicates that models either execute \emph{all} required state transitions correctly or fail on \emph{most} of them---there are few partial successes.
-This all-or-nothing behavior is consistent with the compound failure mechanism identified in \S\ref{sec:tradeoff}: when a model fails to remove one entity, it simultaneously fails to introduce the replacement, cascading to complete narrative failure.
-
-The bimodal split varies by model:
-\begin{itemize}[leftmargin=*]
-  \item StoryDiffusion: 39.2\% at STA = 1.0, 28.4\% at STA = 0.0
-  \item EchoShot: 34.1\% at STA = 1.0, 31.7\% at STA = 0.0
-  \item VGoT: 27.5\% at STA = 1.0, 35.8\% at STA = 0.0
-  \item VIC: 21.4\% at STA = 1.0, 42.3\% at STA = 0.0
-\end{itemize}
-
-\paragraph{EPA distribution shows moderate spread.}
-EPA scores range from 0.33 to 1.0 (minimum possible EPA for 2-entity scenarios is 0.33).
-The distribution is approximately Gaussian centered at 0.55 with $\sigma \approx 0.14$.
-No model achieves perfect EPA (1.0) on more than 15\% of videos, confirming that entity-level detection remains challenging even for the best-performing model.
-
-\paragraph{DD distribution is entirely negative.}
-The DD distribution has mean $\approx -0.010$ and is bounded above by approximately 0.0.
-Fewer than 0.5\% of individual shots achieve DD $> 0$, and no video achieves DD $> 0$ for all three shots simultaneously---confirming the universality of negative diagonal dominance.
-
 
 \end{document}

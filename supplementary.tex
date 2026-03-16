@@ -1,0 +1,560 @@
+%%
+%% Supplementary Material for DIAGONAL
+%%
+\documentclass[sigconf,review,anonymous]{acmart}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{pifont}
+
+\copyrightyear{2026}
+\acmYear{2026}
+\setcopyright{none}
+
+\newcommand{\diagonal}{\textsc{Diagonal}}
+\newcommand{\sdiag}{\mathcal{S}_{\mathrm{diag}}}
+\newcommand{\Mobs}{M_{\mathrm{obs}}}
+\newcommand{\Mideal}{M_{\mathrm{ideal}}}
+\newcommand{\calB}{\mathcal{B}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\Eij}{E_{ij}}
+
+\begin{document}
+
+\title{Supplementary Material for\\DIAGONAL: Density-Normalized Cross-Modal Alignment\\for Multi-Shot Video Narrative Evaluation}
+
+\author{Anonymous Authors}
+\affiliation{\institution{Anonymous Institution}}
+
+\maketitle
+
+%% ============================================================
+\section{Completeness Theorem: Full Proof}
+\label{app:proof}
+
+\begin{theorem}[Completeness of the Narrative Space]
+Under column permutation $\calP_{ij}$ and integer-coefficient linear combination, the two basis matrices $\calB_1$ (Relay) and $\calB_2$ (Split) span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
+\end{theorem}
+
+\begin{proof}
+We construct all six standard basis matrices $E_{ij}$ from $\calB_1$ and $\calB_2$.
+
+\textbf{Step~1: Column isolation.}
+Define three permutation variants of $\calB_1$:
+$v_1 = \calB_1 = E_{12} - E_{21}$,
+$v_2 = \calP_{13}(\calB_1) = E_{12} - E_{23}$,
+$v_3 = \calP_{23}(\calP_{12}(\calB_1)) = E_{11} - E_{23}$.
+Computing $X = v_3 - v_2 + v_1$:
+\begin{equation}
+X = (E_{11} - E_{23}) - (E_{12} - E_{23}) + (E_{12} - E_{21}) = E_{11} - E_{21}.
+\end{equation}
+
+\textbf{Step~2: Dimension breaking via $\calB_2$.}
+Apply column permutation: $\calP_{12}(\calB_2) = -E_{11} + E_{21} - E_{22}$.
+Adding to $X$:
+\begin{equation}
+X + \calP_{12}(\calB_2) = (E_{11} - E_{21}) + (-E_{11} + E_{21} - E_{22}) = -E_{22}.
+\end{equation}
+Thus $E_{22} = -(X + \calP_{12}(\calB_2))$.
+
+\textbf{Step~3: Propagation.}
+From $E_{22}$, column permutations yield $E_{21} = \calP_{12}(E_{22})$ and $E_{23} = \calP_{23}(E_{22})$.
+From $X = E_{11} - E_{21}$ and the now-known $E_{21}$: $E_{11} = X + E_{21}$.
+Similarly, $E_{12} = \calP_{12}(E_{11})$ and $E_{13} = \calP_{13}(E_{11})$.
+
+All six standard basis matrices $\{E_{11}, E_{12}, E_{13}, E_{21}, E_{22}, E_{23}\}$ are obtained.
+Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combination of these.
+\end{proof}
+
+
+%% ============================================================
+\section{Dataset Construction Details}
+\label{app:dataset}
+
+\begin{table}[h]
+\caption{Complete benchmark composition (1,000 scenarios, 3,000 shots).}
+\label{tab:full_composition}
+\centering
+\small
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Type & Pattern & Formula & Scenarios & Shots \\
+\midrule
+\multirow{3}{*}{Basis}
+  & Relay         & $A \to AB \to B$     & 200 & 600 \\
+  & Split         & $AB \to A \to B$     & 200 & 600 \\
+  & Accumulation  & $A \to AB \to ABC$   & 200 & 600 \\
+\midrule
+\multirow{4}{*}{Derived}
+  & Convergence      & $A \to B \to AB$     & 100 & 300 \\
+  & Sliding Window   & $AB \to BC \to C$    & 100 & 300 \\
+  & Reduction        & $ABC \to AB \to A$   & 100 & 300 \\
+  & Reverse Relay    & $B \to AB \to A$     & 100 & 300 \\
+\midrule
+\multicolumn{2}{l}{Total} & & 1,000 & 3,000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Prompt generation.}
+All prompts are generated via Google Gemini (temperature 0.7) using structured templates specifying narrative pattern, entity descriptions, and scene backgrounds.
+Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descriptions, visually indistinguishable entity pairs, or degenerate backgrounds.
+
+\paragraph{Scene themes.}
+10 environmental themes: Domestic\_LivingRoom, Domestic\_Kitchen, Urban\_Caf\'{e}, Urban\_Library, Urban\_Street, Nature\_Forest, Nature\_Beach, Nature\_Park, Professional\_Office, Professional\_Hospital.
+
+\paragraph{Entity type distribution.}
+Three categories: Human (H), Professional (P), Animal (A).
+
+\begin{table}[h]
+\caption{Entity type combination distribution.}
+\label{tab:entity_type_combos}
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Entity Types & Count & \% \\
+\midrule
+(H, P)    & 268 & 26.8 \\
+(H, P, P) & 169 & 16.9 \\
+(P, P)    & 110 & 11.0 \\
+(H, H)    & 96  & 9.6 \\
+(H, H, P) & 93  & 9.3 \\
+(A, H)    & 72  & 7.2 \\
+(A, A)    & 54  & 5.4 \\
+(P, P, P) & 45  & 4.5 \\
+(A, A, A) & 38  & 3.8 \\
+(A, A, H) & 35  & 3.5 \\
+(H, H, H) & 20  & 2.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Sample Prompts}
+\label{app:prompts}
+
+Each prompt has three variants: \texttt{gen\_prompt} (+ quality tags), \texttt{eval\_prompt} (clean scene for CLIP), \texttt{diag\_prompt} (entity probe).
+
+\begin{table}[h]
+\caption{Relay pattern sample ($A \to AB \to B$).}
+\label{tab:prompt_relay}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}clp{5.5cm}@{}}
+\toprule
+Shot & Field & Prompt \\
+\midrule
+\multirow{2}{*}{1}
+  & eval & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
+  & diag & a toddler \\
+\midrule
+\multirow{2}{*}{2}
+  & eval & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
+  & diag & a toddler and a mother together \\
+\midrule
+\multirow{2}{*}{3}
+  & eval & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
+  & diag & a mother \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{Accumulation sample ($A \to AB \to ABC$).}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}clp{5.5cm}@{}}
+\toprule
+Shot & Field & Prompt \\
+\midrule
+1 & eval & A lone eagle soaring above a dense forest canopy at dawn \\
+  & diag & an eagle \\
+\midrule
+2 & eval & An eagle and a fox standing at the edge of a forest clearing \\
+  & diag & an eagle and a fox \\
+\midrule
+3 & eval & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
+  & diag & an eagle, a fox, and a rabbit \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{Sliding Window sample ($AB \to BC \to C$).}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}clp{5.5cm}@{}}
+\toprule
+Shot & Field & Prompt \\
+\midrule
+1 & eval & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
+  & diag & a chef and a waiter \\
+\midrule
+2 & eval & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
+  & diag & a waiter and a sommelier \\
+\midrule
+3 & eval & A sommelier examining a wine bottle under warm chandelier light, alone \\
+  & diag & a sommelier \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Model Implementation Details}
+\label{app:models}
+
+\begin{table}[h]
+\caption{Inference specifications. $^\dagger$T2I: 30 steps; I2V: 50 steps.}
+\label{tab:model_full_specs}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lllllc@{}}
+\toprule
+Model & Backbone & Paradigm & Steps & Resolution & Frames \\
+\midrule
+StoryDiff & SDXL+SEINE & T2I$\to$I2V$^\dagger$ & 30+50 & 512$\times$512 & 16 \\
+EchoShot  & Wan2.1-1.3B & T2V (FM) & 50 & 832$\times$480 & 93 \\
+VIC       & CogVideoX-5B & In-context & 50 & 720$\times$480 & 49 \\
+VGoT      & Kolors+DC & T2I$\to$I2V & 25+50 & 512$\times$512 & 16 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All models use seed = 42, negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark''.
+VIC completed 449/1000 (44.9\%) and VGoT 600/1000 (60.0\%) due to OOM errors and degenerate outputs.
+
+
+%% ============================================================
+\section{Evaluation Details}
+\label{app:eval_details}
+
+\paragraph{CLIP model.}
+CLIP ViT-L/14 (\texttt{openai/clip-vit-large-patch14}). 5 uniformly-spaced frames per shot, mean-pooled, L2-normalized.
+
+\paragraph{Thresholds.}
+\begin{itemize}[leftmargin=*,nosep]
+  \item DD $\epsilon$-pass: $\epsilon = 0.02$; pass requires DD$_i > \epsilon$ for all $i$.
+  \item EPA binarization: per-shot median of entity similarities.
+  \item STA detection: $|\Delta E_{t,e}| > 0.001$.
+  \item SVD trajectory: $\Delta\calH \geq -0.05$ (entry), $\leq 0.05$ (exit).
+\end{itemize}
+
+\paragraph{Failure classification.}
+\begin{itemize}[leftmargin=*,nosep]
+  \item Type~I: $\Delta S_{t,e} = -1$ but $E[t\!+\!1,e] \geq E[t,e] - 0.002$.
+  \item Type~II: $\Delta S_{t,e} = +1$ but $E[t\!+\!1,e] \leq E[t,e] + 0.002$.
+  \item Type~III: $M_{11} > M_{22}$ and $M_{33} > M_{22}$ with $|M_{11} - M_{22}| > 0.01$.
+  \item Type~IV: $\max_j M_{ij} - \min_j M_{ij} < 0.01$ for any row $i$.
+\end{itemize}
+
+
+%% ============================================================
+\section{State Transition Matrices}
+\label{app:delta_s}
+
+\begin{table}[h]
+\caption{$\Delta S$ and presence matrices $P$ for all 7 patterns.}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Pattern & $\Delta S$ & $P$ \\
+\midrule
+Relay & $\bigl[\begin{smallmatrix} 0 & +1 \\ -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
+Split & $\bigl[\begin{smallmatrix} 0 & -1 \\ -1 & +1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
+Accumulation & $\bigl[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
+Convergence & $\bigl[\begin{smallmatrix} -1 & +1 \\ +1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
+Sliding Win. & $\bigl[\begin{smallmatrix} -1 & 0 & +1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
+Reduction & $\bigl[\begin{smallmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 & 1 \\ 1 & 1 & 0 \\ 1 & 0 & 0 \end{smallmatrix}\bigr]$ \\[6pt]
+Rev.\ Relay & $\bigl[\begin{smallmatrix} +1 & 0 \\ 0 & -1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{smallmatrix}\bigr]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Full Per-Pattern Results}
+\label{app:per_pattern}
+
+\begin{table*}[h]
+\caption{Complete per-pattern results. $n$: videos generated (SD/Echo/VGoT/VIC). Best per pattern in \textbf{bold}.}
+\label{tab:full_pattern}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l|ccc|ccc|ccc|ccc@{}}
+\toprule
+& \multicolumn{3}{c|}{StoryDiffusion} & \multicolumn{3}{c|}{EchoShot} & \multicolumn{3}{c|}{VGoT} & \multicolumn{3}{c}{VIC} \\
+Pattern & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA \\
+\midrule
+Relay       & .876 & .530 & .525 & .873 & .508 & .508 & .867 & .534 & \textbf{.622} & .873 & .504 & .405 \\
+Split       & \textbf{.868} & \textbf{.555} & .568 & .858 & .538 & .542 & .864 & .513 & \textbf{.565} & .862 & .504 & .448 \\
+Accum.      & \textbf{.982} & .583 & \textbf{.605} & .979 & .561 & .553 & .976 & \textbf{.618} & .407 & .979 & .548 & .424 \\
+Converg.    & .870 & \textbf{.587} & \textbf{.603} & \textbf{.870} & .543 & .590 & .858 & .506 & .391 & .869 & .508 & .447 \\
+Slid.\ Win. & .802 & \textbf{.631} & \textbf{.860} & .821 & .600 & .613 & .851 & .472 & .497 & .858 & .483 & .449 \\
+Reduction   & \textbf{.975} & .602 & \textbf{.830} & .969 & .571 & .625 & .968 & .539 & .510 & .977 & \textbf{.551} & .455 \\
+Rev.\ Relay & .859 & .573 & .605 & .865 & .550 & \textbf{.635} & .867 & .494 & .517 & .871 & .522 & .402 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Sliding Window produces the widest STA spread (0.449--0.860), making it the most discriminative test.
+VIC's STA range is only 0.053 (0.402--0.455), confirming a fixed coherence ceiling invariant to pattern complexity.
+
+
+%% ============================================================
+\section{Human Evaluation Protocol}
+\label{app:human_eval}
+
+\paragraph{Platform.}
+Custom Streamlit web application showing two anonymized model outputs side by side (3 keyframes each). Entity presence/absence annotations shown below. Left/right randomized.
+
+\paragraph{Scale.}
+5-point Likert: 1 = ``A clearly better'', 3 = ``Similar'', 5 = ``B clearly better''.
+Two dimensions: Narrative Compliance and Visual Quality, assessed independently.
+
+\paragraph{Criteria.}
+\emph{Narrative}: ``Which video better follows the scripted entity dynamics?''
+\emph{Visual}: ``Which video looks more visually coherent and natural? Ignore narrative correctness.''
+
+\paragraph{Design.}
+120 pairwise comparisons (40 scenarios $\times$ 6 model pairs). Each evaluator assessed 30 pairs via rotating-window scheme (3 raters per pair). 15 graduate student participants (CS and media studies). Median time: $\sim$25 min. Two attention-check trials (100\% pass rate).
+
+\begin{table}[h]
+\caption{Score distributions by dimension.}
+\centering
+\small
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+& \multicolumn{5}{c}{Score \%} & \multicolumn{2}{c}{Summary} \\
+Dim. & 1 & 2 & 3 & 4 & 5 & $\mu$ & $\sigma$ \\
+\midrule
+Narr.  & 12.3 & 14.8 & 42.3 & 17.1 & 13.5 & 3.05 & 1.18 \\
+Visual & 16.7 & 18.2 & 26.0 & 22.4 & 16.7 & 3.04 & 1.34 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Inter-rater reliability: Fleiss' $\kappa = 0.18$ (narrative), $0.24$ (visual). Lower narrative agreement reflects the difficulty of distinguishing comparably poor entity dynamics.
+
+\begin{table}[h]
+\caption{Head-to-head preferences (\%). M1 win / Tie / M2 win.}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Matchup & Narrative & Visual \\
+\midrule
+SD vs.\ Echo  & 32 / 43 / 25 & 28 / 31 / 41 \\
+SD vs.\ VIC   & 38 / 24 / 38 & 21 / 33 / 46 \\
+SD vs.\ VGoT  & 35 / 40 / 25 & 30 / 28 / 42 \\
+Echo vs.\ VIC & 42 / 38 / 20 & 22 / 27 / 51 \\
+Echo vs.\ VGoT & 37 / 42 / 21 & 31 / 30 / 39 \\
+VIC vs.\ VGoT & 25 / 45 / 30 & 43 / 25 / 32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Bootstrap Confidence Intervals}
+\label{app:bootstrap}
+
+95\% bootstrap CIs ($B = 10{,}000$, percentile method):
+
+\begin{table}[h]
+\caption{Main results with 95\% CIs. All STA differences significant at $p < 0.01$.}
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Metric & StoryDiff & EchoShot & VGoT & VIC \\
+\midrule
+STA & \textbf{.630}\tiny{[.610,.649]} & .567\tiny{[.547,.587]} & .511\tiny{[.486,.535]} & .431\tiny{[.401,.460]} \\
+EPA & \textbf{.573}\tiny{[.564,.582]} & .548\tiny{[.539,.558]} & .534\tiny{[.524,.544]} & .518\tiny{[.507,.528]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Statistical Significance}
+\label{app:significance}
+
+\begin{table}[h]
+\caption{Paired-bootstrap tests ($B = 10{,}000$). $\Delta$ = M1 $-$ M2. $^{***}p<.001$, $^{**}p<.01$, $^{*}p<.05$.}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& \multicolumn{2}{c}{STA} & \multicolumn{2}{c}{EPA} \\
+Matchup & $\Delta$ & $p$ & $\Delta$ & $p$ \\
+\midrule
+SD vs.\ Echo  & $+$.063 & .008$^{**}$ & $+$.025 & .003$^{**}$ \\
+SD vs.\ VIC   & $+$.199 & .000$^{***}$ & $+$.055 & .000$^{***}$ \\
+SD vs.\ VGoT  & $+$.119 & .000$^{***}$ & $+$.039 & .000$^{***}$ \\
+Echo vs.\ VIC & $+$.136 & .000$^{***}$ & $+$.030 & .000$^{***}$ \\
+Echo vs.\ VGoT & $+$.056 & .005$^{**}$ & $+$.014 & .047$^{*}$ \\
+VIC vs.\ VGoT & $-$.080 & .000$^{***}$ & $-$.017 & .023$^{*}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All pairwise STA differences are significant ($p < 0.01$). Ranking: SD $>$ Echo $>$ VGoT $>$ VIC.
+
+
+%% ============================================================
+\section{Dataset Size Sensitivity}
+\label{app:dataset_size}
+
+\begin{table}[h]
+\caption{Rank stability (Kendall's $\tau$, 50 trials) vs.\ full 1,000-scenario ranking.}
+\centering
+\small
+\begin{tabular}{@{}rcccc@{}}
+\toprule
+& \multicolumn{2}{c}{STA} & \multicolumn{2}{c}{EPA} \\
+$n$ & $\tau$ & $\sigma$ & $\tau$ & $\sigma$ \\
+\midrule
+50  & 0.73 & 0.24 & 0.67 & 0.28 \\
+100 & 0.87 & 0.15 & 0.80 & 0.19 \\
+200 & 1.00 & 0.00 & 0.87 & 0.15 \\
+500 & 1.00 & 0.00 & 1.00 & 0.00 \\
+1000 & 1.00 & 0.00 & 1.00 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+STA rankings stabilize at $n = 200$; EPA requires $n \geq 500$.
+
+
+%% ============================================================
+\section{Threshold Sensitivity}
+\label{app:threshold}
+
+\paragraph{EPA binarization.}
+Fixed thresholds $\tau \in [0.20, 0.30]$: rankings perfectly preserved.
+
+\begin{table}[h]
+\caption{EPA vs.\ fixed binarization threshold.}
+\centering
+\small
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$\tau$ & SD & Echo & VGoT & VIC \\
+\midrule
+0.20 & \textbf{.581} & .556 & .541 & .524 \\
+0.24 & \textbf{.575} & .550 & .536 & .519 \\
+0.28 & \textbf{.567} & .541 & .528 & .511 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Failure tolerance $\delta$.}
+Context Bleeding tolerance $\delta \in [0.001, 0.01]$: VIC always worst; rankings invariant.
+
+\begin{table}[h]
+\caption{Context Bleeding rate (\%) vs.\ tolerance $\delta$.}
+\centering
+\small
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$\delta$ & SD & Echo & VGoT & VIC \\
+\midrule
+0.001 & 39.2 & 49.1 & 41.5 & \textbf{63.4} \\
+0.002 & 36.8 & 46.6 & 39.0 & \textbf{60.8} \\
+0.010 & 24.8 & 34.3 & 28.2 & \textbf{47.9} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{DD $\epsilon$.}
+At $\epsilon = 0.00$ (strict maximum), pass rate remains 0\% for all models---no shot achieves maximal similarity to its corresponding prompt.
+
+
+%% ============================================================
+\section{CLIP Backbone Ablation}
+\label{app:clip}
+
+\begin{table}[h]
+\caption{ViT-L/14 vs.\ ViT-B/32: identical rankings.}
+\centering
+\small
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+Backbone & Metric & SD & Echo & VGoT & VIC \\
+\midrule
+ViT-L/14 & STA & \textbf{.630} & .567 & .511 & .431 \\
+ViT-B/32 & STA & \textbf{.618} & .554 & .498 & .419 \\
+\midrule
+ViT-L/14 & EPA & \textbf{.573} & .548 & .534 & .518 \\
+ViT-B/32 & EPA & \textbf{.582} & .559 & .543 & .527 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Per-Pattern Failure Analysis}
+\label{app:failure_pattern}
+
+\begin{table}[h]
+\caption{Failure rates (\%) per pattern, aggregated across models.}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Pattern & Trans. & I & II & III & IV \\
+\midrule
+Relay         & 2 & 38.2 & 52.1 & 9.8  & 16.3 \\
+Split         & 3 & 44.7 & 48.8 & 11.5 & 18.2 \\
+Accumulation  & 2 & 35.1 & 58.3 & 8.4  & 14.7 \\
+Convergence   & 4 & 51.3 & 61.2 & 14.6 & 19.5 \\
+Sliding Win.  & 4 & 53.8 & 55.4 & 13.2 & 17.1 \\
+Reduction     & 2 & 39.6 & 47.2 & 12.4 & 15.8 \\
+Rev.\ Relay   & 2 & 40.1 & 50.6 & 10.7 & 16.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Patterns with 4 transitions (Convergence, Sliding Window) show highest failure rates. Amnesia (Type~II) dominates across all patterns.
+
+
+%% ============================================================
+\section{Score Distributions}
+\label{app:distributions}
+
+\paragraph{STA is bimodal.}
+Scores cluster at 0.0 and 1.0 with few intermediate values---models either execute all transitions or fail on most:
+StoryDiff: 39.2\% at STA=1.0, 28.4\% at STA=0.0.
+EchoShot: 34.1\% / 31.7\%.
+VGoT: 27.5\% / 35.8\%.
+VIC: 21.4\% / 42.3\%.
+
+\paragraph{DD is entirely negative.}
+Mean DD $\approx -0.010$; fewer than 0.5\% of individual shots achieve DD $> 0$; no video achieves DD $> 0$ for all three shots.
+
+\paragraph{EPA range.}
+EPA spans 0.33--1.0. No model achieves perfect EPA on more than 15\% of videos.
+
+
+\end{document}
