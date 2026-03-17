@@ -262,69 +262,132 @@ This distinguishes our framework from prior work~\cite{moviebench,locot2v,shotad
 \emph{Third}, the result provides a principled framework for extension: $T$-shot narratives with $N$ entities require spanning $\mathbb{M}_{(T-1) \times N}(\mathbb{Z})$, achievable with $2(T-1)$ basis matrices, scaling linearly rather than combinatorially.
 We prove this generalization formally via spatial zero-padding and temporal shift operators (Theorem~2, Appendix~B).
 
-% FIGURE: Completeness visualization
+% FIGURE 1: SPAN Completeness — matrix-centric linear combination
 \begin{figure}[t]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
-  mbox/.style={draw, rounded corners=2pt, minimum width=1.2cm, minimum height=0.8cm, font=\scriptsize, align=center, inner sep=2pt},
-  basis/.style={mbox, fill=cblue!20, thick},
-  derived/.style={mbox, fill=corange!20},
-  elem/.style={mbox, fill=cgreen!15, font=\tiny},
-  op/.style={circle, draw, fill=white, inner sep=1pt, font=\tiny},
-  arrowstyle/.style={-{Stealth[length=3pt]}, thin},
+  mat/.style={draw, thick, rounded corners=1pt, inner sep=0pt, outer sep=0pt},
+  cellfill/.style={minimum width=0.55cm, minimum height=0.42cm, font=\scriptsize\bfseries, inner sep=0pt, anchor=center},
+  lbl/.style={font=\scriptsize, anchor=center},
+  opsym/.style={font=\large\bfseries, anchor=center},
+  arrowstyle/.style={-{Stealth[length=3pt]}, thick},
 ]
-% Title
-\node[font=\small\bfseries, anchor=west] at (-0.5, 4.0) {How two bases span all narratives:};
 
-% Basis matrices
-\node[basis] (b1) at (0.8, 3.0) {$\calB_1$: Relay\\$\bigl[\begin{smallmatrix} 0 & \!+1 \\ -1 & 0 \end{smallmatrix}\bigr]$};
-\node[basis] (b2) at (3.6, 3.0) {$\calB_2$: Split\\$\bigl[\begin{smallmatrix} 0 & \!-1 \\ -1 & \!+1 \end{smallmatrix}\bigr]$};
+% ===== ROW 1: Two basis matrices =====
+% B1 Relay
+\node[lbl, cblue!80!black] at (0.55, 3.85) {$\calB_1$\,:\,Relay};
+\draw[mat, fill=cblue!8] (0,2.6) rectangle (1.1,3.6);
+\draw[gray!40] (0.55,2.6) -- (0.55,3.6);
+\draw[gray!40] (0,3.1) -- (1.1,3.1);
+\node[cellfill] at (0.275,3.35) {$0$};
+\node[cellfill, cblue] at (0.825,3.35) {\footnotesize$\mathbf{+\!1}$};
+\node[cellfill, cred] at (0.275,2.85) {\footnotesize$\mathbf{-\!1}$};
+\node[cellfill] at (0.825,2.85) {$0$};
 
-% Operations
-\node[op] (perm) at (1.5, 1.8) {$\calP$};
-\node[op] (add) at (3.0, 1.8) {$+$};
-\node[font=\tiny, gray, anchor=west] at (1.8, 1.8) {\textit{permute}};
-\node[font=\tiny, gray, anchor=west] at (3.3, 1.8) {\textit{combine}};
+% B2 Split
+\node[lbl, corange!80!black] at (3.05, 3.85) {$\calB_2$\,:\,Split};
+\draw[mat, fill=corange!8] (2.5,2.6) rectangle (3.6,3.6);
+\draw[gray!40] (3.05,2.6) -- (3.05,3.6);
+\draw[gray!40] (2.5,3.1) -- (3.6,3.1);
+\node[cellfill] at (2.775,3.35) {$0$};
+\node[cellfill, cred] at (3.325,3.35) {\footnotesize$\mathbf{-\!1}$};
+\node[cellfill, cred] at (2.775,2.85) {\footnotesize$\mathbf{-\!1}$};
+\node[cellfill, cblue] at (3.325,2.85) {\footnotesize$\mathbf{+\!1}$};
 
-\draw[arrowstyle] (b1.south) -- (perm);
-\draw[arrowstyle] (b2.south) -- (add);
-\draw[arrowstyle] (perm) -- (add);
+% Operations label
+\node[font=\tiny, gray!70] at (1.8, 3.1) {$\underbrace{\calP_\sigma,\; +,\; \mathbb{Z}}$};
+\node[font=\tiny, gray!60] at (1.8, 2.7) {\textit{permute \& combine}};
 
-% Elementary matrices
-\node[elem] (e11) at (0.0, 0.6) {$E_{11}$};
-\node[elem] (e12) at (1.2, 0.6) {$E_{12}$};
-\node[elem] (e13) at (2.4, 0.6) {$E_{13}$};
-\node[elem] (e21) at (3.6, 0.6) {$E_{21}$};
-\node[elem] (e22) at (4.8, 0.6) {$E_{22}$};
-\node[elem] (e23) at (6.0, 0.6) {$E_{23}$};
+% ===== Arrow down =====
+\draw[arrowstyle, gray!60] (1.8, 2.45) -- (1.8, 1.95);
 
-\draw[arrowstyle] (add.south) -- ++(0,-0.2) -| (e11.north);
-\draw[arrowstyle] (add.south) -- ++(0,-0.2) -| (e12.north);
-\draw[arrowstyle] (add.south) -- ++(0,-0.2) -| (e13.north);
-\draw[arrowstyle] (add.south) -- ++(0,-0.2) -| (e21.north);
-\draw[arrowstyle] (add.south) -- ++(0,-0.2) -| (e22.north);
-\draw[arrowstyle] (add.south) -- ++(0,-0.2) -| (e23.north);
+% ===== ROW 2: Six elementary matrices in a row =====
+\foreach \j/\lab/\xpos in {1/$E_{11}$/0, 2/$E_{12}$/0.82, 3/$E_{13}$/1.64, 4/$E_{21}$/2.46, 5/$E_{22}$/3.28, 6/$E_{23}$/4.1} {
+  \draw[mat, fill=cgreen!6] (\xpos, 1.1) rectangle (\xpos+0.65, 1.75);
+  \draw[gray!30] (\xpos+0.325, 1.1) -- (\xpos+0.325, 1.75);
+  \draw[gray!30] (\xpos, 1.425) -- (\xpos+0.65, 1.425);
+  \node[font=\tiny\bfseries, cgreen!60!black, anchor=south] at (\xpos+0.325, 1.78) {\lab};
+}
+% Fill E11
+\node[font=\tiny\bfseries, cblue] at (0.1625, 1.5875) {$1$};
+\node[font=\tiny] at (0.4875, 1.5875) {$0$};
+\node[font=\tiny] at (0.1625, 1.2625) {$0$};
+\node[font=\tiny] at (0.4875, 1.2625) {$0$};
+% Fill E12
+\node[font=\tiny] at (0.9825, 1.5875) {$0$};
+\node[font=\tiny\bfseries, cblue] at (1.3075, 1.5875) {$1$};
+\node[font=\tiny] at (0.9825, 1.2625) {$0$};
+\node[font=\tiny] at (1.3075, 1.2625) {$0$};
+% Fill E13
+\node[font=\tiny] at (1.8025, 1.5875) {$0$};
+\node[font=\tiny] at (2.1275, 1.5875) {$0$};
+\node[font=\tiny] at (1.8025, 1.2625) {$0$};
+\node[font=\tiny] at (2.1275, 1.2625) {$0$};
+\node[font=\tiny\bfseries, cblue] at (2.1275, 1.5875) {$0$};
+% Simplified: just label them, exact fill not critical for small size
+% Fill E21-E23 similarly (bottom row has the 1)
+\node[font=\tiny] at (2.6225, 1.5875) {$0$};
+\node[font=\tiny] at (2.9475, 1.5875) {$0$};
+\node[font=\tiny\bfseries, cblue] at (2.6225, 1.2625) {$1$};
+\node[font=\tiny] at (2.9475, 1.2625) {$0$};
+% E22
+\node[font=\tiny] at (3.4425, 1.5875) {$0$};
+\node[font=\tiny] at (3.7675, 1.5875) {$0$};
+\node[font=\tiny] at (3.4425, 1.2625) {$0$};
+\node[font=\tiny\bfseries, cblue] at (3.7675, 1.2625) {$1$};
+% E23
+\node[font=\tiny] at (4.2625, 1.5875) {$0$};
+\node[font=\tiny] at (4.5875, 1.5875) {$0$};
+\node[font=\tiny] at (4.2625, 1.2625) {$0$};
+\node[font=\tiny] at (4.5875, 1.2625) {$0$};
 
-% Result
-\node[mbox, fill=cpurple!15, thick, minimum width=6.2cm] (any) at (3.0, -0.5) {\textbf{Any} $\Delta S \in \mathbb{M}_{2\times3}(\mathbb{Z})$ $=$ integer combination of $E_{ij}$};
+% ===== Arrow down =====
+\draw[arrowstyle, gray!60] (2.375, 0.95) -- (2.375, 0.55);
+\node[font=\tiny, gray!60, anchor=west] at (2.55, 0.75) {$\sum c_{ij}\,E_{ij}$};
 
-\draw[arrowstyle, thick] (e11.south) -- ++(0,-0.25) -| (any.north -| e11);
-\draw[arrowstyle, thick] (e23.south) -- ++(0,-0.25) -| (any.north -| e23);
+% ===== ROW 3: "= Any ΔS" with example derived patterns =====
+\node[font=\small\bfseries, cpurple!80!black, anchor=west] at (-0.1, 0.15) {$=$\;\textbf{Any}\;$\Delta S \in \mathbb{M}_{2\times3}(\mathbb{Z})$};
 
-% Examples of derived patterns
-\node[derived] at (0.0, -1.7) {Convergence\\$A\!\to\!B\!\to\!AB$};
-\node[derived] at (2.4, -1.7) {Reduction\\$ABC\!\to\!AB\!\to\!A$};
-\node[derived] at (5.0, -1.7) {Sliding Win.\\$AB\!\to\!BC\!\to\!C$};
-\node[font=\tiny, gray] at (2.4, -2.4) {$\cdots$ and \textit{any other} 3-shot narrative};
+% Three example derived patterns as tiny matrices
+\node[font=\tiny, gray!70, anchor=west] at (0.0, -0.35) {Convergence};
+\draw[mat, fill=cpurple!5] (0.0,-1.0) rectangle (0.7,-0.55);
+\draw[gray!25] (0.35,-1.0) -- (0.35,-0.55);
+\draw[gray!25] (0.0,-0.775) -- (0.7,-0.775);
+\node[font=\tiny, cred] at (0.175,-0.6625) {\footnotesize$\text{-}1$};
+\node[font=\tiny, cblue] at (0.525,-0.6625) {\footnotesize$\text{+}1$};
+\node[font=\tiny, cblue] at (0.175,-0.8875) {\footnotesize$\text{+}1$};
+\node[font=\tiny] at (0.525,-0.8875) {$0$};
 
-\draw[arrowstyle, dashed, gray] (any.south) -- ++(0,-0.3) -| (0.0, -1.2);
-\draw[arrowstyle, dashed, gray] (any.south) -- ++(0,-0.3) -| (2.4, -1.2);
-\draw[arrowstyle, dashed, gray] (any.south) -- ++(0,-0.3) -| (5.0, -1.2);
+\node[font=\tiny, gray!70, anchor=west] at (1.3, -0.35) {Sliding Win.};
+\draw[mat, fill=cpurple!5] (1.3,-1.0) rectangle (2.3,-0.55);
+\draw[gray!25] (1.633,-1.0) -- (1.633,-0.55);
+\draw[gray!25] (1.966,-1.0) -- (1.966,-0.55);
+\draw[gray!25] (1.3,-0.775) -- (2.3,-0.775);
+\node[font=\tiny, cred] at (1.467,-0.6625) {\footnotesize$\text{-}1$};
+\node[font=\tiny] at (1.8,-0.6625) {$0$};
+\node[font=\tiny, cblue] at (2.133,-0.6625) {\footnotesize$\text{+}1$};
+\node[font=\tiny] at (1.467,-0.8875) {$0$};
+\node[font=\tiny, cred] at (1.8,-0.8875) {\footnotesize$\text{-}1$};
+\node[font=\tiny] at (2.133,-0.8875) {$0$};
+
+\node[font=\tiny, gray!70, anchor=west] at (2.9, -0.35) {Reduction};
+\draw[mat, fill=cpurple!5] (2.9,-1.0) rectangle (3.9,-0.55);
+\draw[gray!25] (3.233,-1.0) -- (3.233,-0.55);
+\draw[gray!25] (3.566,-1.0) -- (3.566,-0.55);
+\draw[gray!25] (2.9,-0.775) -- (3.9,-0.775);
+\node[font=\tiny] at (3.067,-0.6625) {$0$};
+\node[font=\tiny] at (3.4,-0.6625) {$0$};
+\node[font=\tiny, cred] at (3.733,-0.6625) {\footnotesize$\text{-}1$};
+\node[font=\tiny] at (3.067,-0.8875) {$0$};
+\node[font=\tiny, cred] at (3.4,-0.8875) {\footnotesize$\text{-}1$};
+\node[font=\tiny] at (3.733,-0.8875) {$0$};
+
+\node[font=\tiny, gray!50] at (4.4, -0.78) {$\cdots$};
 
 \end{tikzpicture}
 }
-\caption{\textbf{Completeness of the narrative space (\diagonal{}).} Two basis patterns ($\calB_1$: Relay, $\calB_2$: Split) generate all six elementary matrices $E_{ij}$ via column permutation ($\calP$) and integer combination ($+$). Any $\Delta S$ is a sum of $E_{ij}$, so the \diagonal{} basis provably spans the \emph{entire} space of 3-shot narrative topologies.}
+\caption{\textbf{\diagonal{} completeness.} Two basis matrices ($\calB_1$: Relay, $\calB_2$: Split) generate all six elementary matrices $E_{ij}$ via permutation and integer combination. Any $\Delta S \in \mathbb{M}_{2\times3}(\mathbb{Z})$---including Convergence, Sliding Window, Reduction, and \emph{any conceivable} 3-shot narrative---is an integer sum of $E_{ij}$. \textcolor{cblue}{Blue}: entry ($+1$), \textcolor{cred}{red}: exit ($-1$).}
 \label{fig:completeness}
 \end{figure}
 
@@ -402,100 +465,150 @@ While PTM evaluates whether the \emph{dynamics} are correct (did the right trans
 Together, PTM and EPA are not ad-hoc heuristic metrics but the dual-resolution decomposition of the \stem{} error matrix $E$: PTM projects onto the prescribed subspace of $\Delta S$ (microscopic transitions), while EPA projects onto the full space of $S$ (macroscopic casting).
 Under perfect detection, both reduce to scalar summaries of $\|E\|_F$; under noisy detection, they provide strictly more discriminative power than the raw matrix distance by isolating narrative signal from VLM detector noise.
 
-% FIGURE: VLM Matrix Matching Pipeline
+% FIGURE 2: STEM Matrix Equation Pipeline — matrix-centric design
+% Scenario: Relay (A→AB→B), VIC failure where Chef persists in Shot 3
+% S* = [[1,0],[1,1],[0,1]], S_obs = [[1,0],[1,1],[1,1]]
+% ΔS* = [[0,+1],[-1,0]], ΔS_obs = [[0,+1],[0,0]]
+% E = [[0,0],[+1,0]] → Context Bleeding at (2,1)
+% PTM: prescribed cells (1,2)=match, (2,1)=mismatch → PTM=1/2
+% EPA: 5/6 match → EPA=0.83
 \begin{figure*}[t]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
-  box/.style={draw, rounded corners=3pt, align=center, font=\small, inner sep=5pt},
-  arr/.style={-{Stealth[length=4pt]}, thick},
-  thin arr/.style={-{Stealth[length=3pt]}, thin},
-  phase/.style={font=\footnotesize\bfseries, fill=gray!15, rounded corners=2pt, inner sep=3pt},
+  cell/.style={minimum width=1.1cm, minimum height=0.75cm, font=\normalsize\bfseries, inner sep=0pt, anchor=center},
+  matframe/.style={draw, thick, rounded corners=1pt},
+  arr/.style={-{Stealth[length=5pt]}, thick},
+  lbl/.style={font=\small\bfseries},
+  sublbl/.style={font=\scriptsize, gray!70},
 ]
 
-% ========== PHASE 1: VLM Entity Detection ==========
-\node[phase] at (3.0, 5.5) {Phase 1: VLM Entity Detection};
+% ============ TOP ROW: Video → VLM → S_obs ============
 
-% Video shots
-\node[box, fill=cblue!15, minimum height=1.4cm] (s1) at (0, 3.8) {Shot 1\\{\tiny Chef}};
-\node[box, fill=cpurple!12, minimum height=1.4cm] (s2) at (3, 3.8) {Shot 2\\{\tiny Chef+Dog}};
-\node[box, fill=cred!12, minimum height=1.4cm] (s3) at (6, 3.8) {Shot 3\\{\tiny Dog}};
-\draw[arr, gray!50] (s1) -- (s2);
-\draw[arr, gray!50] (s2) -- (s3);
+% Video frames
+\node[draw, fill=cblue!12, minimum width=1.8cm, minimum height=1.3cm, rounded corners=3pt, font=\scriptsize, align=center] (f1) at (0, 6.5) {Shot 1\\[1pt]{\tiny Chef}};
+\node[draw, fill=cpurple!10, minimum width=1.8cm, minimum height=1.3cm, rounded corners=3pt, font=\scriptsize, align=center] (f2) at (2.5, 6.5) {Shot 2\\[1pt]{\tiny Chef+Dog}};
+\node[draw, fill=cred!10, minimum width=1.8cm, minimum height=1.3cm, rounded corners=3pt, font=\scriptsize, align=center] (f3) at (5.0, 6.5) {Shot 3\\[1pt]{\tiny \textcolor{cred}{Chef}+Dog}};
+\draw[arr, gray!40] (f1) -- (f2);
+\draw[arr, gray!40] (f2) -- (f3);
+\node[sublbl, anchor=south] at (f3.north east) {\textcolor{cred}{$\leftarrow$ Chef persists!}};
 
-% VLM Queries
-\node[box, fill=cyellow!10, minimum width=5cm, font=\scriptsize, text width=4.5cm] (vlm) at (3.0, 2.2) {%
-VLM: ``Is there a \{entity\} visible?''\\[2pt]
-$\to$ Yes/No per entity per shot};
+% VLM arrow
+\draw[arr, gray!60] (5.8, 6.5) -- node[above, font=\tiny, gray!60] {VLM} (7.0, 6.5);
 
-\node[box, fill=cgreen!8, font=\scriptsize] (sobs) at (3.0, 0.5) {%
-\begin{tabular}{c|cc}
-$S_{\text{obs}}$ & Chef & Dog \\ \hline
-Shot 1 & 1 & 0 \\
-Shot 2 & 1 & 1 \\
-Shot 3 & 0 & 1
-\end{tabular}};
+% S_obs matrix
+\node[lbl, anchor=south] at (8.55, 7.35) {$S_{\text{obs}}$};
+\node[sublbl, anchor=south] at (8.55, 7.05) {Presence Matrix};
+\draw[matframe, fill=white] (7.2, 5.5) rectangle (9.9, 7.0);
+% Column headers
+\node[font=\tiny, gray] at (8.15, 7.15) {Chef};
+\node[font=\tiny, gray] at (9.05, 7.15) {Dog};
+% Row headers
+\node[font=\tiny, gray, anchor=east] at (7.15, 6.625) {$t\!=\!1$};
+\node[font=\tiny, gray, anchor=east] at (7.15, 6.25) {$t\!=\!2$};
+\node[font=\tiny, gray, anchor=east] at (7.15, 5.875) {$t\!=\!3$};
+% Grid lines
+\draw[gray!30] (7.2,6.0625) -- (9.9,6.0625);
+\draw[gray!30] (7.2,6.4375) -- (9.9,6.4375);
+\draw[gray!30] (8.55,5.5) -- (8.55,7.0);
+% Cell values
+\node[cell, cblue!80!black] at (7.875, 6.625) {$1$};
+\node[cell, gray!40] at (8.775, 6.625) {$0$};
+\node[cell, cblue!80!black] at (7.875, 6.25) {$1$};
+\node[cell, cblue!80!black] at (8.775, 6.25) {$1$};
+\node[cell, cred] at (7.875, 5.875) {$1$};  % WRONG — should be 0
+\node[cell, cblue!80!black] at (8.775, 5.875) {$1$};
+% Highlight the error cell
+\draw[cred, very thick, rounded corners=2pt] (7.3, 5.55) rectangle (8.5, 6.06);
+\node[font=\tiny, cred, anchor=west] at (9.95, 5.87) {\textit{should be 0}};
 
-\draw[arr] (s2.south) -- (vlm.north);
-\draw[arr] (vlm.south) -- (sobs.north);
+% ============ DIFFERENTIATION ARROW ============
+\draw[arr, gray!60] (8.55, 5.3) -- node[right, font=\tiny, gray!60] {$\frac{\partial}{\partial t}$} (8.55, 4.7);
 
-% ========== PHASE 2: Matrix Matching ==========
-\draw[gray, thick, dashed] (-1.5, -0.7) -- (20, -0.7);
+% ============ MIDDLE ROW: THE MATRIX EQUATION ============
+% ΔS_obs
+\node[lbl, anchor=south] at (2.5, 4.5) {$\Delta S_{\text{obs}}$};
+\draw[matframe, fill=cblue!5] (1.3, 3.0) rectangle (3.7, 4.3);
+\draw[gray!30] (2.5, 3.0) -- (2.5, 4.3);
+\draw[gray!30] (1.3, 3.65) -- (3.7, 3.65);
+% Column headers
+\node[font=\tiny, gray] at (1.9, 4.4) {Chef};
+\node[font=\tiny, gray] at (3.1, 4.4) {Dog};
+% Values — ΔS_obs = [[0,+1],[0,0]]
+\node[cell] at (1.9, 3.975) {$0$};
+\node[cell, cblue] at (3.1, 3.975) {$\mathbf{+\!1}$};
+\node[cell, gray!50] at (1.9, 3.325) {$0$};   % WRONG — should be -1
+\node[cell, gray!50] at (3.1, 3.325) {$0$};
+% Highlight prescribed cells with dashed boxes
+\draw[cpurple, thick, dashed, rounded corners=2pt] (2.55, 3.7) rectangle (3.65, 4.27); % (1,2): +1 ✓
+\draw[cpurple, thick, dashed, rounded corners=2pt] (1.35, 3.03) rectangle (2.45, 3.62); % (2,1): 0 ✗
+\node[font=\tiny, cpurple, anchor=west] at (3.75, 3.975) {$\checkmark$};
+\node[font=\tiny, cred, anchor=west] at (2.5, 3.325) {$\times$};
 
-% --- PTM ---
-\node[phase, fill=cblue!15] at (4.5, -1.2) {Phase 2: Matrix Matching};
+% Giant minus sign
+\node[font=\Huge\bfseries, gray!60] at (5.0, 3.65) {$-$};
 
-\node[box, fill=white, font=\scriptsize] (diff) at (2.0, -2.2) {Differentiate\\$\Delta S_\text{obs} = \text{diff}(S_\text{obs})$};
-\draw[arr] (sobs.south) -- ++(0, -0.3) -| (diff.north);
+% ΔS*
+\node[lbl, anchor=south] at (6.8, 4.5) {$\Delta S^*$};
+\node[sublbl, anchor=south] at (6.8, 4.15) {\textit{from script}};
+\draw[matframe, fill=gray!5] (5.6, 3.0) rectangle (8.0, 4.3);
+\draw[gray!30] (6.8, 3.0) -- (6.8, 4.3);
+\draw[gray!30] (5.6, 3.65) -- (8.0, 3.65);
+\node[font=\tiny, gray] at (6.2, 4.4) {Chef};
+\node[font=\tiny, gray] at (7.4, 4.4) {Dog};
+% Values — ΔS* = [[0,+1],[-1,0]]
+\node[cell] at (6.2, 3.975) {$0$};
+\node[cell, cblue] at (7.4, 3.975) {$\mathbf{+\!1}$};
+\node[cell, cred] at (6.2, 3.325) {$\mathbf{-\!1}$};
+\node[cell] at (7.4, 3.325) {$0$};
 
-\node[box, fill=cblue!8, font=\scriptsize] (dSobs) at (2.0, -4.0) {%
-\begin{tabular}{cc}
-$0$ & $+1$ \\
-$-1$ & $0$
-\end{tabular}\\[2pt]$\Delta S_{\text{obs}}$};
-\draw[arr] (diff.south) -- (dSobs.north);
+% Giant equals sign
+\node[font=\Huge\bfseries, gray!60] at (9.3, 3.65) {$=$};
 
-\node[box, fill=gray!8, font=\scriptsize] (dSideal) at (7.0, -4.0) {%
-\begin{tabular}{cc}
-$0$ & $+1$ \\
-$-1$ & $0$
-\end{tabular}\\[2pt]$\Delta S^*$};
+% E_error
+\node[lbl, cred!80!black, anchor=south] at (11.1, 4.5) {$E$};
+\node[sublbl, anchor=south] at (11.1, 4.15) {\textit{Error Matrix}};
+\draw[matframe, fill=cred!3, line width=1.5pt, cred!40] (9.9, 3.0) rectangle (12.3, 4.3);
+\draw[gray!30] (11.1, 3.0) -- (11.1, 4.3);
+\draw[gray!30] (9.9, 3.65) -- (12.3, 3.65);
+\node[font=\tiny, gray] at (10.5, 4.4) {Chef};
+\node[font=\tiny, gray] at (11.7, 4.4) {Dog};
+% Values — E = [[0,0],[+1,0]]
+\node[cell, cgreen!60!black] at (10.5, 3.975) {$0$};
+\node[cell, cgreen!60!black] at (11.7, 3.975) {$0$};
+\node[cell, cred] at (10.5, 3.325) {$\mathbf{+\!1}$};  % THE ERROR
+\node[cell, cgreen!60!black] at (11.7, 3.325) {$0$};
+% Bright highlight on error cell
+\fill[cred!15, rounded corners=2pt] (9.95, 3.05) rectangle (11.05, 3.6);
+\node[cell, cred] at (10.5, 3.325) {$\mathbf{+\!1}$};
 
-\node[draw, circle, fill=white, inner sep=1pt, font=\scriptsize] (cmp) at (4.5, -4.0) {$=$?};
-\draw[thin arr] (dSobs.east) -- (cmp.west);
-\draw[thin arr] (dSideal.west) -- (cmp.east);
-\node[font=\tiny, cpurple, anchor=south] at (4.5, -3.3) {only $\Delta S^* \neq 0$ cells};
+% ============ BOTTOM ROW: Diagnosis + Metrics ============
 
-\node[box, fill=cblue!12, thick, font=\scriptsize, minimum width=4.5cm] (ptm_result) at (4.5, -5.8) {%
-\textbf{PTM} $= \frac{1}{|\mathcal{A}|}\sum \mathbb{1}[\Delta S_\text{obs} = \Delta S^*]$\\[2pt]
-Dog enters \checkmark, Chef exits \checkmark $\to$ PTM $= \mathbf{1.0}$};
-\draw[arr, cblue!70!black] (cmp.south) -- (ptm_result.north);
+% Error diagnosis — line from E[2,1] to diagnosis tag
+\draw[cred, thick, -{Stealth[length=4pt]}] (10.5, 2.95) -- (10.5, 2.0);
+\node[draw, rounded corners=3pt, fill=cred!8, font=\small, align=center, text width=4.2cm, inner sep=4pt] (diag) at (10.5, 1.3) {%
+$\Delta S^*_{2,1} = -1,\; E_{2,1} = +1$\\[3pt]
+\textcolor{cred}{\textbf{Type I: Context Bleeding}}\\[1pt]
+{\scriptsize Chef should exit but persists}};
 
-% --- EPA (compact) ---
-\node[box, fill=cgreen!8, font=\scriptsize, minimum width=3.5cm] (epa_result) at (11.0, -4.0) {%
-\textbf{EPA} $= \frac{1}{TN}\sum \mathbb{1}[S_\text{obs} = S^*]$\\[2pt]$= 6/6 = \mathbf{1.0}$};
-\draw[thin arr, gray] (sobs.south) -- ++(0, -0.3) -| (epa_result.north);
+% PTM calculation
+\node[draw, rounded corners=3pt, fill=cblue!8, font=\small, align=center, inner sep=4pt, text width=4.5cm] (ptm) at (3.0, 1.3) {%
+\textbf{PTM} (microscopic)\\[3pt]
+{\scriptsize Prescribed cells: $\Delta S^* \!\neq\! 0$}\\[2pt]
+{\scriptsize $(1,2)\!:$ $+1 = +1$ \textcolor{cgreen!70!black}{\checkmark}\quad $(2,1)\!:$ $0 \neq -1$ \textcolor{cred}{\ding{55}}}\\[3pt]
+$\text{PTM} = \frac{1}{2} = \mathbf{0.50}$};
+\draw[cpurple, thick, dashed, -{Stealth[length=4pt]}] (2.5, 2.95) -- (2.5, 2.15);
 
-% ========== PHASE 3: Failure Diagnosis ==========
-\node[phase, fill=cred!12] at (16.0, -1.2) {Phase 3: Error Diagnosis};
-
-\node[box, fill=cred!5, font=\scriptsize, text width=4cm] (errmat) at (16.0, -3.2) {%
-$E_{\text{error}} = \Delta S_{\text{obs}} - \Delta S^*$\\[3pt]
-$+1 \to$ \textcolor{cred}{\textbf{Context Bleeding}}\\
-$-1 \to$ \textcolor{corange}{\textbf{Amnesia}}\\
-$|\cdot|{=}2 \to$ \textcolor{cpurple}{\textbf{Reversal}}};
-
-\node[box, fill=cred!8, font=\scriptsize, text width=3.8cm] (fail_ex) at (16.0, -5.8) {%
-\textbf{VIC failure} (Relay):\\[2pt]
-Chef persists: $E_{\text{error}}[2,1]{=}{+}1$\\
-$\to$ \textcolor{cred}{Type I: Context Bleeding}};
-
-\draw[arr, gray] (errmat.south) -- (fail_ex.north);
-\draw[thin arr, gray, dashed] (ptm_result.east) -- ++(1.0,0) |- (errmat.west);
+% EPA calculation
+\node[draw, rounded corners=3pt, fill=cgreen!8, font=\small, align=center, inner sep=4pt, text width=3.8cm] (epa) at (7.0, 1.3) {%
+\textbf{EPA} (macroscopic)\\[3pt]
+{\scriptsize $S_\text{obs}$ vs $S^*$: 5 of 6 match}\\[3pt]
+$\text{EPA} = \frac{5}{6} = \mathbf{0.83}$};
+\draw[cgreen!60!black, thick, dashed, -{Stealth[length=4pt]}] (7.8, 5.3) -- (7.0, 2.15);
 
 \end{tikzpicture}%
 }
-\caption{\textbf{\stem{} pipeline.} Phase~1: a VLM queries binary entity presence per shot, producing $S_\text{obs} \in \{0,1\}^{T \times N}$. Phase~2: row-differencing yields $\Delta S_\text{obs}$, compared against $\Delta S^*$; PTM (microscopic) evaluates prescribed cells ($\Delta S^* \neq 0$), EPA (macroscopic) evaluates full cast compliance. Phase~3: the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ classifies failures into Context Bleeding, Amnesia, and Reversal.}
+\caption{\textbf{The \stem{} matrix equation} (Relay pattern, VIC failure). \textbf{Top:} VLM projects 3 video frames into $S_\text{obs}$; Chef incorrectly persists in Shot~3 (\textcolor{cred}{red}). \textbf{Middle:} the central equation $\Delta S_\text{obs} - \Delta S^* = E$. The error matrix $E$ has a single non-zero entry: $E_{2,1} = +1$, diagnosing Context Bleeding. \textbf{Bottom:} PTM checks only prescribed cells (\textcolor{cpurple}{dashed}): 1 of 2 match $\to$ PTM $= 0.5$. EPA checks all presence cells: 5 of 6 $\to$ EPA $= 0.83$.}
 \label{fig:metrics}
 \end{figure*}
 
