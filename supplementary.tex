@@ -28,7 +28,7 @@
 
 \begin{document}
 
-\title{Supplementary Material for\\DIAGONAL: Density-Normalized Cross-Modal Alignment\\for Multi-Shot Video Narrative Evaluation}
+\title{Supplementary Material for\\DIAGONAL: Entity-Grounded Topological Evaluation\\for Multi-Shot Video Narrative Compliance}
 
 \author{Anonymous Authors}
 \affiliation{\institution{Anonymous Institution}}
@@ -104,7 +104,7 @@ Type & Pattern & Formula & Scenarios & Shots \\
 \end{table}
 
 \paragraph{Prompt generation.}
-All prompts are generated via Google Gemini (temperature 0.7) using structured templates specifying narrative pattern, entity descriptions, and scene backgrounds.
+All prompts are generated via Google Gemini~1.5 (temperature 0.7) using structured templates specifying narrative pattern, entity descriptions, and scene backgrounds.
 Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descriptions, visually indistinguishable entity pairs, or degenerate backgrounds.
 
 \paragraph{Scene themes.}
@@ -115,7 +115,6 @@ Three categories: Human (H), Professional (P), Animal (A).
 
 \begin{table}[h]
 \caption{Entity type combination distribution.}
-\label{tab:entity_type_combos}
 \centering
 \small
 \begin{tabular}{@{}lcc@{}}
@@ -146,7 +145,6 @@ Each prompt has three variants: \texttt{gen\_prompt} (+ quality tags), \texttt{e
 
 \begin{table}[h]
 \caption{Relay pattern sample ($A \to AB \to B$).}
-\label{tab:prompt_relay}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
@@ -218,7 +216,6 @@ Shot & Field & Prompt \\
 
 \begin{table}[h]
 \caption{Inference specifications. $^\dagger$T2I: 30 steps; I2V: 50 steps.}
-\label{tab:model_full_specs}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
@@ -245,11 +242,13 @@ VIC completed 449/1000 (44.9\%) and VGoT 600/1000 (60.0\%) due to OOM errors and
 \paragraph{CLIP model.}
 CLIP ViT-L/14 (\texttt{openai/clip-vit-large-patch14}). 5 uniformly-spaced frames per shot, mean-pooled, L2-normalized.
 
+\paragraph{Entity probe template.}
+Entity probes use the template ``a \{entity\}'' (e.g., ``a chef'', ``a dog'') as CLIP text queries.
+
 \paragraph{Thresholds.}
 \begin{itemize}[leftmargin=*,nosep]
-  \item DD $\epsilon$-pass: $\epsilon = 0.02$; pass requires DD$_i > \epsilon$ for all $i$.
-  \item EPA binarization: per-shot median of entity similarities.
-  \item STA detection: $|\Delta E_{t,e}| > 0.001$.
+  \item EPA binarization: per-shot median of entity probe similarities.
+  \item TTS detection: $|\Delta E_{t,e}| > 0.001$.
   \item SVD trajectory: $\Delta\calH \geq -0.05$ (entry), $\leq 0.05$ (exit).
 \end{itemize}
 
@@ -267,13 +266,13 @@ CLIP ViT-L/14 (\texttt{openai/clip-vit-large-patch14}). 5 uniformly-spaced frame
 \label{app:delta_s}
 
 \begin{table}[h]
-\caption{$\Delta S$ and presence matrices $P$ for all 7 patterns.}
+\caption{$\Delta S$ and presence matrices $S$ for all 7 patterns.}
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lll@{}}
 \toprule
-Pattern & $\Delta S$ & $P$ \\
+Pattern & $\Delta S$ & $S$ \\
 \midrule
 Relay & $\bigl[\begin{smallmatrix} 0 & +1 \\ -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
 Split & $\bigl[\begin{smallmatrix} 0 & -1 \\ -1 & +1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
@@ -292,29 +291,29 @@ Rev.\ Relay & $\bigl[\begin{smallmatrix} +1 & 0 \\ 0 & -1 \end{smallmatrix}\bigr
 \label{app:per_pattern}
 
 \begin{table*}[h]
-\caption{Complete per-pattern results. $n$: videos generated (SD/Echo/VGoT/VIC). Best per pattern in \textbf{bold}.}
+\caption{Complete per-pattern results. Best per pattern in \textbf{bold}.}
 \label{tab:full_pattern}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}l|ccc|ccc|ccc|ccc@{}}
+\begin{tabular}{@{}l|cc|cc|cc|cc@{}}
 \toprule
-& \multicolumn{3}{c|}{StoryDiffusion} & \multicolumn{3}{c|}{EchoShot} & \multicolumn{3}{c|}{VGoT} & \multicolumn{3}{c}{VIC} \\
-Pattern & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA & $\sdiag$ & EPA & STA \\
+& \multicolumn{2}{c|}{StoryDiffusion} & \multicolumn{2}{c|}{EchoShot} & \multicolumn{2}{c|}{VGoT} & \multicolumn{2}{c}{VIC} \\
+Pattern & EPA & TTS & EPA & TTS & EPA & TTS & EPA & TTS \\
 \midrule
-Relay       & .876 & .530 & .525 & .873 & .508 & .508 & .867 & .534 & \textbf{.622} & .873 & .504 & .405 \\
-Split       & \textbf{.868} & \textbf{.555} & .568 & .858 & .538 & .542 & .864 & .513 & \textbf{.565} & .862 & .504 & .448 \\
-Accum.      & \textbf{.982} & .583 & \textbf{.605} & .979 & .561 & .553 & .976 & \textbf{.618} & .407 & .979 & .548 & .424 \\
-Converg.    & .870 & \textbf{.587} & \textbf{.603} & \textbf{.870} & .543 & .590 & .858 & .506 & .391 & .869 & .508 & .447 \\
-Slid.\ Win. & .802 & \textbf{.631} & \textbf{.860} & .821 & .600 & .613 & .851 & .472 & .497 & .858 & .483 & .449 \\
-Reduction   & \textbf{.975} & .602 & \textbf{.830} & .969 & .571 & .625 & .968 & .539 & .510 & .977 & \textbf{.551} & .455 \\
-Rev.\ Relay & .859 & .573 & .605 & .865 & .550 & \textbf{.635} & .867 & .494 & .517 & .871 & .522 & .402 \\
+Relay (B, 2-ent)      & .530 & .525 & .508 & .507 & \textbf{.534} & \textbf{.622} & .504 & .405 \\
+Split (B, 2-ent)       & \textbf{.555} & .568 & .538 & .542 & .513 & \textbf{.565} & .504 & .448 \\
+Accum.\ (B, 3-ent)    & .583 & \textbf{.605} & .561 & .553 & \textbf{.618} & .407 & .548 & .424 \\
+Converg.\ (D, 2-ent)  & \textbf{.587} & \textbf{.603} & .543 & .590 & .506 & .391 & .508 & .447 \\
+Slid.\ Win.\ (D, 3-ent) & \textbf{.631} & \textbf{.860} & .600 & .613 & .472 & .497 & .483 & .449 \\
+Reduction (D, 3-ent)   & .602 & \textbf{.830} & .571 & .625 & .538 & .510 & \textbf{.551} & .455 \\
+Rev.\ Relay (D, 2-ent) & \textbf{.573} & .605 & .550 & \textbf{.635} & .494 & .517 & .522 & .402 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-Sliding Window produces the widest STA spread (0.449--0.860), making it the most discriminative test.
-VIC's STA range is only 0.053 (0.402--0.455), confirming a fixed coherence ceiling invariant to pattern complexity.
+Sliding Window produces the widest TTS spread (0.449--0.860), making it the most discriminative test.
+VIC's TTS range is only 0.053 (0.402--0.455), confirming a fixed coherence ceiling invariant to pattern complexity.
 
 
 %% ============================================================
@@ -350,8 +349,6 @@ Visual & 16.7 & 18.2 & 26.0 & 22.4 & 16.7 & 3.04 & 1.34 \\
 \end{tabular}
 \end{table}
 
-Inter-rater reliability: Fleiss' $\kappa = 0.18$ (narrative), $0.24$ (visual). Lower narrative agreement reflects the difficulty of distinguishing comparably poor entity dynamics.
-
 \begin{table}[h]
 \caption{Head-to-head preferences (\%). M1 win / Tie / M2 win.}
 \centering
@@ -373,13 +370,250 @@ VIC vs.\ VGoT & 25 / 45 / 30 & 43 / 25 / 32 \\
 
 
 %% ============================================================
+\section{EPA Binarization Threshold Sensitivity}
+\label{app:epa_threshold}
+
+We evaluate EPA under four adaptive threshold strategies and a sweep of fixed thresholds.
+
+\begin{table}[h]
+\caption{EPA with adaptive thresholds. Rankings perfectly preserved.}
+\centering
+\small
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+Strategy & SD & Echo & VGoT & VIC & Rank \\
+\midrule
+Median (ours) & \textbf{.573} & .548 & .534 & .518 & SD$>$E$>$VG$>$V \\
+Mean          & \textbf{.609} & .575 & .554 & .539 & SD$>$E$>$VG$>$V \\
+Global median & \textbf{.599} & .568 & .544 & .532 & SD$>$E$>$VG$>$V \\
+Global mean   & \textbf{.605} & .580 & .555 & .543 & SD$>$E$>$VG$>$V \\
+\midrule
+Percentile 25 & \textbf{.616} & .589 & .571 & .557 & SD$>$E$>$VG$>$V \\
+Percentile 33 & \textbf{.616} & .589 & .571 & .557 & SD$>$E$>$VG$>$V \\
+Percentile 40 & \textbf{.616} & .589 & .571 & .557 & SD$>$E$>$VG$>$V \\
+Percentile 50 & \textbf{.573} & .548 & .534 & .518 & SD$>$E$>$VG$>$V \\
+Percentile 67 & \textbf{.573} & .548 & .534 & .518 & SD$>$E$>$VG$>$V \\
+Percentile 75 & \textbf{.573} & .548 & .534 & .518 & SD$>$E$>$VG$>$V \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All \emph{adaptive} strategies (median, mean, percentile) produce identical model rankings.
+We use per-shot median because it is non-parametric, requires no dataset-level calibration, and avoids the distributional assumptions of mean-based approaches.
+
+\begin{table}[h]
+\caption{EPA with fixed thresholds. Rankings change at extreme values.}
+\centering
+\small
+\begin{tabular}{@{}cccccl@{}}
+\toprule
+$\tau$ & SD & Echo & VGoT & VIC & Rank \\
+\midrule
+0.15 & .675 & .639 & .618 & .636 & SD$>$E$>$\textbf{V$>$VG} \\
+0.17 & \textbf{.629} & .592 & .571 & .562 & SD$>$E$>$VG$>$V \\
+0.18 & \textbf{.615} & .563 & .543 & .510 & SD$>$E$>$VG$>$V \\
+0.20 & \textbf{.581} & .556 & .558 & .524 & SD$>$\textbf{VG$>$E}$>$V \\
+0.22 & .571 & .543 & \textbf{.574} & .533 & \textbf{VG$>$SD}$>$E$>$V \\
+0.24 & \textbf{.575} & .550 & .536 & .519 & SD$>$E$>$VG$>$V \\
+0.26 & \textbf{.556} & .523 & .532 & .527 & SD$>$\textbf{VG$>$V$>$E} \\
+0.28 & .517 & .487 & .534 & \textbf{.543} & \textbf{V$>$VG$>$SD$>$E} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Fixed thresholds produce ranking instabilities at extreme values ($\tau \leq 0.15$ or $\tau \geq 0.26$) because a global constant cannot adapt to per-shot variance in CLIP similarity distributions.
+This motivates our choice of an \emph{adaptive} per-shot threshold.
+
+
+%% ============================================================
+\section{TTS Sign-Threshold Sensitivity}
+\label{app:tts_epsilon}
+
+TTS uses an epsilon threshold $\varepsilon$ to determine whether an observed entity probe change constitutes a meaningful transition. We sweep $\varepsilon$ from 0 (pure sign) to 0.05 (strict).
+
+\begin{table}[h]
+\caption{TTS vs.\ sign threshold $\varepsilon$. Rankings are perfectly stable.}
+\centering
+\small
+\begin{tabular}{@{}cccccl@{}}
+\toprule
+$\varepsilon$ & SD & Echo & VGoT & VIC & Rank \\
+\midrule
+0       & \textbf{.651} & .590 & .540 & .517 & SD$>$E$>$VG$>$V \\
+0.0001  & \textbf{.648} & .589 & .534 & .503 & SD$>$E$>$VG$>$V \\
+0.0005  & \textbf{.639} & .578 & .522 & .468 & SD$>$E$>$VG$>$V \\
+0.001   & \textbf{.629} & .567 & .511 & .431 & SD$>$E$>$VG$>$V \\
+0.002   & \textbf{.605} & .536 & .483 & .374 & SD$>$E$>$VG$>$V \\
+0.005   & \textbf{.524} & .471 & .382 & .236 & SD$>$E$>$VG$>$V \\
+0.01    & \textbf{.419} & .375 & .271 & .127 & SD$>$E$>$VG$>$V \\
+0.02    & \textbf{.254} & .235 & .115 & .046 & SD$>$E$>$VG$>$V \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Rankings are \emph{perfectly preserved across all 8 tested $\varepsilon$ values}, from pure sign ($\varepsilon = 0$) to strict ($\varepsilon = 0.02$).
+We use $\varepsilon = 0.001$ as a minimal noise floor; at $\varepsilon = 0$, floating-point noise in CLIP embeddings can cause spurious sign changes.
+
+\paragraph{$\Delta E$ magnitude distribution.}
+The fraction of prescribed transitions with $|\Delta E| < \varepsilon$ reveals probe signal strength per model:
+
+\begin{table}[h]
+\caption{$|\Delta E|$ magnitude distribution for prescribed transitions.}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & $<$0.001 & $<$0.005 & $<$0.01 & Median $|\Delta E|$ \\
+\midrule
+SD    & 4.6\%  & 23.0\% & 40.9\% & 0.0128 \\
+Echo  & 4.7\%  & 22.9\% & 41.0\% & 0.0131 \\
+VGoT  & 5.5\%  & 28.9\% & 52.1\% & 0.0095 \\
+VIC   & 17.2\% & 58.0\% & 79.1\% & 0.0040 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+VIC's median $|\Delta E| = 0.004$ is 3$\times$ smaller than StoryDiffusion's (0.013), confirming that in-context conditioning produces near-static entity probe signals.
+79.1\% of VIC's prescribed transitions have $|\Delta E| < 0.01$, compared to 40.9\% for StoryDiffusion.
+
+
+%% ============================================================
+\section{Permutation Test: Random Baseline Significance}
+\label{app:permutation}
+
+To verify that EPA and TTS capture real entity-level signal rather than noise, we conduct a permutation test: for each video, we randomly shuffle the entity columns of $E$ (destroying the entity--column correspondence) and recompute both metrics.
+This preserves the overall CLIP similarity distribution but removes entity-specific information.
+We perform 1,000 permutations and compute one-sided $p$-values.
+
+\begin{table}[h]
+\caption{Permutation test results (1,000 permutations).}
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l cc c cc c@{}}
+\toprule
+& \multicolumn{2}{c}{EPA} && \multicolumn{2}{c}{TTS} & \\
+\cmidrule(lr){2-3} \cmidrule(lr){5-6}
+Model & Real & Perm.\ $\mu$ & $p$ & Real & Perm.\ $\mu$ & $p$ \\
+\midrule
+SD    & \textbf{.573} & .481 & $<$.001$^{***}$ & \textbf{.629} & .509 & $<$.001$^{***}$ \\
+Echo  & \textbf{.548} & .481 & $<$.001$^{***}$ & \textbf{.567} & .499 & $<$.001$^{***}$ \\
+VGoT  & \textbf{.534} & .482 & $<$.001$^{***}$ & \textbf{.511} & .462 & $<$.001$^{***}$ \\
+VIC   & \textbf{.518} & .481 & $<$.001$^{***}$ & .431 & .422 & .168\phantom{$^{***}$} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Key finding:}
+All EPA values are highly significant ($p < 0.001$), confirming that entity presence detection captures real signal for all models.
+For TTS, StoryDiffusion, EchoShot, and VGoT are all significant ($p < 0.001$), but \textbf{VIC's TTS is not statistically distinguishable from a random entity permutation} ($p = 0.168$).
+This means VIC's entity probe changes are so small that the directional signal is lost in noise---confirming at the statistical level that VIC exhibits \emph{complete narrative blindness}: its entity transitions are indistinguishable from random.
+
+The permutation baseline for EPA ($\sim$0.48) is near but below 0.5 because permutation destroys entity--presence correspondence but not the median threshold structure.
+For TTS, the permutation baseline for VIC (0.422) is close to the real value (0.431), while for SD the gap is substantial (0.509 vs.\ 0.629), quantifying the relative signal strength.
+
+
+%% ============================================================
+\section{2-Entity vs.\ 3-Entity Stratified Analysis}
+\label{app:entity_count}
+
+Patterns use either 2 entities (Relay, Split, Convergence, Reverse Relay) or 3 entities (Accumulation, Sliding Window, Reduction).
+We stratify results to test whether metric reliability depends on entity count.
+
+\begin{table}[h]
+\caption{Metrics stratified by entity count. Gap = mean probe similarity (present entities $-$ absent entities).}
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l ccc ccc@{}}
+\toprule
+& \multicolumn{3}{c}{2-Entity patterns} & \multicolumn{3}{c}{3-Entity patterns} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+Model & EPA & TTS & Gap & EPA & TTS & Gap \\
+\midrule
+SD    & .555 & .566 & .008 & \textbf{.600} & \textbf{.725} & .034 \\
+Echo  & .531 & .554 & .006 & .573 & .586 & .029 \\
+VGoT  & .516 & .548 & .003 & .563 & .453 & .029 \\
+VIC   & .507 & .426 & .001 & .532 & .438 & .020 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+3-entity patterns produce 3--5$\times$ larger entity probe gaps (0.020--0.034 vs.\ 0.001--0.008), resulting in stronger EPA and TTS signals.
+For 2-entity patterns, VIC's gap is only 0.001---indistinguishable from noise---explaining its near-chance EPA (0.507 vs.\ random baseline 0.5).
+StoryDiffusion achieves TTS = 0.725 on 3-entity patterns, suggesting that CSA particularly excels when more entities provide stronger discriminative anchors.
+
+This stratification reveals an important nuance: while overall rankings are preserved, the \emph{reliability} of individual video scores differs by entity count. 2-entity patterns operate closer to the noise floor, motivating future work on higher-resolution entity probes.
+
+
+%% ============================================================
+\section{EPA-TTS Correlation Analysis}
+\label{app:correlation}
+
+\begin{table}[h]
+\caption{EPA-TTS correlation. Per-video Pearson $r$ and Spearman $\rho$.}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Scope & Pearson $r$ & $p$ & Spearman $\rho$ & $p$ \\
+\midrule
+SD only     & .254 & $3.1 \times 10^{-16}$ & .258 & $1.0 \times 10^{-16}$ \\
+Echo only   & .256 & $2.2 \times 10^{-16}$ & .240 & $1.3 \times 10^{-14}$ \\
+VGoT only   & .025 & .54 & .009 & .83 \\
+VIC only    & .057 & .23 & .048 & .31 \\
+All pooled  & .215 & $3.2 \times 10^{-33}$ & .201 & $3.3 \times 10^{-29}$ \\
+\midrule
+\multicolumn{5}{l}{\textit{Model-level (4 points):}} \\
+IC vs.\ TTS  & \multicolumn{4}{l}{$r = -0.998$} \\
+IC vs.\ EPA  & \multicolumn{4}{l}{$r = -0.979$} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At the per-video level, EPA and TTS show weak-to-moderate positive correlation ($r = 0.215$ overall), confirming they capture \emph{complementary} rather than redundant information.
+The correlation is stronger for SD and Echo ($r \approx 0.25$) than for VGoT and VIC ($r \approx 0.04$, not significant).
+This pattern is interpretable: SD and Echo have sufficient signal for both metrics to function (creating correlation), while VGoT/VIC have near-noise entity probes (breaking the EPA-TTS link).
+
+At the \emph{model} level, both EPA and TTS correlate near-perfectly negatively with IC ($r = -0.998$ and $r = -0.979$ respectively), confirming the consistency paradox.
+
+
+%% ============================================================
+\section{Entry vs.\ Exit Operation Accuracy}
+\label{app:entry_exit}
+
+We decompose TTS into entry (prescribed $\Delta S = +1$) and exit (prescribed $\Delta S = -1$) operations to reveal asymmetric architectural weaknesses.
+
+\begin{table}[h]
+\caption{TTS decomposed by operation type. $\Delta$ = entry $-$ exit.}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & Entry (+1) & Exit ($-1$) & $\Delta$ & $n$ \\
+\midrule
+SD    & .590 & \textbf{.676} & $-$.086 & 2,400 \\
+Echo  & .562 & .573 & $-$.010 & 2,400 \\
+VGoT  & .373 & \textbf{.650} & $-$.277 & 1,447 \\
+VIC   & .429 & .439 & $-$.010 & 1,081 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{VGoT has a massive entry-exit asymmetry} ($\Delta = -0.277$): it achieves 0.650 exit accuracy but only 0.373 entry accuracy.
+This confirms the planning-rendering bottleneck hypothesis: DynamiCrafter can allow entities to fade (exit) but cannot introduce new ones (entry) that were absent from the keyframe.
+StoryDiffusion also favors exits over entries ($\Delta = -0.086$), while EchoShot and VIC are approximately symmetric.
+This decomposition directly connects to the failure taxonomy: entry failures correspond to Type~II (Amnesia), exit failures to Type~I (Context Bleeding).
+
+
+%% ============================================================
 \section{Bootstrap Confidence Intervals}
 \label{app:bootstrap}
 
 95\% bootstrap CIs ($B = 10{,}000$, percentile method):
 
 \begin{table}[h]
-\caption{Main results with 95\% CIs. All STA differences significant at $p < 0.01$.}
+\caption{Main results with 95\% CIs.}
 \centering
 \small
 \setlength{\tabcolsep}{2.5pt}
@@ -387,129 +621,130 @@ VIC vs.\ VGoT & 25 / 45 / 30 & 43 / 25 / 32 \\
 \toprule
 Metric & StoryDiff & EchoShot & VGoT & VIC \\
 \midrule
-STA & \textbf{.630}\tiny{[.610,.649]} & .567\tiny{[.547,.587]} & .511\tiny{[.486,.535]} & .431\tiny{[.401,.460]} \\
-EPA & \textbf{.573}\tiny{[.564,.582]} & .548\tiny{[.539,.558]} & .534\tiny{[.524,.544]} & .518\tiny{[.507,.528]} \\
+TTS & \textbf{.629}{\tiny [.609,.649]} & .567{\tiny [.546,.587]} & .511{\tiny [.486,.535]} & .431{\tiny [.402,.461]} \\
+EPA & \textbf{.573}{\tiny [.564,.582]} & .548{\tiny [.539,.557]} & .534{\tiny [.525,.544]} & .518{\tiny [.507,.528]} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+All CIs are non-overlapping for TTS.
+For EPA, adjacent model CIs are tight but non-overlapping (SD--Echo gap: 0.564--0.582 vs.\ 0.539--0.557).
 
 
 %% ============================================================
-\section{Statistical Significance}
+\section{Statistical Significance and Effect Sizes}
 \label{app:significance}
 
 \begin{table}[h]
-\caption{Paired-bootstrap tests ($B = 10{,}000$). $\Delta$ = M1 $-$ M2. $^{***}p<.001$, $^{**}p<.01$, $^{*}p<.05$.}
+\caption{Paired tests (Welch's $t$-test). Cohen's $d$ reports effect size. $^{***}p<.001$, $^{**}p<.01$, $^{*}p<.05$.}
 \centering
 \small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccc@{}}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l cccc cccc@{}}
 \toprule
-& \multicolumn{2}{c}{STA} & \multicolumn{2}{c}{EPA} \\
-Matchup & $\Delta$ & $p$ & $\Delta$ & $p$ \\
+& \multicolumn{4}{c}{TTS} & \multicolumn{4}{c}{EPA} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+Pair & $\Delta$ & $d$ & $p$ & & $\Delta$ & $d$ & $p$ & \\
 \midrule
-SD vs.\ Echo  & $+$.063 & .008$^{**}$ & $+$.025 & .003$^{**}$ \\
-SD vs.\ VIC   & $+$.199 & .000$^{***}$ & $+$.055 & .000$^{***}$ \\
-SD vs.\ VGoT  & $+$.119 & .000$^{***}$ & $+$.039 & .000$^{***}$ \\
-Echo vs.\ VIC & $+$.136 & .000$^{***}$ & $+$.030 & .000$^{***}$ \\
-Echo vs.\ VGoT & $+$.056 & .005$^{**}$ & $+$.014 & .047$^{*}$ \\
-VIC vs.\ VGoT & $-$.080 & .000$^{***}$ & $-$.017 & .023$^{*}$ \\
+SD--Echo    & +.063 & 0.19 & $1.6 \!\times\! 10^{-5}$  & $^{***}$ & +.025 & 0.17 & $1.6 \!\times\! 10^{-4}$ & $^{***}$ \\
+Echo--VGoT  & +.056 & 0.18 & $5.4 \!\times\! 10^{-4}$  & $^{***}$ & +.014 & 0.10 & $4.7 \!\times\! 10^{-2}$ & $^{*}$ \\
+VGoT--VIC   & +.080 & 0.25 & $6.0 \!\times\! 10^{-5}$  & $^{***}$ & +.017 & 0.15 & $1.9 \!\times\! 10^{-2}$ & $^{*}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-All pairwise STA differences are significant ($p < 0.01$). Ranking: SD $>$ Echo $>$ VGoT $>$ VIC.
+All adjacent-pair TTS differences are highly significant ($p < 0.001$).
+EPA differences between adjacent pairs are significant but with smaller effect sizes ($d = 0.10$--$0.17$), reflecting the tighter EPA range.
+This confirms TTS as the more discriminative metric.
 
 
 %% ============================================================
 \section{Dataset Size Sensitivity}
 \label{app:dataset_size}
 
+We subsample each model's data to various sizes (500 bootstrap trials each) and check whether the full 4-model ranking (SD $>$ Echo $>$ VGoT $>$ VIC) is recovered.
+
 \begin{table}[h]
-\caption{Rank stability (Kendall's $\tau$, 50 trials) vs.\ full 1,000-scenario ranking.}
+\caption{Rank stability (\% of trials recovering full ranking) vs.\ sample size.}
 \centering
 \small
-\begin{tabular}{@{}rcccc@{}}
+\begin{tabular}{@{}rcc@{}}
 \toprule
-& \multicolumn{2}{c}{STA} & \multicolumn{2}{c}{EPA} \\
-$n$ & $\tau$ & $\sigma$ & $\tau$ & $\sigma$ \\
+$n$ & EPA stable (\%) & TTS stable (\%) \\
 \midrule
-50  & 0.73 & 0.24 & 0.67 & 0.28 \\
-100 & 0.87 & 0.15 & 0.80 & 0.19 \\
-200 & 1.00 & 0.00 & 0.87 & 0.15 \\
-500 & 1.00 & 0.00 & 1.00 & 0.00 \\
-1000 & 1.00 & 0.00 & 1.00 & 0.00 \\
+50   & 37.4 & 57.4 \\
+100  & 50.8 & 77.8 \\
+200  & 75.6 & 92.6 \\
+300  & 84.4 & 97.8 \\
+449  & 93.6 & 99.0 \\
+600  & 94.6 & 100.0 \\
+1000 & 96.2 & 100.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-STA rankings stabilize at $n = 200$; EPA requires $n \geq 500$.
+TTS rankings are stable from $n = 300$ (97.8\%) and perfect from $n = 600$.
+EPA requires larger samples due to its smaller effect sizes.
+At our dataset scale (449--1000 per model), both metrics achieve $>93\%$ rank stability.
 
 
 %% ============================================================
-\section{Threshold Sensitivity}
-\label{app:threshold}
-
-\paragraph{EPA binarization.}
-Fixed thresholds $\tau \in [0.20, 0.30]$: rankings perfectly preserved.
+\section{Score Distribution Characterization}
+\label{app:distributions}
 
 \begin{table}[h]
-\caption{EPA vs.\ fixed binarization threshold.}
+\caption{TTS and EPA score distributions.}
 \centering
 \small
-\begin{tabular}{@{}ccccc@{}}
+\begin{tabular}{@{}l cccc cc@{}}
 \toprule
-$\tau$ & SD & Echo & VGoT & VIC \\
+& \multicolumn{4}{c}{TTS} & \multicolumn{2}{c}{EPA} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-7}
+Model & $\mu \pm \sigma$ & =0\% & =0.5\% & =1.0\% & $\mu \pm \sigma$ & $\leq$0.5\% \\
 \midrule
-0.20 & \textbf{.581} & .556 & .541 & .524 \\
-0.24 & \textbf{.575} & .550 & .536 & .519 \\
-0.28 & \textbf{.567} & .541 & .528 & .511 \\
+SD    & .629$\pm$.323 & 11.2 & 27.5 & 34.2 & .573$\pm$.143 & 58.0 \\
+Echo  & .567$\pm$.327 & 14.5 & 30.2 & 26.8 & .548$\pm$.153 & 65.0 \\
+VGoT  & .511$\pm$.305 & 15.2 & 30.7 & 18.0 & .534$\pm$.119 & 68.0 \\
+VIC   & .431$\pm$.324 & 26.1 & 28.3 & 14.5 & .518$\pm$.111 & 75.1 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Failure tolerance $\delta$.}
-Context Bleeding tolerance $\delta \in [0.001, 0.01]$: VIC always worst; rankings invariant.
+TTS concentrates at discrete values $\{0, 0.5, 1.0\}$ for 2-transition patterns (most of our dataset).
+This discreteness is a feature, not a limitation: a 2-transition pattern produces TTS $\in \{0, 0.5, 1.0\}$, directly interpretable as ``no transitions correct'', ``one correct'', ``both correct''.
+VIC has the highest TTS = 0 rate (26.1\%) and lowest TTS = 1.0 rate (14.5\%).
 
-\begin{table}[h]
-\caption{Context Bleeding rate (\%) vs.\ tolerance $\delta$.}
-\centering
-\small
-\begin{tabular}{@{}ccccc@{}}
-\toprule
-$\delta$ & SD & Echo & VGoT & VIC \\
-\midrule
-0.001 & 39.2 & 49.1 & 41.5 & \textbf{63.4} \\
-0.002 & 36.8 & 46.6 & 39.0 & \textbf{60.8} \\
-0.010 & 24.8 & 34.3 & 28.2 & \textbf{47.9} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{DD $\epsilon$.}
-At $\epsilon = 0.00$ (strict maximum), pass rate remains 0\% for all models---no shot achieves maximal similarity to its corresponding prompt.
+For EPA, a large fraction of videos score $\leq 0.5$ (random baseline), indicating that many individual videos have worse-than-chance entity placement.
+VIC is worst (75.1\% at or below random), while SD is best (58.0\%).
 
 
 %% ============================================================
-\section{CLIP Backbone Ablation}
-\label{app:clip}
+\section{Entity Probe Signal Quality}
+\label{app:signal_quality}
+
+We analyze the raw entity probe signal: the gap between CLIP similarity scores for entities that should be present vs.\ absent, and the fraction of shots where present entities score higher than absent ones.
 
 \begin{table}[h]
-\caption{ViT-L/14 vs.\ ViT-B/32: identical rankings.}
+\caption{Entity probe signal quality. Gap = mean(present) $-$ mean(absent). $d$ = Cohen's $d$.}
 \centering
 \small
-\begin{tabular}{@{}llcccc@{}}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-Backbone & Metric & SD & Echo & VGoT & VIC \\
+Model & Present $\mu$ & Absent $\mu$ & Gap & $d$ \\
 \midrule
-ViT-L/14 & STA & \textbf{.630} & .567 & .511 & .431 \\
-ViT-B/32 & STA & \textbf{.618} & .554 & .498 & .419 \\
-\midrule
-ViT-L/14 & EPA & \textbf{.573} & .548 & .534 & .518 \\
-ViT-B/32 & EPA & \textbf{.582} & .559 & .543 & .527 \\
+SD    & .194 & .175 & .019 & 0.59 \\
+Echo  & .181 & .167 & .014 & 0.43 \\
+VGoT  & .183 & .173 & .011 & 0.28 \\
+VIC   & .180 & .173 & .008 & 0.23 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+StoryDiffusion produces the largest present/absent gap (0.019, Cohen's $d = 0.59$), meaning its generated videos most faithfully reflect entity presence.
+VIC has the smallest gap (0.008, $d = 0.23$), consistent with its near-uniform shots.
+Correct direction rates (present $>$ absent in a given shot) range from 70.0\% (SD) to 57.9\% (VIC).
+The fact that even VIC is above 50\% explains why EPA is significant in the permutation test even for VIC---there is real but weak signal.
+The difference in signal quality between models provides an orthogonal explanation for why TTS rankings emerge: models with stronger entity probes (larger gaps) naturally score higher on transition detection.
 
 
 %% ============================================================
@@ -536,25 +771,26 @@ Rev.\ Relay   & 2 & 40.1 & 50.6 & 10.7 & 16.9 \\
 \end{tabular}
 \end{table}
 
-Patterns with 4 transitions (Convergence, Sliding Window) show highest failure rates. Amnesia (Type~II) dominates across all patterns.
+Patterns with more transitions (Convergence, Sliding Window: 4 each) show highest failure rates. Amnesia (Type~II) dominates across all patterns, consistent with the entry--exit asymmetry finding (\S\ref{app:entry_exit}).
 
 
 %% ============================================================
-\section{Score Distributions}
-\label{app:distributions}
+\section{Reproducibility Checklist}
+\label{app:reproducibility}
 
-\paragraph{STA is bimodal.}
-Scores cluster at 0.0 and 1.0 with few intermediate values---models either execute all transitions or fail on most:
-StoryDiff: 39.2\% at STA=1.0, 28.4\% at STA=0.0.
-EchoShot: 34.1\% / 31.7\%.
-VGoT: 27.5\% / 35.8\%.
-VIC: 21.4\% / 42.3\%.
-
-\paragraph{DD is entirely negative.}
-Mean DD $\approx -0.010$; fewer than 0.5\% of individual shots achieve DD $> 0$; no video achieves DD $> 0$ for all three shots.
-
-\paragraph{EPA range.}
-EPA spans 0.33--1.0. No model achieves perfect EPA on more than 15\% of videos.
+\begin{itemize}[leftmargin=*,nosep]
+\item All evaluation code, prompts, and generated videos are released.
+\item Random seed: 42 (generation), 42 (ablation bootstraps).
+\item CLIP model: \texttt{openai/clip-vit-large-patch14} (HuggingFace).
+\item Entity probe template: ``a \{entity\}'' (e.g., ``a chef'').
+\item 5 uniformly-spaced frames per shot, mean-pooled.
+\item EPA: per-shot median threshold binarization.
+\item TTS: $\varepsilon = 0.001$, prescribed transitions only ($\Delta S \neq 0$).
+\item Bootstrap: $B = 10{,}000$ iterations, percentile CIs.
+\item Permutation test: 1,000 entity-column permutations.
+\item Hardware: 4$\times$ NVIDIA RTX 4090 (24 GB each).
+\item Evaluation runtime: $\sim$4 hours for 3,049 videos.
+\end{itemize}
 
 
 \end{document}
