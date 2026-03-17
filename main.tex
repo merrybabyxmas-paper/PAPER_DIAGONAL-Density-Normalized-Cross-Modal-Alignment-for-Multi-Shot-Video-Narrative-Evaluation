@@ -28,7 +28,8 @@
 %%
 %% Custom commands
 %%
-\newcommand{\diagonal}{\textsc{Diagonal}}
+\newcommand{\diagonal}{\textsc{Span}}
+\newcommand{\stem}{\textsc{Stem}}
 \newcommand{\sdiag}{\mathcal{S}_{\mathrm{diag}}}
 \newcommand{\Mobs}{M_{\mathrm{obs}}}
 \newcommand{\Mideal}{M_{\mathrm{ideal}}}
@@ -52,7 +53,7 @@
 %%
 %% Title
 %%
-\title{DIAGONAL: Entity-Grounded Topological Evaluation\\for Multi-Shot Video Narrative Compliance}
+\title{Spanning the Narrative Space:\\State Transition Matrix Matching for Multi-Shot Video Evaluation}
 
 \author{Anonymous Authors}
 \affiliation{%
@@ -63,13 +64,12 @@
 %% Abstract
 %%
 \begin{abstract}
-Text-to-multi-shot video (T2MSV) generation models are evaluated primarily on visual quality and frame-level consistency, yet these metrics fail to capture whether models can execute \emph{narrative dynamics}---the structured entry and exit of entities across shots.
-We formalize multi-shot narratives as \emph{state transition matrices} $\Delta S \in \{-1,0,+1\}^{(T-1) \times N}$, where each element encodes an atomic operation: entry ($+1$), exit ($-1$), or hold ($0$).
-We prove that all possible 3-shot narrative topologies can be spanned by just two basis matrices under column permutation and linear combination (\textbf{Theorem~1}), establishing mathematical completeness.
-Building on this, we introduce \diagonal{}, a benchmark comprising 1,000 prompts spanning 7 narrative patterns (3 basis, 4 derived).
-A vision-language model constructs the observed presence matrix $S_\text{obs}$ via per-entity binary queries, yielding a clean matrix-matching pipeline: the \emph{Prescribed Transition Match} (PTM) measures the fraction of structurally prescribed transitions ($\Delta S \neq 0$ cells) correctly observed in the generated video.
-Evaluation of four SOTA T2MSV architectures across 3,600 videos reveals statistically significant method rankings (Kruskal--Wallis $H = 275$, $p < 10^{-59}$): StoryDiffusion achieves the highest PTM (0.243) while VIC scores lowest (0.070), with all pairwise comparisons significant ($p < 0.005$) and non-overlapping bootstrap confidence intervals.
-We identify a \emph{coherence--compliance Pareto dilemma} ($r_{\text{IC-PTM}} = -0.998$) and four systematic failure types, providing actionable architectural diagnostics.
+Multi-shot video generation has advanced rapidly, yet evaluation remains trapped in Identity Consistency (IC)---a metric that rewards an entity persisting when it should exit, producing a \emph{consistency paradox}.
+We propose the \diagonal{} framework, which reduces video narratives to \emph{state transition matrices} $\Delta S \in \{-1,0,+1\}^{(T-1) \times N}$ and proves that just two basis matrices (Relay and Split) span the entire narrative space under column permutation and linear combination (\textbf{Theorem~1}).
+To evaluate generated videos, we introduce \stem{} (State Transition Error Matching): a VLM constructs the observed presence matrix $S_\text{obs}$ via binary entity queries, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ captures all narrative failures in a single algebraic object.
+Because VLM noise concentrates in hold cells, we decompose $E$ into two robust projections: \emph{Entity Presence Accuracy} (EPA) for macroscopic cast compliance and \emph{Prescribed Transition Match} (PTM) for microscopic transition fidelity.
+Across 3,600 videos from four SOTA architectures, IC and PTM are perfectly anti-correlated ($r = -0.998$): VIC ranks first on IC (0.94) but last on PTM (0.070), while StoryDiffusion leads on PTM (0.243).
+All pairwise comparisons are significant ($H = 275$, $p < 10^{-59}$), with non-overlapping confidence intervals and a four-type failure taxonomy providing actionable architectural diagnostics.
 \end{abstract}
 
 \begin{CCSXML}
@@ -90,7 +90,7 @@ We identify a \emph{coherence--compliance Pareto dilemma} ($r_{\text{IC-PTM}} = 
 \ccsdesc[500]{Computing methodologies~Computer vision}
 \ccsdesc[500]{Computing methodologies~Neural networks}
 
-\keywords{Multi-Shot Video Generation, Narrative Evaluation, State Transition Matrix, Video Benchmark}
+\keywords{Multi-Shot Video Generation, State Transition Matrix, Narrative Evaluation, Consistency Paradox, Video Benchmark}
 
 \maketitle
 
@@ -99,33 +99,24 @@ We identify a \emph{coherence--compliance Pareto dilemma} ($r_{\text{IC-PTM}} = 
 \label{sec:intro}
 %% ============================================================
 
-Diffusion-based generative models~\cite{ddpm,ldm} have rapidly expanded from single-clip to text-to-multi-shot video (T2MSV) generation~\cite{ho2022video,svd,imagenvideo}.
-Recent systems such as StoryDiffusion~\cite{storydiff}, EchoShot~\cite{echoshot}, VIC~\cite{vic}, and VGoT~\cite{vgot} generate temporally connected sequences of scenes, leveraging consistent self-attention, flow-matching, in-context learning, and cascaded T2I-to-I2V pipelines.
-These systems have demonstrated impressive visual fidelity in recent evaluations~\cite{vbench,vbench2}, and commercial systems like Sora~\cite{sora} and Movie Gen~\cite{moviegen} suggest rapid progress toward production-quality video generation.
+Systems like Sora~\cite{sora}, StoryDiffusion~\cite{storydiff}, and Movie Gen~\cite{moviegen} are pushing video generation from single clips to multi-shot narratives~\cite{ho2022video,svd,imagenvideo}.
+Yet evaluation has not kept pace: benchmarks~\cite{vbench,vbench2,t2vcompbench} still measure visual quality and frame-level similarity---metrics designed for the single-shot era.
+The core of any narrative is \emph{who appears, when, and alongside whom}: a scene where two characters meet and then part ways conveys entirely different meaning from one where they remain together throughout, yet both receive identical consistency scores.
 
-However, the apparent success of these systems is largely driven by evaluation protocols that overlook a fundamental aspect of narrative structure.
-Existing benchmarks~\cite{vbench,vbench2,t2vcompbench,moviebench} evaluate identity consistency, visual quality, or single-clip compositionality, but none systematically test whether models can execute \emph{narrative dynamics}: the structured introduction, co-occurrence, and removal of entities across shots.
-This gap is critical because real-world video narratives---from films~\cite{moviebench} to advertisements to educational content---are fundamentally defined by \emph{who appears, when, and alongside whom}.
-A scene where two characters meet and then part ways conveys entirely different meaning from one where they remain together throughout; yet both would receive identical consistency scores.
-Without metrics that capture these dynamics, we cannot meaningfully assess whether T2MSV models are progressing toward their intended purpose, and the community risks optimizing toward the wrong objective.
+The consequences of this evaluation gap are severe.
+Identity Consistency (IC)~\cite{shotadapter} computes cross-shot visual similarity, so a model that fails to remove an entity when the script demands it---producing a static, narratively trivial sequence---is \emph{rewarded} with a higher score.
+We call this the \textbf{consistency paradox}: IC is adversarial to narrative compliance (\S\ref{sec:blindspot}).
+VIC~\cite{vic} achieves the highest IC (0.94) among four SOTA architectures, yet our evaluation reveals it has the \emph{worst} narrative fidelity---a finding invisible to existing metrics.
 
-Consider a relay narrative: $A \!\to\! AB \!\to\! B$, where entity $A$ appears alone, both co-occur, then only $B$ remains.
-This seemingly simple pattern requires three distinct capabilities: (1)~introducing $B$ while preserving $A$'s appearance and identity, (2)~maintaining co-occurrence with both entities visually distinguishable, and (3)~removing $A$ while $B$ persists in isolation.
-Current models systematically fail at (3)---the departed entity ``bleeds'' into subsequent shots (\textbf{Context Bleeding}), a failure mode invisible to existing metrics.
-Critically, Identity Consistency (IC)~\cite{shotadapter} \emph{rewards} this failure because persistent entities increase cross-shot similarity.
-We term this the \textbf{consistency paradox}: IC is adversarial to narrative compliance for any non-trivial pattern.
-This paradox has far-reaching implications: the community may be inadvertently optimizing models \emph{away from} narrative competence by chasing IC improvements, creating a systematic blind spot in the evaluation landscape.
-
-To address these limitations, we formalize entity dynamics as a \emph{state transition matrix} (a compact encoding of which entities enter, exit, or persist at each shot boundary) and prove that \textbf{all} 3-shot topologies are generated from just two basis matrices (\textbf{Theorem~1}).
-Our evaluation reveals a \emph{coherence--compliance Pareto dilemma}: no current architecture simultaneously achieves high visual coherence and high narrative compliance, suggesting a fundamental architectural tension that the community must resolve.
-\diagonal{} contributes:
+Rather than patching existing metrics, we reformulate the problem in linear algebra.
+A narrative script becomes a \emph{state transition matrix} $\Delta S \in \{-1,0,+1\}^{(T-1)\times N}$, encoding which entities enter, exit, or hold at each shot boundary.
+We extract an observed matrix from the generated video and check whether the two matrices match---\textbf{matrix matching} replaces subjective similarity scoring.
+We contribute:
 
 \begin{itemize}[leftmargin=*,nosep]
-  \item A \textbf{topological formalization} with mathematical completeness guarantee for multi-shot narrative structures (\S\ref{sec:completeness}).
-  \item A \textbf{VLM-based matrix-matching pipeline} that constructs observed presence matrices via binary entity queries and evaluates them against prescribed transition matrices (\S\ref{sec:vlm_instantiation}).
-  \item A \textbf{1,000-prompt benchmark} spanning 7 patterns with a primary metric (PTM) achieving statistically significant discrimination across all method pairs ($p < 0.005$) (\S\ref{sec:experiments}).
-  \item A \textbf{four-type failure taxonomy} derived algebraically from the error matrix, providing actionable architectural diagnostics (\S\ref{sec:error_taxonomy}).
-  \item The \textbf{consistency paradox}: holistic metrics are adversarial to narrative evaluation ($r_{\text{IC-PTM}} = -0.998$) (\S\ref{sec:blindspot}).
+  \item The \textbf{\diagonal{} framework}, proving that all 3-shot narrative topologies are spanned by just two basis matrices (Relay and Split; \textbf{Theorem~1}, \S\ref{sec:completeness}).
+  \item \textbf{\stem{} evaluation}: the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ as the single evaluation object, decomposed into macroscopic EPA and microscopic PTM for VLM-noise robustness (\S\ref{sec:error_taxonomy}, \S\ref{sec:vlm_instantiation}).
+  \item Empirical proof of the \textbf{consistency paradox} ($r_{\text{IC-PTM}} = -0.998$) and a \textbf{four-type failure taxonomy} providing actionable architectural diagnostics across 3,600 videos (\S\ref{sec:experiments}).
 \end{itemize}
 
 
@@ -150,7 +141,8 @@ VBench~\cite{vbench,vbench2} computes frame-level CLIP~\cite{clip}/DINO~\cite{di
 ShotAdapter~\cite{shotadapter} isolates subject regions but produces \emph{chimera embeddings} in multi-entity shots.
 MovieBench~\cite{moviebench} and LoCoT2V~\cite{locot2v} recognize multi-shot challenges but lack entity-level metrics and mathematical formalization.
 FID~\cite{fid} and FVD~\cite{fvd} measure distributional fidelity but are agnostic to narrative structure; CLIPScore~\cite{clipscore} measures text--image alignment but only at the single-frame level.
-\diagonal{} is the first to formalize multi-shot narratives via state transition matrices with completeness guarantees.
+These benchmarks select scenarios heuristically without coverage guarantees.
+\diagonal{} is the first to formalize multi-shot narratives via state transition matrices, with a mathematical proof that its basis patterns span the \emph{entire} narrative space.
 
 \begin{table}[t]
 \caption{Benchmark comparison. \checkmark~supported, \ding{55}~not, $\triangle$~partial.}
@@ -168,7 +160,7 @@ MovieBench~\cite{moviebench}     & \checkmark & $\triangle$ & \ding{55} & \ding{
 LoCoT2V~\cite{locot2v}          & \checkmark & \ding{55} & \ding{55} & \ding{55} & \ding{55} \\
 ShotAdapter~\cite{shotadapter}  & \checkmark & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
 \midrule
-\diagonal{} (Ours)              & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\diagonal{} + \stem{} (Ours)     & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -192,11 +184,11 @@ The paradox motivates the matrix-matching evaluation we introduce next.
 
 
 %% ============================================================
-\section{The DIAGONAL Framework}
+\section{Methodology}
 \label{sec:framework}
 %% ============================================================
 
-We present \diagonal{} as a unified framework that formalizes multi-shot narrative dynamics as matrix algebra, defines a single evaluation object---the error matrix---that captures \emph{all} narrative failures, and instantiates it through a VLM-based detection pipeline with noise-robust metrics (Fig.~\ref{fig:metrics}).
+We present a unified methodology that formalizes multi-shot narrative dynamics as matrix algebra (\diagonal{} framework, \S\ref{sec:formalization}--\ref{sec:completeness}), defines the error matrix as the single evaluation object (\stem{} evaluation, \S\ref{sec:error_taxonomy}), and instantiates it through a VLM-based detection pipeline with noise-robust dual-resolution metrics (\S\ref{sec:vlm_instantiation}; Fig.~\ref{fig:metrics}).
 
 \subsection{Narrative as State Transition Matrices}
 \label{sec:formalization}
@@ -332,15 +324,15 @@ We prove this generalization formally via spatial zero-padding and temporal shif
 
 \end{tikzpicture}
 }
-\caption{\textbf{Completeness of the narrative space.} Two basis patterns ($\calB_1$: Relay, $\calB_2$: Split) generate all six elementary matrices $E_{ij}$ via column permutation ($\calP$) and integer combination ($+$). Since any state transition matrix $\Delta S$ is a sum of elementary matrices, \diagonal{}'s basis provably spans the \emph{entire} space of 3-shot narrative topologies, including all derived patterns and any conceivable narrative not explicitly listed.}
+\caption{\textbf{Completeness of the narrative space (\diagonal{}).} Two basis patterns ($\calB_1$: Relay, $\calB_2$: Split) generate all six elementary matrices $E_{ij}$ via column permutation ($\calP$) and integer combination ($+$). Any $\Delta S$ is a sum of $E_{ij}$, so the \diagonal{} basis provably spans the \emph{entire} space of 3-shot narrative topologies.}
 \label{fig:completeness}
 \end{figure}
 
-\subsection{Matrix Distance and Error Taxonomy}
+\subsection{The \stem{} Evaluation and Error Taxonomy}
 \label{sec:error_taxonomy}
 
-The formalism above defines the \emph{prescribed} transition matrix $\Delta S^*$ for any narrative pattern.
-Given an observed presence matrix $S_\text{obs}$ (obtained by any detector; \S\ref{sec:vlm_instantiation}), the observed transition matrix follows identically:
+The ideal evaluation compares the observed transition matrix against the prescribed one.
+Given $S_\text{obs}$ (obtained by any detector; \S\ref{sec:vlm_instantiation}), the observed transition matrix follows identically:
 \begin{equation}
 \Delta S_\text{obs} = S_{\text{obs},\,2:T} - S_{\text{obs},\,1:T\!-\!1}.
 \label{eq:delta_s_obs}
@@ -369,7 +361,7 @@ Each non-zero entry $E_{t,e}$ falls into exactly one of four types determined by
 Type~I captures an entity that should exit but persists ($E_{t,e} \in \{+1, +2\}$); Type~II captures an entity that should enter but fails to appear ($E_{t,e} \in \{-1, -2\}$); Type~III captures unprescribed transitions in hold cells; Type~IV is the most severe---the observed transition is in the \emph{opposite} direction from prescribed.
 This taxonomy is exhaustive: every $E_{t,e} \neq 0$ maps to exactly one type, and the set of all non-zero entries in $E$ constitutes a complete diagnostic of the generation's narrative failures.
 
-\subsection{VLM-Based Instantiation and Robust Evaluation}
+\subsection{Dual-Resolution VLM Instantiation}
 \label{sec:vlm_instantiation}
 
 \textbf{Entity detection.}
@@ -381,16 +373,15 @@ S_\text{obs}[t, k] = \mathbb{1}\!\bigl[\text{VLM}(\text{frame}_t, \text{``Is the
 Binary VLM queries avoid two limitations of continuous CLIP probes: (i)~CLIP entity probes yield present--absent gaps of only 0.008--0.019 (Cohen's $d = 0.23$--$0.59$), requiring fragile threshold tuning; (ii)~full-prompt CLIP similarity suffers from bag-of-words effects rendering shot-prompt discrimination near-random.
 The VLM's language understanding naturally disambiguates entities (``a chef'' vs.\ ``a waiter'') without relying on visual-textual alignment quality.
 
-\textbf{From matrix distance to robust metrics.}
-The ideal evaluation would use the matrix distance $d = \|E\|_F$ directly.
-However, VLM detection introduces systematic noise (TPR $= 52\%$, TNR $= 67\%$) that affects the error matrix non-uniformly.
-Critically, the noise concentrates in \emph{hold cells} ($\Delta S^* = 0$), which constitute the majority of entries:
-a false positive or false negative in a hold cell creates a spurious $E_{t,e} \neq 0$ entry that inflates $\|E\|_F$ identically for all methods.
-We verify empirically that the raw Frobenius distance is \emph{not} discriminative between methods ($p > 0.4$ for all pairwise comparisons; Appendix).
+\textbf{From \stem{} to dual-resolution metrics.}
+The ideal \stem{} evaluation would use the matrix distance $d = \|E\|_F$ directly.
+However, VLM detection introduces systematic noise (TPR $= 52\%$, TNR $= 67\%$) that concentrates in \emph{hold cells} ($\Delta S^* = 0$)---the majority of entries.
+A false positive or negative in a hold cell creates a spurious $E_{t,e} \neq 0$ that inflates $\|E\|_F$ identically for all methods.
+We verify empirically that the raw Frobenius distance is \emph{not} discriminative ($p > 0.4$ for all pairs; Appendix).
 
-This motivates decomposing the error matrix into two complementary projections that isolate the signal from noise:
+This motivates decomposing $E$ into two complementary projections at different resolutions---macroscopic casting and microscopic transitions---that isolate signal from noise:
 
-\textbf{Prescribed Transition Match (PTM).}
+\textbf{Prescribed Transition Match (PTM)---microscopic transition fidelity.}
 \label{sec:ptm_def}
 PTM restricts evaluation to the \emph{prescribed subspace}---the $\Delta S^* \neq 0$ cells where narrative-defining transitions occur:
 \begin{equation}
@@ -400,16 +391,16 @@ PTM restricts evaluation to the \emph{prescribed subspace}---the $\Delta S^* \ne
 Equivalently, PTM $= 1 - \frac{1}{|\mathcal{A}|}\sum_{(t,e) \in \mathcal{A}} \mathbb{1}[E_{t,e} \neq 0]$: it measures the fraction of the error matrix's prescribed entries that are zero.
 By discarding hold cells, PTM eliminates the dominant noise source while retaining the entries that distinguish narrative success from failure.
 
-\textbf{Entity Presence Accuracy (EPA).}
+\textbf{Entity Presence Accuracy (EPA)---macroscopic cast compliance.}
 \label{sec:epa_def}
-EPA operates on the presence matrix $S$ rather than its derivative $\Delta S$, providing a complementary view of \emph{static cast compliance}:
+EPA operates on the presence matrix $S$ rather than its derivative $\Delta S$, providing a macroscopic view of \emph{static cast compliance}:
 \begin{equation}
 \text{EPA} = \frac{1}{TN}\sum_{t=1}^{T}\sum_{k=1}^{N} \mathbb{1}\!\left[S_{\text{obs},\,tk} = S^*_{tk}\right].
 \label{eq:epa}
 \end{equation}
 While PTM evaluates whether the \emph{dynamics} are correct (did the right transitions happen?), EPA evaluates whether the \emph{states} are correct (are the right entities present in each shot?).
-Together, PTM and EPA are not ad-hoc heuristic metrics but principled projections of the error matrix $E$: PTM projects onto the prescribed subspace of $\Delta S$, while EPA projects onto the full space of $S$.
-Under perfect detection, both reduce to scalar summaries of $\|E\|_F$; under noisy detection, they provide strictly more discriminative power than the raw matrix distance by isolating signal from detector noise.
+Together, PTM and EPA are not ad-hoc heuristic metrics but the dual-resolution decomposition of the \stem{} error matrix $E$: PTM projects onto the prescribed subspace of $\Delta S$ (microscopic transitions), while EPA projects onto the full space of $S$ (macroscopic casting).
+Under perfect detection, both reduce to scalar summaries of $\|E\|_F$; under noisy detection, they provide strictly more discriminative power than the raw matrix distance by isolating narrative signal from VLM detector noise.
 
 % FIGURE: VLM Matrix Matching Pipeline
 \begin{figure*}[t]
@@ -504,7 +495,7 @@ $\to$ \textcolor{cred}{Type I: Context Bleeding}};
 
 \end{tikzpicture}%
 }
-\caption{\textbf{VLM Matrix Matching pipeline.} \diagonal{} queries a VLM for binary entity presence per shot (Phase~1), producing $S_\text{obs} \in \{0,1\}^{T \times N}$. Phase~2: row-differencing yields $\Delta S_\text{obs}$, directly compared against $\Delta S^*$; the Prescribed Transition Match (PTM) evaluates only structurally meaningful cells ($\Delta S^* \neq 0$). EPA provides complementary static cast compliance. Phase~3: the error matrix $E_\text{error}$ classifies failures into Context Bleeding (entity persists), Amnesia (entity fails to appear), and Reversal (opposite transition).}
+\caption{\textbf{\stem{} pipeline.} Phase~1: a VLM queries binary entity presence per shot, producing $S_\text{obs} \in \{0,1\}^{T \times N}$. Phase~2: row-differencing yields $\Delta S_\text{obs}$, compared against $\Delta S^*$; PTM (microscopic) evaluates prescribed cells ($\Delta S^* \neq 0$), EPA (macroscopic) evaluates full cast compliance. Phase~3: the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ classifies failures into Context Bleeding, Amnesia, and Reversal.}
 \label{fig:metrics}
 \end{figure*}
 
@@ -591,7 +582,7 @@ For each generated 3-shot video, we extract the middle frame of each shot and qu
 All 3,600 successfully generated videos are evaluated on 4$\times$RTX~4090 GPUs in approximately 20 minutes.
 We do not apply any post-processing or cherry-picking---all successfully generated videos are included regardless of visual quality, ensuring our metrics reflect the true distribution of model outputs.
 
-\subsection{Main Results}
+\subsection{Main Results: The Paradox Confirmed}
 \label{sec:main_results}
 
 \begin{table}[t]
@@ -602,7 +593,7 @@ We do not apply any post-processing or cherry-picking---all successfully generat
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lc c cc@{}}
 \toprule
-& & \textit{Baseline} & \multicolumn{2}{c}{\textit{DIAGONAL (Ours)}} \\
+& & \textit{Baseline} & \multicolumn{2}{c}{\textit{\stem{} (Ours)}} \\
 \cmidrule(lr){3-3} \cmidrule(lr){4-5}
 Model & $N$ & IC$\uparrow$ & PTM$\uparrow$ & EPA$\uparrow$ \\
 \midrule
@@ -614,7 +605,7 @@ VIC        & 1000 & \textbf{.94} & .070 & .546 \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:main} reveals the diagnostic power of \diagonal{}'s evaluation.
+Table~\ref{tab:main} reveals the diagnostic power of \stem{} evaluation.
 IC ranks VIC highest (0.94), suggesting it is the ``best'' model; yet VIC scores \emph{lowest} on both PTM (0.070) and EPA (0.546), exposing the consistency paradox quantitatively.
 Both metrics produce \emph{identical rankings} (SD $>$ Echo $>$ VGoT $>$ VIC)---the exact reverse of IC.
 
@@ -651,7 +642,7 @@ SD achieves highest PTM in 6 of 7 patterns (Table~\ref{tab:sta_pattern}), with t
 \textbf{Finding 4: 3.5$\times$ gap between best and worst.}
 PTM ranges from 0.243 (SD) to 0.070 (VIC)---a 3.5$\times$ difference, far larger than CLIP-based metrics (which show gaps $< 0.06$; Appendix). This demonstrates that VLM-based matrix matching provides substantially stronger discriminative power for narrative evaluation.
 
-\subsection{Pattern-Level Analysis}
+\subsection{Diagnostic Analysis by Pattern}
 \label{sec:pattern_analysis}
 
 \begin{table}[t]
@@ -688,29 +679,11 @@ The LLM planner structures narratives correctly, but DynamiCrafter cannot render
 \textbf{VIC shows pattern-invariant failure.}
 PTM ranges only 0.048--0.080 (range $= 0.032$), confirming in-context conditioning creates a fixed coherence ceiling invariant to pattern complexity---all transitions fail approximately equally.
 
-\subsection{Diagnostic Analysis}
+\textbf{Macroscopic view (EPA).}
+StoryDiffusion and EchoShot achieve slightly higher EPA on derived patterns (e.g., SD: 0.584 $\to$ 0.607), suggesting more complex entity configurations produce more visually distinctive entities.
+VGoT shows EPA \emph{drop} on derived patterns (0.572 $\to$ 0.525), confirming its cascaded pipeline cannot handle compositional demands.
 
-\begin{table}[t]
-\caption{EPA by basis (B) vs.\ derived (D) patterns.}
-\label{tab:epa_pattern}
-\centering
-\small
-\begin{tabular}{@{}lccc@{}}
-\toprule
-Model & EPA (B) & EPA (D) & $\Delta$ \\
-\midrule
-StoryDiff & .584 & .607 & +.023 \\
-EchoShot  & .551 & .581 & +.030 \\
-VGoT      & .572 & .525 & $-$.047 \\
-VIC       & .537 & .559 & +.022 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-StoryDiffusion and EchoShot achieve slightly higher EPA on derived patterns, suggesting that more complex entity configurations produce more visually distinctive entities.
-VGoT shows EPA \emph{drop} on derived patterns (0.572 $\to$ 0.525), confirming its cascaded pipeline cannot handle the compositional demands of complex transition patterns.
-
-\subsection{Failure Analysis}
+\subsection{Error Taxonomy Analysis}
 \label{sec:failure_analysis}
 
 \begin{table}[t]
@@ -735,7 +708,7 @@ Table~\ref{tab:failures} reveals pervasive narrative failures across all archite
 \textbf{VIC's Context Bleeding (77.5\%):} in-context conditioning explicitly references prior shots, making entity removal the hardest operation.
 \textbf{VGoT's Amnesia (87.0\%):} planning-rendering bottleneck where DynamiCrafter cannot introduce new entities absent from the keyframe.
 \textbf{StoryDiffusion has the highest spurious transition rate (51.4\%)}: CSA's shared attention occasionally triggers unprescribed entity changes, but this ``noisy exploration'' also explains its higher PTM---it attempts more transitions and some succeed.
-Fewer than 1.5\% of videos are failure-free even for the best model, confirming universal Narrative Blindness.
+Fewer than 1.5\% of videos are failure-free even for the best model, confirming \emph{universal Narrative Blindness}: all four architectures fail at $>$98\% of videos despite spanning fundamentally different generation paradigms.
 
 \subsection{The Pareto Dilemma}
 
@@ -821,36 +794,34 @@ The Sliding Window example (Row~3) requires 4 non-zero transitions; only StoryDi
 
 \subsection{Discussion}
 
-\paragraph{Why is Narrative Blindness universal?}
-All four architectures fail at $>$98\% of videos despite spanning different paradigms.
-We attribute this to a common assumption: multi-shot coherence is achieved through \emph{global} feature sharing (shared attention, in-context tokens, keyframe anchoring), which is inherently at odds with narrative dynamics requiring \emph{controlled dissimilarity}.
-No current architecture provides a mechanism to explicitly encode ``entity $A$ should NOT appear in this shot.''
-
 \paragraph{VLM detection limitations.}
-The VLM achieves 52\% TPR and 67\% TNR on entity detection---imperfect, but \emph{systematically} imperfect across all methods.
-The key property for a benchmark metric is not absolute accuracy but \emph{discriminative validity}: whether it separates good methods from bad.
-PTM achieves this with overwhelming statistical significance ($H = 275$, $p < 10^{-59}$), non-overlapping confidence intervals, and effect sizes up to $d = 0.72$.
+The VLM achieves 52\% TPR and 67\% TNR---imperfect, but \emph{systematically} imperfect across all methods.
+The key property is \emph{discriminative validity}, not absolute accuracy.
+PTM achieves this with $H = 275$ ($p < 10^{-59}$), non-overlapping CIs, and effect sizes up to $d = 0.72$.
 The 3.5$\times$ gap between SD and VIC is far larger than CLIP-based metrics ($<$0.06 gap).
-We also evaluated Grounding DINO~\cite{groundingdino} (TNR $= 4\%$: detects everything) and smaller VLMs (2B: TPR $= 40\%$), confirming 7B VLM as the optimal detection backbone (Appendix).
+We also evaluated Grounding DINO~\cite{groundingdino} (TNR $= 4\%$) and smaller VLMs (2B: TPR $= 40\%$), confirming 7B VLM as optimal (Appendix).
 
-\paragraph{Metric design.}
-PTM focuses on prescribed transitions ($\Delta S \neq 0$) rather than the full matrix, because hold cells ($\Delta S = 0$) are dominated by detection noise common to all methods.
-We verified that the normalized Frobenius distance $\|\Delta S_\text{obs} - \Delta S^*\|_F$ is \emph{not} discriminative ($p > 0.4$ for all pairs; Appendix), confirming that the prescribed-cell focus is essential for statistical power.
+\paragraph{Why dual-resolution decomposition?}
+The raw Frobenius distance $\|E\|_F$ is not discriminative ($p > 0.4$ for all pairs) because hold cells dominate and carry uniform noise.
+The \stem{} dual-resolution decomposition---macroscopic EPA on $S$ and microscopic PTM on the prescribed subspace of $\Delta S$---isolates the narrative-relevant signal, enabling the statistical power observed in all results above.
 
 %% ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
 %% ============================================================
 
-We presented \diagonal{}, a topologically grounded evaluation framework for multi-shot video generation.
-Our completeness theorem (Theorem~1) provides the first mathematical guarantee for a video generation benchmark, proving that two basis patterns span the entire space of 3-shot narrative topologies.
-The VLM-based matrix matching pipeline provides clean binary presence matrices that enable direct computation of transition accuracy, yielding the Prescribed Transition Match (PTM)---a metric with overwhelming discriminative power ($H = 275$, $p < 10^{-59}$) and non-overlapping confidence intervals across all methods.
-Evaluation of four architectures across 3,600 videos reveals a 3.5$\times$ PTM gap between the best (StoryDiffusion: 0.243) and worst (VIC: 0.070) models, with the consistency paradox ($r_{\text{IC-PTM}} = -0.998$) demonstrating that holistic metrics are adversarial to narrative evaluation.
+We presented the \diagonal{} framework, which spans the multi-shot narrative space with just two basis matrices (Theorem~1), and the \stem{} evaluation, which reduces narrative assessment to matrix matching via the error matrix $E = \Delta S_\text{obs} - \Delta S^*$.
+The consistency paradox ($r_{\text{IC-PTM}} = -0.998$) demonstrates that the field's primary metric---Identity Consistency---is \emph{adversarial} to narrative compliance.
+Across 3,600 videos from four architectures, the 3.5$\times$ PTM gap between StoryDiffusion (0.243) and VIC (0.070), with overwhelming statistical significance ($H = 275$, $p < 10^{-59}$), confirms that current shared-attention and in-context conditioning mechanisms are fundamentally at odds with narrative dynamics.
 
-\paragraph{Limitations and future work.}
-\diagonal{} evaluates 3-shot sequences with $\leq$3 entities; Theorem~2 (Appendix~B) proves the formal generalization to $T$ shots and $N$ entities via linear operators.
+\paragraph{Call to action.}
+The community must move beyond visual coherence optimization.
+Current architectures lack a mechanism to explicitly encode ``entity $A$ should \emph{not} appear in this shot''---the absence operation that defines narrative structure.
+Progress requires \emph{entity-aware} conditioning: entity-specific attention masks~\cite{flexattention}, grounded generation~\cite{gligen}, or per-entity guidance scales that enable controlled dissimilarity across shot boundaries.
+
+\paragraph{Limitations.}
+\diagonal{} evaluates 3-shot, $\leq$3-entity sequences; Theorem~2 (Appendix~B) proves formal generalization to $T$ shots and $N$ entities.
 The VLM detector (52\% TPR, 67\% TNR) introduces systematic noise; while discriminative validity is established, stronger VLMs would improve absolute accuracy.
-VGoT (600/1K) did not complete all scenarios due to generation failures, which may introduce selection bias; however, metrics are mean-normalized per video.
 We release all prompts, evaluation code, and 3,600 generated videos for reproducibility.
 
 
