@@ -26,6 +26,8 @@
 \newcommand{\calH}{\mathcal{H}}
 \newcommand{\Eij}{E_{ij}}
 
+\newtheorem{lemma}{Lemma}
+
 \begin{document}
 
 \title{Supplementary Material for\\DIAGONAL: Entity-Grounded Topological Evaluation\\for Multi-Shot Video Narrative Compliance}
@@ -72,6 +74,102 @@ Similarly, $E_{12} = \calP_{12}(E_{11})$ and $E_{13} = \calP_{13}(E_{11})$.
 All six standard basis matrices $\{E_{11}, E_{12}, E_{13}, E_{21}, E_{22}, E_{23}\}$ are obtained.
 Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combination of these.
 \end{proof}
+
+
+%% ============================================================
+\section{\texorpdfstring{Topological Generalization to $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$}{Topological Generalization to M\_(T-1)xN(Z)}}
+\label{app:generalization}
+
+In Section~4, Theorem~1 proved that the basis set $\calB = \{\calB_1, \calB_2\}$ spans the local narrative space $\mathbb{M}_{2\times 3}(\mathbb{Z})$ under the symmetric group of column permutations $\Sigma_3$.
+Here, we prove that this local spanning property generalizes to the global multi-shot space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ for any $T \geq 3$ and $N \geq 3$.
+
+\subsection{Operator Definitions and Validity}
+
+To formalize the dimensional expansion, we define two linear operators.
+
+\paragraph{Spatial Zero-Padding Operator ($\mathcal{Z}_N$).}
+Let $\mathcal{Z}_N : \mathbb{M}_{2\times 3} \to \mathbb{M}_{2\times N}$ be defined by appending $N-3$ zero-columns:
+\begin{equation}
+\mathcal{Z}_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr].
+\end{equation}
+
+\textit{Linearity.} For any $c_1, c_2 \in \mathbb{Z}$ and $X, Y \in \mathbb{M}_{2\times 3}$:
+\begin{equation}
+\mathcal{Z}_N(c_1 X + c_2 Y) = \bigl[\; c_1 X + c_2 Y \;\;\; \mathbf{0} \;\bigr] = c_1\,\mathcal{Z}_N(X) + c_2\,\mathcal{Z}_N(Y).
+\end{equation}
+Thus $\mathcal{Z}_N$ is a linear homomorphism preserving spanning properties.
+We define the padded bases $\hat{\calB}_1 = \mathcal{Z}_N(\calB_1)$ and $\hat{\calB}_2 = \mathcal{Z}_N(\calB_2)$.
+
+\paragraph{Temporal Shift Operator ($\mathcal{S}_\tau$).}
+Let $\mathcal{S}_\tau : \mathbb{M}_{2\times N} \to \mathbb{M}_{(T-1)\times N}$ be a block matrix insertion operator for temporal window $\tau \in \{1, \ldots, T-2\}$:
+\begin{equation}
+\mathcal{S}_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}.
+\end{equation}
+
+\textit{Linearity.} For any $c_1, c_2 \in \mathbb{Z}$ and $X, Y \in \mathbb{M}_{2\times N}$:
+\begin{equation}
+\mathcal{S}_\tau(c_1 X + c_2 Y) = c_1\,\mathcal{S}_\tau(X) + c_2\,\mathcal{S}_\tau(Y).
+\end{equation}
+The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local transitions maps to the global space without cross-temporal interference.
+
+\subsection{Lemma 1: Spatial Extension}
+
+\begin{lemma}
+The set $\hat{\calB} = \{\hat{\calB}_1, \hat{\calB}_2\}$ spans $\mathbb{M}_{2\times N}(\mathbb{Z})$ under the permutation group $\Sigma_N$.
+\end{lemma}
+
+\begin{proof}
+Let $E_{i,j}^{2\times 3}$ be the elementary matrix in $\mathbb{M}_{2\times 3}(\mathbb{Z})$. By Theorem~1:
+\[
+\forall\, i \in \{1,2\},\; j \in \{1,2,3\}: \quad E_{i,j}^{2\times 3} \in \operatorname{span}(\calB)^{\Sigma_3}.
+\]
+Let $\hat{E}_{i,j}^{2\times N} = \mathcal{Z}_N(E_{i,j}^{2\times 3})$. Since $\mathcal{Z}_N$ is linear, $\hat{E}_{i,j}^{2\times N} \in \operatorname{span}(\hat{\calB})^{\Sigma_3}$.
+
+For any target column $k \in \{1, \ldots, N\}$, there exists a permutation $\sigma \in \Sigma_N$ such that:
+\[
+E_{i,k}^{2\times N} = \sigma\bigl(\hat{E}_{i,1}^{2\times N}\bigr).
+\]
+Since any $\Delta S^{2\times N} \in \mathbb{M}_{2\times N}(\mathbb{Z})$ is a linear combination:
+\[
+\Delta S^{2\times N} = \sum_{i=1}^{2} \sum_{k=1}^{N} w_{i,k}\, E_{i,k}^{2\times N}, \quad w_{i,k} \in \mathbb{Z},
+\]
+it follows that $\Delta S^{2\times N} \in \operatorname{span}(\hat{\calB})^{\Sigma_N}$.
+\end{proof}
+
+\subsection{Lemma 2: Temporal Extension}
+
+\begin{lemma}
+The local basis spans the global temporal space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$.
+\end{lemma}
+
+\begin{proof}
+Any $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be decomposed into $T-2$ overlapping local transitions.
+Let $\Delta S_{2\times N}^{(\tau)}$ denote the $2\times N$ submatrix of rows $\tau$ and $\tau+1$.
+The global matrix is the linear sum of shifted local blocks:
+\[
+\Delta S = \sum_{\tau=1}^{T-2} \mathcal{S}_\tau\!\left(\Delta S_{2\times N}^{(\tau)}\right).
+\]
+By Lemma~1, each $\Delta S_{2\times N}^{(\tau)}$ is spanned by $\hat{\calB}$.
+Since $\mathcal{S}_\tau$ is linear, the summation preserves the spanning property.
+\end{proof}
+
+\subsection{Theorem 2: General Spanning}
+
+\begin{theorem}[Topological Generalization]
+For any $T \geq 3$ and $N \geq 3$, every $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be expressed as:
+\begin{equation}
+\Delta S = \sum_{\tau=1}^{T-2} \sum_{m} c_{\tau,m}\; \mathcal{S}_\tau\!\left(\sigma_{\tau,m}\!\left(\hat{\calB}_m\right)\right),
+\label{eq:grand_spanning}
+\end{equation}
+where $c_{\tau,m} \in \mathbb{Z}$, $\sigma_{\tau,m} \in \Sigma_N$, and $\hat{\calB}_m \in \{\hat{\calB}_1, \hat{\calB}_2\}$.
+\end{theorem}
+
+\begin{proof}
+Follows directly from Lemma~1 (spatial extension) and Lemma~2 (temporal extension).
+\end{proof}
+
+Therefore, the two topological bases (Relay and Split) completely span the global narrative space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$, proving that \diagonal{} is mathematically complete for narratives of any length and entity complexity.
+The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---linearly in both dimensions.
 
 
 %% ============================================================

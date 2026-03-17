@@ -121,10 +121,10 @@ Our evaluation reveals a \emph{coherence--compliance Pareto dilemma}: no current
 \diagonal{} contributes:
 
 \begin{itemize}[leftmargin=*,nosep]
-  \item A \textbf{topological formalization} with mathematical completeness guarantee for multi-shot narrative structures (\S\ref{sec:formalization}).
-  \item A \textbf{VLM-based matrix-matching pipeline} that constructs observed presence matrices via binary entity queries and evaluates them against prescribed transition matrices (\S\ref{sec:metrics}).
+  \item A \textbf{topological formalization} with mathematical completeness guarantee for multi-shot narrative structures (\S\ref{sec:completeness}).
+  \item A \textbf{VLM-based matrix-matching pipeline} that constructs observed presence matrices via binary entity queries and evaluates them against prescribed transition matrices (\S\ref{sec:vlm_instantiation}).
   \item A \textbf{1,000-prompt benchmark} spanning 7 patterns with a primary metric (PTM) achieving statistically significant discrimination across all method pairs ($p < 0.005$) (\S\ref{sec:experiments}).
-  \item A \textbf{four-type failure taxonomy} providing actionable architectural diagnostics (\S\ref{sec:failures}).
+  \item A \textbf{four-type failure taxonomy} derived algebraically from the error matrix, providing actionable architectural diagnostics (\S\ref{sec:error_taxonomy}).
   \item The \textbf{consistency paradox}: holistic metrics are adversarial to narrative evaluation ($r_{\text{IC-PTM}} = -0.998$) (\S\ref{sec:blindspot}).
 \end{itemize}
 
@@ -192,13 +192,14 @@ The paradox motivates the matrix-matching evaluation we introduce next.
 
 
 %% ============================================================
-\section{Topological Formalization}
-\label{sec:formalization}
+\section{The DIAGONAL Framework}
+\label{sec:framework}
 %% ============================================================
 
-In this section, we formalize the notion of ``narrative dynamics'' and prove that a small set of basis patterns is sufficient to represent \emph{all possible} multi-shot narrative structures.
+We present \diagonal{} as a unified framework that formalizes multi-shot narrative dynamics as matrix algebra, defines a single evaluation object---the error matrix---that captures \emph{all} narrative failures, and instantiates it through a VLM-based detection pipeline with noise-robust metrics (Fig.~\ref{fig:metrics}).
 
-\subsection{Notation and Definitions}
+\subsection{Narrative as State Transition Matrices}
+\label{sec:formalization}
 
 We denote a multi-shot video as a sequence of $T$ shots $V_1, V_2, \ldots, V_T$, each depicting a visual scene.
 Each video involves $N$ named entities $e_1, e_2, \ldots, e_N$ (e.g., ``a chef,'' ``a dog'').
@@ -225,7 +226,8 @@ A 2-shot sequence allows only a single transition boundary, so entities can be i
 With 3 shots, two transition boundaries enable full arcs: an entity can enter at one boundary and exit at another, or multiple entities can undergo different transitions simultaneously.
 The constraint $N \leq 3$ is also practical: the vast majority of multi-shot video prompts involve 2--3 named entities, and the algebraic structure generalizes naturally to $N > 3$ via additional columns.
 
-\subsection{Basis Patterns}
+\subsection{Topological Basis and Completeness}
+\label{sec:completeness}
 
 We identify three \textbf{basis patterns} that represent fundamental narrative archetypes:
 
@@ -242,24 +244,10 @@ Entities are progressively introduced:
 $\calB_3 = \bigl[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\bigr]$.
 
 Four \textbf{derived patterns} are obtained by applying time-reversal (negating and reversing rows of $\Delta S$) and column permutation (swapping entity roles):
-
-\textbf{Reduction} ($ABC \!\to\! AB \!\to\! A$): entities are progressively removed, the time-reversal of Accumulation.
-$\Delta S = \bigl[\begin{smallmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$.
-
-\textbf{Convergence} ($A \!\to\! B \!\to\! AB$): two separately introduced entities eventually co-occur.
-$\Delta S = \bigl[\begin{smallmatrix} -1 & +1 \\ +1 & 0 \end{smallmatrix}\bigr]$.
-
-\textbf{Reverse Relay} ($B \!\to\! AB \!\to\! A$): time-reversal of Relay---$A$ enters as $B$ exits.
-$\Delta S = \bigl[\begin{smallmatrix} +1 & 0 \\ 0 & -1 \end{smallmatrix}\bigr]$.
-
-\textbf{Sliding Window} ($AB \!\to\! BC \!\to\! C$): the most demanding pattern with 4 non-zero transitions---simultaneous exit of $A$ and entry of $C$, followed by exit of $B$.
-$\Delta S = \bigl[\begin{smallmatrix} -1 & 0 & +1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$.
-
-Table~\ref{tab:pattern_dist} lists all seven patterns with their properties.
-
-\subsection{Completeness Theorem}
-
-The central theoretical contribution of this paper is showing that the basis patterns are not merely representative---they \emph{span the entire narrative space}.
+Reduction ($ABC \!\to\! AB \!\to\! A$),
+Convergence ($A \!\to\! B \!\to\! AB$),
+Reverse Relay ($B \!\to\! AB \!\to\! A$), and
+Sliding Window ($AB \!\to\! BC \!\to\! C$)---the most demanding pattern with 4 non-zero transitions (Table~\ref{tab:pattern_dist}).
 
 \begin{theorem}[Completeness of the Narrative Space]
 Under column permutation and integer-coefficient linear combination, the two basis patterns $\calB_1$ (Relay) and $\calB_2$ (Split) generate all matrices in $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
@@ -280,6 +268,7 @@ Theorem~1 has three important consequences.
 This distinguishes our framework from prior work~\cite{moviebench,locot2v,shotadapter} that selects patterns heuristically without coverage guarantees.
 \emph{Second}, the theorem provides a \emph{minimality} argument: any benchmark claiming narrative completeness must include patterns that together span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$; our two basis patterns achieve this optimally.
 \emph{Third}, the result provides a principled framework for extension: $T$-shot narratives with $N$ entities require spanning $\mathbb{M}_{(T-1) \times N}(\mathbb{Z})$, achievable with $2(T-1)$ basis matrices, scaling linearly rather than combinatorially.
+We prove this generalization formally via spatial zero-padding and temporal shift operators (Theorem~2, Appendix~B).
 
 % FIGURE: Completeness visualization
 \begin{figure}[t]
@@ -347,74 +336,80 @@ This distinguishes our framework from prior work~\cite{moviebench,locot2v,shotad
 \label{fig:completeness}
 \end{figure}
 
+\subsection{Matrix Distance and Error Taxonomy}
+\label{sec:error_taxonomy}
 
-%% ============================================================
-\section{The DIAGONAL Framework}
-\label{sec:metrics}
-%% ============================================================
+The formalism above defines the \emph{prescribed} transition matrix $\Delta S^*$ for any narrative pattern.
+Given an observed presence matrix $S_\text{obs}$ (obtained by any detector; \S\ref{sec:vlm_instantiation}), the observed transition matrix follows identically:
+\begin{equation}
+\Delta S_\text{obs} = S_{\text{obs},\,2:T} - S_{\text{obs},\,1:T\!-\!1}.
+\label{eq:delta_s_obs}
+\end{equation}
+The \textbf{error matrix} $E = \Delta S_\text{obs} - \Delta S^*$ is the single object that captures \emph{all} narrative failures:
+\begin{equation}
+E_{t,e} = \Delta S_{\text{obs},\,t,e} - \Delta S^*_{t,e}, \quad E \in \{-2,\ldots,+2\}^{(T-1) \times N}.
+\label{eq:error_matrix}
+\end{equation}
+A perfect generation yields $E = \mathbf{0}$; every non-zero entry localizes a specific failure to a transition--entity pair $(t, e)$.
+The \textbf{matrix distance} is the natural scalar summary:
+\begin{equation}
+d(S_\text{obs}, S^*) = \| E \|_F = \| \Delta S_\text{obs} - \Delta S^* \|_F.
+\label{eq:matrix_distance}
+\end{equation}
 
-\diagonal{} evaluates multi-shot narratives by constructing an observed presence matrix $S_\text{obs}$ using a vision-language model (VLM), then directly comparing it against the prescribed transition matrix $\Delta S^*$ (Fig.~\ref{fig:metrics}).
+\textbf{Failure taxonomy from $E$.}
+The algebraic structure of $E$ directly induces a complete failure classification without ad-hoc definitions.
+Each non-zero entry $E_{t,e}$ falls into exactly one of four types determined by the prescribed value $\Delta S^*_{t,e}$ and the sign of $E_{t,e}$:
+\begin{align}
+\text{\textbf{Type~I} (Context Bleeding):} &\quad \Delta S^*_{t,e} = -1,\; E_{t,e} > 0 \label{eq:type1} \\
+\text{\textbf{Type~II} (Amnesia):} &\quad \Delta S^*_{t,e} = +1,\; E_{t,e} < 0 \label{eq:type2} \\
+\text{\textbf{Type~III} (Spurious):} &\quad \Delta S^*_{t,e} = 0,\;\; E_{t,e} \neq 0 \label{eq:type3} \\
+\text{\textbf{Type~IV} (Reversal):} &\quad |E_{t,e}| = 2 \label{eq:type4}
+\end{align}
+Type~I captures an entity that should exit but persists ($E_{t,e} \in \{+1, +2\}$); Type~II captures an entity that should enter but fails to appear ($E_{t,e} \in \{-1, -2\}$); Type~III captures unprescribed transitions in hold cells; Type~IV is the most severe---the observed transition is in the \emph{opposite} direction from prescribed.
+This taxonomy is exhaustive: every $E_{t,e} \neq 0$ maps to exactly one type, and the set of all non-zero entries in $E$ constitutes a complete diagnostic of the generation's narrative failures.
 
-\subsection{VLM-Based Entity Detection}
-\label{sec:vlm_detection}
+\subsection{VLM-Based Instantiation and Robust Evaluation}
+\label{sec:vlm_instantiation}
 
-Given a 3-shot generated video with $N$ entities $e_1, \ldots, e_N$, we extract the middle frame of each shot and query a VLM (Qwen2-VL-7B-Instruct~\cite{qwen2vl}) with a binary question per entity:
+\textbf{Entity detection.}
+To construct $S_\text{obs}$ in practice, we extract the middle frame of each shot and query a VLM (Qwen2-VL-7B-Instruct~\cite{qwen2vl}) with a binary question per entity:
 \begin{equation}
 S_\text{obs}[t, k] = \mathbb{1}\!\bigl[\text{VLM}(\text{frame}_t, \text{``Is there a } e_k \text{ visible?''}) = \text{Yes}\bigr].
 \label{eq:vlm_probe}
 \end{equation}
-This produces a clean binary presence matrix $S_\text{obs} \in \{0,1\}^{T \times N}$ directly comparable to the ground-truth $S^*$.
 Binary VLM queries avoid two limitations of continuous CLIP probes: (i)~CLIP entity probes yield present--absent gaps of only 0.008--0.019 (Cohen's $d = 0.23$--$0.59$), requiring fragile threshold tuning; (ii)~full-prompt CLIP similarity suffers from bag-of-words effects rendering shot-prompt discrimination near-random.
 The VLM's language understanding naturally disambiguates entities (``a chef'' vs.\ ``a waiter'') without relying on visual-textual alignment quality.
 
-\subsection{Observed Transition Matrix}
+\textbf{From matrix distance to robust metrics.}
+The ideal evaluation would use the matrix distance $d = \|E\|_F$ directly.
+However, VLM detection introduces systematic noise (TPR $= 52\%$, TNR $= 67\%$) that affects the error matrix non-uniformly.
+Critically, the noise concentrates in \emph{hold cells} ($\Delta S^* = 0$), which constitute the majority of entries:
+a false positive or false negative in a hold cell creates a spurious $E_{t,e} \neq 0$ entry that inflates $\|E\|_F$ identically for all methods.
+We verify empirically that the raw Frobenius distance is \emph{not} discriminative between methods ($p > 0.4$ for all pairwise comparisons; Appendix).
 
-The \textbf{observed transition matrix} is obtained by row-differencing $S_\text{obs}$:
-\begin{equation}
-\Delta S_\text{obs} = S_{\text{obs},\,2:T} - S_{\text{obs},\,1:T\!-\!1},
-\label{eq:delta_s_obs}
-\end{equation}
-where $\Delta S_\text{obs} \in \{-1,0,+1\}^{(T-1) \times N}$, directly comparable to the prescribed $\Delta S^*$.
-The \textbf{error matrix} $E_\text{error} = \Delta S_\text{obs} - \Delta S^*$ localizes narrative failures to specific transition--entity pairs.
+This motivates decomposing the error matrix into two complementary projections that isolate the signal from noise:
 
-\subsection{Prescribed Transition Match (PTM)}
+\textbf{Prescribed Transition Match (PTM).}
 \label{sec:ptm_def}
-
-PTM is our primary metric, measuring the fraction of \emph{structurally meaningful} transitions correctly observed.
-Let $\mathcal{A} = \{(t,e) : \Delta S^*_{t,e} \neq 0\}$ be the set of prescribed transitions (entries and exits):
+PTM restricts evaluation to the \emph{prescribed subspace}---the $\Delta S^* \neq 0$ cells where narrative-defining transitions occur:
 \begin{equation}
-\text{PTM} = \frac{1}{|\mathcal{A}|} \sum_{(t,e) \in \mathcal{A}} \mathbb{1}\!\left[\Delta S_{\text{obs},\,t,e} = \Delta S^*_{t,e}\right].
+\text{PTM} = \frac{1}{|\mathcal{A}|} \sum_{(t,e) \in \mathcal{A}} \mathbb{1}\!\left[E_{t,e} = 0\right], \quad \mathcal{A} = \{(t,e) : \Delta S^*_{t,e} \neq 0\}.
 \label{eq:ptm}
 \end{equation}
-PTM focuses on the $\Delta S \neq 0$ cells---precisely the transitions that define the narrative pattern---ignoring ``hold'' cells ($\Delta S = 0$) that measure only detection noise.
-PTM $= 1$ when all prescribed transitions are correctly observed; PTM $= 0$ indicates complete narrative failure.
+Equivalently, PTM $= 1 - \frac{1}{|\mathcal{A}|}\sum_{(t,e) \in \mathcal{A}} \mathbb{1}[E_{t,e} \neq 0]$: it measures the fraction of the error matrix's prescribed entries that are zero.
+By discarding hold cells, PTM eliminates the dominant noise source while retaining the entries that distinguish narrative success from failure.
 
-\subsection{Entity Presence Accuracy (EPA)}
+\textbf{Entity Presence Accuracy (EPA).}
 \label{sec:epa_def}
-
-As a complementary metric, EPA measures \emph{static cast compliance}---whether each entity appears in the correct shots:
+EPA operates on the presence matrix $S$ rather than its derivative $\Delta S$, providing a complementary view of \emph{static cast compliance}:
 \begin{equation}
 \text{EPA} = \frac{1}{TN}\sum_{t=1}^{T}\sum_{k=1}^{N} \mathbb{1}\!\left[S_{\text{obs},\,tk} = S^*_{tk}\right].
 \label{eq:epa}
 \end{equation}
-EPA captures overall presence accuracy including hold cells, providing a broader but less discriminative view than PTM.
-
-\subsection{Failure Taxonomy}
-\label{sec:failures}
-
-By comparing $\Delta S_\text{obs}$ against $\Delta S^*$, we define failure types directly from the error matrix $E_\text{error}$:
-
-\textbf{Type~I: Context Bleeding} (exit operation collapse).
-$\Delta S^*_{t,e} = -1$ but $\Delta S_{\text{obs},\,t,e} \geq 0$: an entity that should exit persists---the exit operation is nullified, and the entity's visual signature ``bleeds'' across the shot boundary.
-
-\textbf{Type~II: Amnesia} (entry operation collapse).
-$\Delta S^*_{t,e} = +1$ but $\Delta S_{\text{obs},\,t,e} \leq 0$: an entity that should enter fails to appear---the model ``forgets'' to introduce it.
-
-\textbf{Type~III: Spurious Transition} (false dynamics).
-$\Delta S^*_{t,e} = 0$ but $\Delta S_{\text{obs},\,t,e} \neq 0$: an entity undergoes an unprescribed transition, entering or exiting when it should hold steady.
-
-\textbf{Type~IV: Reversal} (direction inversion).
-$|\text{E}_{\text{error},\,t,e}| = 2$: the observed transition is in the \emph{opposite} direction from prescribed (entry instead of exit, or vice versa)---the most severe failure.
+While PTM evaluates whether the \emph{dynamics} are correct (did the right transitions happen?), EPA evaluates whether the \emph{states} are correct (are the right entities present in each shot?).
+Together, PTM and EPA are not ad-hoc heuristic metrics but principled projections of the error matrix $E$: PTM projects onto the prescribed subspace of $\Delta S$, while EPA projects onto the full space of $S$.
+Under perfect detection, both reduce to scalar summaries of $\|E\|_F$; under noisy detection, they provide strictly more discriminative power than the raw matrix distance by isolating signal from detector noise.
 
 % FIGURE: VLM Matrix Matching Pipeline
 \begin{figure*}[t]
@@ -853,7 +848,7 @@ The VLM-based matrix matching pipeline provides clean binary presence matrices t
 Evaluation of four architectures across 3,600 videos reveals a 3.5$\times$ PTM gap between the best (StoryDiffusion: 0.243) and worst (VIC: 0.070) models, with the consistency paradox ($r_{\text{IC-PTM}} = -0.998$) demonstrating that holistic metrics are adversarial to narrative evaluation.
 
 \paragraph{Limitations and future work.}
-\diagonal{} evaluates 3-shot sequences with $\leq$3 entities; Theorem~1 provides extension to $T$ shots.
+\diagonal{} evaluates 3-shot sequences with $\leq$3 entities; Theorem~2 (Appendix~B) proves the formal generalization to $T$ shots and $N$ entities via linear operators.
 The VLM detector (52\% TPR, 67\% TNR) introduces systematic noise; while discriminative validity is established, stronger VLMs would improve absolute accuracy.
 VGoT (600/1K) did not complete all scenarios due to generation failures, which may introduce selection bias; however, metrics are mean-normalized per video.
 We release all prompts, evaluation code, and 3,600 generated videos for reproducibility.
