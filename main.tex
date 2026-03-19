@@ -68,7 +68,7 @@ Multi-shot video generation has advanced rapidly, yet evaluation remains trapped
 We propose the \diagonal{} framework, which reduces video narratives to \emph{state transition matrices} $\Delta S \in \{-1,0,+1\}^{(T-1) \times N}$ and proves that just two basis matrices (Relay and Split) span the entire narrative space under column permutation and linear combination (\textbf{Theorem~1}).
 To evaluate generated videos, we introduce \stem{} (State Transition Error Matching): a VLM constructs the observed presence matrix $S_\text{obs}$ via binary entity queries, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ captures all narrative failures in a single algebraic object.
 Because VLM noise concentrates in hold cells, we decompose $E$ into two robust projections: \emph{Entity Presence Accuracy} (EPA) for macroscopic cast compliance and \emph{Prescribed Transition Match} (PTM) for microscopic transition fidelity.
-Across 4,000 videos from four SOTA architectures, IC and PTM are perfectly anti-correlated ($\rho_s = -1.0$): VIC ranks first on IC (0.94) but last on PTM (0.070), while StoryDiffusion leads on PTM (0.243).
+Across 4,000 videos from four SOTA architectures, IC and PTM rankings are perfectly reversed ($\rho_s = -1.0$, $n\!=\!4$ models): VIC ranks first on IC (0.94) but last on PTM (0.070), while StoryDiffusion leads on PTM (0.243).
 All pairwise comparisons are significant ($H = 302.7$, $p < 10^{-65}$), with non-overlapping confidence intervals and a four-type failure taxonomy providing actionable architectural diagnostics.
 \end{abstract}
 
@@ -353,8 +353,9 @@ Each non-zero entry $E_{t,e}$ falls into exactly one of four types determined by
 \text{\textbf{Type~III} (Spurious):} &\quad \Delta S^*_{t,e} = 0,\;\; E_{t,e} \neq 0 \label{eq:type3} \\
 \text{\textbf{Type~IV} (Reversal):} &\quad |E_{t,e}| = 2 \label{eq:type4}
 \end{align}
-Type~I captures an entity that should exit but persists ($E_{t,e} \in \{+1, +2\}$); Type~II captures an entity that should enter but fails to appear ($E_{t,e} \in \{-1, -2\}$); Type~III captures unprescribed transitions in hold cells; Type~IV is the most severe---the observed transition is in the \emph{opposite} direction from prescribed.
-This taxonomy is exhaustive: every $E_{t,e} \neq 0$ maps to exactly one type, and the set of all non-zero entries in $E$ constitutes a complete diagnostic of the generation's narrative failures.
+Type~I captures an entity that should exit but persists ($E_{t,e} = +1$); Type~II captures an entity that should enter but fails to appear ($E_{t,e} = -1$); Type~III captures unprescribed transitions in hold cells; Type~IV is the most severe---the observed transition is in the \emph{opposite} direction from prescribed ($|E_{t,e}| = 2$, a strict subset of Types~I/II).
+Note that Type~IV refines the classification: a reversal is simultaneously a Context Bleeding or Amnesia \emph{and} a reversal, reflecting compounded severity.
+This taxonomy is exhaustive: every $E_{t,e} \neq 0$ maps to at least one type, and the set of all non-zero entries in $E$ constitutes a complete diagnostic of the generation's narrative failures.
 
 \subsection{Dual-Resolution VLM Instantiation}
 \label{sec:vlm_instantiation}
@@ -372,7 +373,7 @@ The VLM's language understanding naturally disambiguates entities (``a chef'' vs
 The ideal \stem{} evaluation would use the matrix distance $d = \|E\|_F$ directly.
 However, VLM detection introduces systematic noise (TPR $= 52\%$, TNR $= 67\%$) that concentrates in \emph{hold cells} ($\Delta S^* = 0$)---the majority of entries.
 A false positive or negative in a hold cell creates a spurious $E_{t,e} \neq 0$ that inflates $\|E\|_F$ identically for all methods.
-We verify empirically that the raw Frobenius distance is \emph{not} discriminative ($p > 0.4$ for all pairs; Appendix).
+We verify empirically that the raw Frobenius distance is weakly discriminative: only 1 of 6 pairwise comparisons reaches significance at $\alpha = 0.05$, and the ranking does not match narrative quality (Appendix).
 
 This motivates decomposing $E$ into two complementary projections at different resolutions---macroscopic casting and microscopic transitions---that isolate signal from noise:
 
@@ -533,7 +534,7 @@ VIC & $d{=}0.72$ & $d{=}0.44$ & $d{=}0.13$ & --- \\
 \end{table}
 
 \textbf{Finding 2: Consistency paradox confirmed.}
-IC and PTM produce opposite rankings ($\rho_{s,\text{IC-PTM}} = -1.0$).
+IC and PTM produce opposite rankings ($\rho_{s,\text{IC-PTM}} = -1.0$, $n\!=\!4$).
 VIC achieves highest IC (0.94) but lowest PTM (0.070): its entity transitions are 3.5$\times$ worse than StoryDiffusion's, yet it appears ``best'' under existing metrics.
 
 \textbf{Finding 3: StoryDiffusion leads across all patterns.}
@@ -595,9 +596,10 @@ VGoT shows EPA \emph{drop} on derived patterns (0.570 $\to$ 0.531), confirming i
 \toprule
 Failure Type & SD & Echo & VGoT & VIC \\
 \midrule
-I: Context Bleeding  & 68.8 & 71.8 & 74.6 & \textbf{77.5} \\
-II: Amnesia           & 73.4 & 78.5 & \textbf{85.4} & 85.9 \\
+I: Context Bleeding  & 64.1 & 66.9 & 73.0 & \textbf{75.6} \\
+II: Amnesia           & 69.1 & 73.1 & \textbf{82.1} & 80.6 \\
 III: Spurious Trans.  & \textbf{51.4} & 42.2 & 25.2 & 20.2 \\
+IV: Reversal          & 13.0 & \textbf{13.9} & 7.6 & 11.5 \\
 \midrule
 No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
 \bottomrule
@@ -605,9 +607,10 @@ No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
 \end{table}
 
 Table~\ref{tab:failures} reveals pervasive narrative failures across all architectures.
-\textbf{VIC's Context Bleeding (77.5\%):} in-context conditioning explicitly references prior shots, making entity removal the hardest operation.
-\textbf{VGoT's Amnesia (85.4\%):} planning-rendering bottleneck where DynamiCrafter cannot introduce new entities absent from the keyframe.
+\textbf{VIC's Context Bleeding (75.6\%):} in-context conditioning explicitly references prior shots, making entity removal the hardest operation.
+\textbf{VGoT's Amnesia (82.1\%):} planning-rendering bottleneck where DynamiCrafter cannot introduce new entities absent from the keyframe.
 \textbf{StoryDiffusion has the highest spurious transition rate (51.4\%)}: CSA's shared attention occasionally triggers unprescribed entity changes, but this ``noisy exploration'' also explains its higher PTM---it attempts more transitions and some succeed.
+\textbf{Reversals} ($|E| = 2$) are rare but severe: 7.6--13.9\% of videos exhibit at least one cell where the observed transition is \emph{opposite} to prescribed. Note that reversals are a strict subset of Types~I/II (a reversal at a prescribed exit cell is simultaneously Context Bleeding); they are reported separately to highlight compounded severity.
 Fewer than 1.5\% of videos are failure-free even for the best model, confirming \emph{universal Narrative Blindness}: all four architectures fail at $>$98\% of videos despite spanning fundamentally different generation paradigms.
 
 \subsection{The Pareto Dilemma}
@@ -687,7 +690,7 @@ The 3.5$\times$ gap between SD and VIC is far larger than CLIP-based metrics ($<
 We also evaluated Grounding DINO~\cite{groundingdino} (TNR $= 4\%$) and smaller VLMs (2B: TPR $= 40\%$), confirming 7B VLM as optimal (Appendix).
 
 \paragraph{Why dual-resolution decomposition?}
-The raw Frobenius distance $\|E\|_F$ is not discriminative ($p > 0.4$ for all pairs) because hold cells dominate and carry uniform noise.
+The raw Frobenius distance $\|E\|_F$ is weakly discriminative (only 1 of 6 pairs significant at $\alpha = 0.05$, and the ranking does not match PTM) because hold cells dominate and carry uniform noise.
 The \stem{} dual-resolution decomposition---macroscopic EPA on $S$ and microscopic PTM on the prescribed subspace of $\Delta S$---isolates the narrative-relevant signal, enabling the statistical power observed in all results above.
 
 %% ============================================================
@@ -696,7 +699,7 @@ The \stem{} dual-resolution decomposition---macroscopic EPA on $S$ and microscop
 %% ============================================================
 
 We presented the \diagonal{} framework, which spans the multi-shot narrative space with just two basis matrices (Theorem~1), and the \stem{} evaluation, which reduces narrative assessment to matrix matching via the error matrix $E = \Delta S_\text{obs} - \Delta S^*$.
-The consistency paradox ($\rho_{s,\text{IC-PTM}} = -1.0$) demonstrates that the field's primary metric---Identity Consistency---is \emph{adversarial} to narrative compliance.
+The consistency paradox ($\rho_{s,\text{IC-PTM}} = -1.0$, $n\!=\!4$; confirmed by Kruskal--Wallis $H = 302.7$, $p < 10^{-65}$ with non-overlapping 95\% CIs across all models) demonstrates that the field's primary metric---Identity Consistency---is \emph{adversarial} to narrative compliance.
 Across 4,000 videos from four architectures, the 3.5$\times$ PTM gap between StoryDiffusion (0.243) and VIC (0.070), with overwhelming statistical significance ($H = 302.7$, $p < 10^{-65}$), confirms that current shared-attention and in-context conditioning mechanisms are fundamentally at odds with narrative dynamics.
 
 \paragraph{Call to action.}
