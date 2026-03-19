@@ -267,17 +267,27 @@ We prove this generalization formally via spatial zero-padding and temporal shif
 \centering
 % --- (a) STEM pipeline ---
 \textbf{(a)} STEM Evaluation Pipeline\par\smallskip
-\includegraphics[width=\textwidth]{figures/OVERALL_a_method.png}
+\begin{tikzpicture}[remember picture]
+\node[inner sep=0pt] (imgA) {\includegraphics[width=\textwidth]{figures/OVERALL_a_method.png}};
+% Mark anchor points on image (a) for connectors
+% Image aspect ratio 1215/626≈1.94, so height≈0.515\textwidth
+% ΔS* prescribed matrix (skyblue bracket): ~47% from left, ~8% from bottom
+\coordinate (prescribedBot) at ([xshift=0.47\textwidth, yshift=0.04\textwidth]imgA.south west);
+% E_error matrix (orange bracket): ~77% from left, ~8% from bottom
+\coordinate (errorBot) at ([xshift=0.77\textwidth, yshift=0.04\textwidth]imgA.south west);
+\end{tikzpicture}
 
 \vspace{2pt}
-\noindent\begin{tikzpicture}\draw[gray!60, dashed, line width=0.6pt] (0,0) -- (\textwidth,0);\end{tikzpicture}
+\noindent\begin{tikzpicture}[remember picture]\draw[gray!60, dashed, line width=0.6pt] (0,0) -- (\textwidth,0);\end{tikzpicture}
 \vspace{4pt}
 
 % --- (b) and (c) side by side ---
 \begin{minipage}[t]{0.52\textwidth}
 \centering
 \textbf{(b)} SPAN Completeness\par\smallskip
-\includegraphics[width=\textwidth]{figures/OVERALL_b_span.png}
+\begin{tikzpicture}[remember picture]
+\node[inner sep=0pt] (imgB) {\includegraphics[width=\textwidth]{figures/OVERALL_b_span.png}};
+\end{tikzpicture}
 \end{minipage}%
 \hfill
 \begin{minipage}[t]{0.02\textwidth}
@@ -289,8 +299,20 @@ We prove this generalization formally via spatial zero-padding and temporal shif
 \begin{minipage}[t]{0.44\textwidth}
 \centering
 \textbf{(c)} Failure Taxonomy\par\smallskip
-\includegraphics[width=\textwidth]{figures/OVERALL_c_failure.png}
+\begin{tikzpicture}[remember picture]
+\node[inner sep=0pt] (imgC) {\includegraphics[width=\textwidth]{figures/OVERALL_c_failure.png}};
+\end{tikzpicture}
 \end{minipage}
+
+% --- Dashed connectors (overlay): ΔS* → (b), E_error → (c) ---
+\begin{tikzpicture}[remember picture, overlay]
+% Skyblue dashed: prescribed matrix in (a) → (b) Completeness
+\draw[cyan!70!blue, dashed, line width=1.2pt, rounded corners=3pt, -{Stealth[length=5pt]}]
+  (prescribedBot) -- ([yshift=5pt]imgB.north);
+% Orange dashed: E_error in (a) → (c) Failure Taxonomy
+\draw[orange!80!red, dashed, line width=1.2pt, rounded corners=3pt, -{Stealth[length=5pt]}]
+  (errorBot) -- ([yshift=5pt]imgC.north);
+\end{tikzpicture}
 
 \caption{\textbf{\diagonal{} framework overview.}
 \textbf{(a)}~The \stem{} pipeline: a VLM projects each shot into a binary presence vector, forming $S_\text{obs}$; temporal differencing yields $\Delta S_\text{obs}$; the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ diagnoses failures and feeds PTM/EPA metrics.
