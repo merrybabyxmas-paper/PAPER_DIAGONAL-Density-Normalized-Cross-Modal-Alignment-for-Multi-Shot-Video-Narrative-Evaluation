@@ -295,19 +295,48 @@ Sum all three permutations and take their pairwise difference:
 \calB_1^{(12)} + \calB_1^{(13)} + \calB_1^{(23)} &= \begin{bmatrix} 1 & 1 & 1 \\ -1 & -1 & -1 \end{bmatrix}, \label{eq:sum_perms} \\[4pt]
 \calB_1^{(12)} - \calB_1^{(23)} &= \begin{bmatrix} 1 & -1 & 0 \\ 0 & -1 & 1 \end{bmatrix}. \label{eq:diff_perms}
 \end{align}
-Combining Eqs.~\ref{eq:sum_perms}--\ref{eq:diff_perms} yields the matrix $E_{11} - E_{21}$.
+Combining Eqs.~\ref{eq:sum_perms}--\ref{eq:diff_perms} yields:
+\begin{equation}
+E_{11} - E_{21} = \begin{bmatrix} 1 & 0 & 0 \\ -1 & 0 & 0 \end{bmatrix}.
+\label{eq:e11_e21}
+\end{equation}
 
 \emph{Step 2: Isolate individual $E_{ij}$.}\;
-Adding $E_{11} - E_{21}$ to a column-permuted variant of $\calB_2$ isolates $-E_{22}$.
-Column permutations of $E_{22}$ then yield $E_{21}$ and $E_{23}$; subtracting from Step~1 gives $E_{11}$, with further permutations producing $E_{12}$ and $E_{13}$.
-
-The complete derivation with all intermediate matrices is in Appendix~A. \qedhere
+Let $\calB_2^{(12)}$ denote $\calB_2$ with columns 1 and 2 swapped.
+Adding Eq.~\ref{eq:e11_e21} to $\calB_2^{(12)}$:
+\begin{equation}
+(E_{11} - E_{21}) + \calB_2^{(12)} = \begin{bmatrix} 1 & 0 & 0 \\ -1 & 0 & 0 \end{bmatrix} + \begin{bmatrix} -1 & 0 & 0 \\ +1 & -1 & 0 \end{bmatrix} = \begin{bmatrix} 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix} = -E_{22}.
+\label{eq:isolate_e22}
+\end{equation}
+From $E_{22}$, column permutations yield $E_{21}$ and $E_{23}$.
+Subtracting $E_{21}$ from Eq.~\ref{eq:e11_e21} gives $E_{11}$, and further column permutations produce $E_{12}$ and $E_{13}$:
+\begin{equation}
+\{E_{11},\, E_{12},\, E_{13},\, E_{21},\, E_{22},\, E_{23}\} \;\subset\; \operatorname{span}_{\mathbb{Z}}\!\bigl(\calB_1,\, \calB_2,\, \Sigma_3\bigr). \qedhere
+\label{eq:all_eij}
+\end{equation}
 \end{proof}
 
+\noindent The complete derivation with all intermediate matrices is provided in Appendix~A.
+
 \paragraph{Implications.}
-\emph{First}, \diagonal{}'s seven patterns form a \emph{mathematically complete} evaluation suite: testing a model on these patterns certifies its behavior on \emph{any} narrative topology, including patterns not explicitly in the benchmark.
-This is a key distinction from prior benchmarks~\cite{moviebench,locot2v,shotadapter}, which rely on empirically curated prompt sets without formal coverage guarantees over the combinatorial narrative space.
-\emph{Second}, the result scales: $T$-shot, $N$-entity narratives require spanning $\mathbb{M}_{(T-1) \times N}(\mathbb{Z})$, achievable with $2(T\!-\!1)$ basis matrices via spatial zero-padding and temporal shift operators---linear, not combinatorial, growth (Theorem~2, Appendix~B).
+
+\emph{Completeness.}\;
+\diagonal{}'s seven patterns form a \emph{mathematically complete} evaluation suite:
+\begin{equation}
+\forall\, M \in \mathbb{M}_{2 \times 3}(\mathbb{Z}),\quad
+M = \sum_{i,j} \alpha_{ij}\, E_{ij}, \quad \alpha_{ij} \in \mathbb{Z},
+\label{eq:completeness_expansion}
+\end{equation}
+so testing a model on these patterns certifies its behavior on \emph{any} narrative topology, including patterns not explicitly in the benchmark.
+This is a key distinction from prior benchmarks~\cite{moviebench,locot2v,shotadapter}, which rely on empirically curated prompt sets without formal coverage guarantees.
+
+\emph{Scalability.}\;
+For $T$-shot, $N$-entity narratives, the target space is $\mathbb{M}_{(T-1) \times N}(\mathbb{Z})$, which has dimension:
+\begin{equation}
+\dim = 2\,(T\!-\!1)\,N,
+\label{eq:scaling}
+\end{equation}
+achievable with $2(T\!-\!1)$ basis matrices via spatial zero-padding and temporal shift operators---linear, not combinatorial, growth (Theorem~2, Appendix~B).
 
 % FIGURE 1: Combined overview — STEM pipeline + Completeness + Failure taxonomy
 \begin{figure*}[t]
