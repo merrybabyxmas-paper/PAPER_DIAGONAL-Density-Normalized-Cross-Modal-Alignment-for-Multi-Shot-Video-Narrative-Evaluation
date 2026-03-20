@@ -118,59 +118,6 @@ We contribute:
   \item \textbf{MEMS-1K} (\S\ref{sec:dataset}), a benchmark of 1{,}000 multi-entity, multi-shot scenarios with 7 narrative patterns, a \textbf{four-type failure taxonomy}, and 4{,}000 videos across four architectures.
 \end{itemize}
 
-
-%% ============================================================
-\section{Related Work}
-\label{sec:related}
-%% ============================================================
-
-\paragraph{Text-to-video generation.}
-Modern video synthesis rests on diffusion models~\cite{ddpm,ldm,scoreflow}, extended temporally through UNet attention~\cite{svd,imagenvideo,ho2022video}, scalable DiT architectures~\cite{dit,wan,sora} with transformer backbones~\cite{attention,vit}, flow-matching~\cite{flowmatching}, and classifier-free guidance~\cite{cfg}.
-Open-source systems such as Open-Sora~\cite{opensora} and AnimateDiff~\cite{animatediff} provide general-purpose motion modules, while Lumiere~\cite{lumiere} and Emu Video~\cite{emuvideo} explore space-time generation, but multi-entity narrative control remains an open problem.
-
-\paragraph{Multi-shot video generation.}
-Multi-shot extensions address cross-shot coherence via Consistent Self-Attention (CSA)~\cite{storydiff,consistory}, cross-attention~\cite{videostudio}, latent initialization~\cite{mevg}, LLM-guided layouts~\cite{vgot,videodirectorgpt,storygen}, keyframe transitions~\cite{seine,dynamicrafter}, flow-matching portraits~\cite{echoshot}, IP-Adapter~\cite{ip_adapter}, in-context LoRA~\cite{vic,lora}, subject customization~\cite{dreamvideo,tuneavideo}, and multimodal storytelling~\cite{minidalle,moviellm}.
-Longer-horizon generation has been explored through autoregressive token models~\cite{videopoet,phenaki} and visual pre-training~\cite{nuwa}, though these operate at the single-clip level.
-We evaluate representatives from four paradigms---CSA (StoryDiffusion), flow-matching (EchoShot), in-context DiT (VIC), and cascaded T2I+I2V (VGoT)---providing the first cross-paradigm comparison on narrative dynamics.
-
-\paragraph{Video generation benchmarks.}
-Existing benchmarks quantify consistency via embedding similarity (Table~\ref{tab:benchmark}).
-VBench~\cite{vbench,vbench2} computes frame-level CLIP~\cite{clip}/DINO~\cite{dinov2} similarities that conflate subject and background.
-T2V-CompBench~\cite{t2vcompbench} targets single-clip compositionality.
-ShotAdapter~\cite{shotadapter} isolates subject regions but cannot decompose multi-entity presence at the shot level.
-MovieBench~\cite{moviebench} and LoCoT2V~\cite{locot2v} recognize multi-shot challenges but lack entity-level metrics and mathematical formalization.
-FID~\cite{fid} and FVD~\cite{fvd} measure distributional fidelity but are agnostic to narrative structure.
-CLIPScore~\cite{clipscore} measures text--image alignment at the single-frame level only.
-These benchmarks rely on empirically curated prompt sets without formal coverage guarantees over the combinatorial narrative space.
-\diagonal{} complements this line of work by formalizing multi-entity, multi-shot narratives via state transition matrices, with a mathematical proof that its basis patterns span the \emph{entire} narrative space.
-
-\begin{table}[t]
-\caption{Benchmark comparison. \checkmark~supported, \ding{55}~not, $\triangle$~partial.}
-\label{tab:benchmark}
-\centering
-\small
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{@{}lccccc@{}}
-\toprule
-Benchmark & \rotatebox{65}{Multi-shot} & \rotatebox{65}{Entity Dec.} & \rotatebox{65}{Absence} & \rotatebox{65}{Formal.} & \rotatebox{65}{Fail.\ Tax.} \\
-\midrule
-VBench 2.0~\cite{vbench2}        & \ding{55} & \ding{55} & \ding{55} & \ding{55} & \ding{55} \\
-T2V-CompBench~\cite{t2vcompbench} & \ding{55} & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
-MovieBench~\cite{moviebench}     & \checkmark & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
-LoCoT2V~\cite{locot2v}          & \checkmark & \ding{55} & \ding{55} & \ding{55} & \ding{55} \\
-ShotAdapter~\cite{shotadapter}  & \checkmark & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
-\midrule
-\diagonal{} + \stem{} (Ours)     & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-%% ============================================================
-\section{The \diagonal{} Framework}
-\label{sec:framework}
-%% ============================================================
-
 % FIGURE 1: Combined overview — STEM pipeline + Completeness + Failure taxonomy
 \begin{figure*}[t]
 \centering
@@ -225,6 +172,58 @@ ShotAdapter~\cite{shotadapter}  & \checkmark & $\triangle$ & \ding{55} & \ding{5
 \label{fig:completeness}
 \label{fig:metrics}
 \end{figure*}
+
+%% ============================================================
+\section{Related Work}
+\label{sec:related}
+%% ============================================================
+
+\paragraph{Text-to-video generation.}
+Modern video synthesis rests on diffusion models~\cite{ddpm,ldm,scoreflow}, extended temporally through UNet attention~\cite{svd,imagenvideo,ho2022video}, scalable DiT architectures~\cite{dit,wan,sora} with transformer backbones~\cite{attention,vit}, flow-matching~\cite{flowmatching}, and classifier-free guidance~\cite{cfg}.
+Open-source systems such as Open-Sora~\cite{opensora} and AnimateDiff~\cite{animatediff} provide general-purpose motion modules, while Lumiere~\cite{lumiere} and Emu Video~\cite{emuvideo} explore space-time generation, but multi-entity narrative control remains an open problem.
+
+\paragraph{Multi-shot video generation.}
+Multi-shot extensions address cross-shot coherence via Consistent Self-Attention (CSA)~\cite{storydiff,consistory}, cross-attention~\cite{videostudio}, latent initialization~\cite{mevg}, LLM-guided layouts~\cite{vgot,videodirectorgpt,storygen}, keyframe transitions~\cite{seine,dynamicrafter}, flow-matching portraits~\cite{echoshot}, IP-Adapter~\cite{ip_adapter}, in-context LoRA~\cite{vic,lora}, subject customization~\cite{dreamvideo,tuneavideo}, and multimodal storytelling~\cite{minidalle,moviellm}.
+Longer-horizon generation has been explored through autoregressive token models~\cite{videopoet,phenaki} and visual pre-training~\cite{nuwa}, though these operate at the single-clip level.
+We evaluate representatives from four paradigms---CSA (StoryDiffusion), flow-matching (EchoShot), in-context DiT (VIC), and cascaded T2I+I2V (VGoT)---providing the first cross-paradigm comparison on narrative dynamics.
+
+\paragraph{Video generation benchmarks.}
+Existing benchmarks quantify consistency via embedding similarity (Table~\ref{tab:benchmark}).
+VBench~\cite{vbench,vbench2} computes frame-level CLIP~\cite{clip}/DINO~\cite{dinov2} similarities that conflate subject and background.
+T2V-CompBench~\cite{t2vcompbench} targets single-clip compositionality.
+ShotAdapter~\cite{shotadapter} isolates subject regions but cannot decompose multi-entity presence at the shot level.
+MovieBench~\cite{moviebench} and LoCoT2V~\cite{locot2v} recognize multi-shot challenges but lack entity-level metrics and mathematical formalization.
+FID~\cite{fid} and FVD~\cite{fvd} measure distributional fidelity but are agnostic to narrative structure.
+CLIPScore~\cite{clipscore} measures text--image alignment at the single-frame level only.
+These benchmarks rely on empirically curated prompt sets without formal coverage guarantees over the combinatorial narrative space.
+\diagonal{} complements this line of work by formalizing multi-entity, multi-shot narratives via state transition matrices, with a mathematical proof that its basis patterns span the \emph{entire} narrative space.
+
+\begin{table}[t]
+\caption{Benchmark comparison. \checkmark~supported, \ding{55}~not, $\triangle$~partial.}
+\label{tab:benchmark}
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Benchmark & \rotatebox{65}{Multi-shot} & \rotatebox{65}{Entity Dec.} & \rotatebox{65}{Absence} & \rotatebox{65}{Formal.} & \rotatebox{65}{Fail.\ Tax.} \\
+\midrule
+VBench 2.0~\cite{vbench2}        & \ding{55} & \ding{55} & \ding{55} & \ding{55} & \ding{55} \\
+T2V-CompBench~\cite{t2vcompbench} & \ding{55} & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
+MovieBench~\cite{moviebench}     & \checkmark & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
+LoCoT2V~\cite{locot2v}          & \checkmark & \ding{55} & \ding{55} & \ding{55} & \ding{55} \\
+ShotAdapter~\cite{shotadapter}  & \checkmark & $\triangle$ & \ding{55} & \ding{55} & \ding{55} \\
+\midrule
+\diagonal{} + \stem{} (Ours)     & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{The \diagonal{} Framework}
+\label{sec:framework}
+%% ============================================================
 
 We first build the theoretical foundation: state transition matrices (\S\ref{sec:formalization}), their algebraic basis (\S\ref{sec:basis}), and the completeness proof (\S\ref{sec:completeness}).
 Section~\ref{sec:stem} then develops the practical evaluation pipeline.
