@@ -403,80 +403,92 @@ achievable with $2(T\!-\!1)$ basis matrices via spatial zero-padding and tempora
 
 
 %% ============================================================
-\section{The \stem{} Evaluation}
+\section{The \stem{} Evaluation Methodology}
 \label{sec:stem}
 %% ============================================================
 
-With the theoretical foundation established, we now develop the practical evaluation pipeline: VLM-based state detection (\S\ref{sec:vlm_instantiation}), error matrix construction with failure taxonomy (\S\ref{sec:error_taxonomy}), and $\ell_0$-norm metrics (\S\ref{sec:metrics}).
+Building upon the theoretical completeness of the \diagonal{} framework, we introduce \stem{} (State Transition Error Matching), a fully automated evaluation pipeline.
+\stem{} bridges the gap between the continuous visual space and our discrete algebraic framework by employing Vision-Language Models (VLMs) as state detectors, ultimately yielding density-normalized $\ell_0$-norm metrics.
 
 \subsection{VLM-Based State Detection}
 \label{sec:vlm_instantiation}
 
-To construct $S_\text{obs}$ in practice, we extract the middle frame of each shot and query Qwen2-VL-7B-Instruct~\cite{qwen2vl} with a binary question per entity:
+To evaluate a generated video, we must first map it to the observed presence matrix $S_\text{obs} \in \{0,1\}^{T \times N}$.
+We extract the middle frame of each shot $t \in \{1, \ldots, T\}$ and query a VLM with a binary question for each prescribed entity $e$:
 \begin{equation}
-S_\text{obs}[t, k] = \mathbb{1}\!\bigl[\text{VLM}(\text{frame}_t,\;\text{``Is } e_k \text{ visible?''}) = \text{Yes}\bigr].
+S_\text{obs}[t, e] = \mathbb{1}\!\bigl[\text{VLM}(\text{frame}_t,\;\text{``Is entity } e \text{ visible?''}) = \text{Yes}\bigr].
 \label{eq:vlm_probe}
 \end{equation}
-Binary VLM queries avoid two limitations of continuous CLIP probes:
-(i)~CLIP entity probes yield present--absent gaps of only 0.008--0.019 (Cohen's $d = 0.23$--$0.59$), requiring fragile threshold tuning;
-(ii)~full-prompt CLIP similarity suffers from bag-of-words effects, rendering shot-prompt discrimination near-random.
+We utilize Qwen2-VL-7B-Instruct~\cite{qwen2vl} for this detection.
+Formulating detection as discrete binary queries circumvents the limitations of continuous contrastive probes (e.g., CLIP similarity), which suffer from bag-of-words effects and marginal present--absent score gaps (Cohen's $d = 0.23$--$0.59$), often requiring fragile, dataset-specific threshold tuning.
 
-\subsection{Error Matrix and Failure Taxonomy}
+\subsection{Algebraic Error Matrix and Failure Taxonomy}
 \label{sec:error_taxonomy}
 
-Given $S_\text{obs}$, compute the observed transitions and the \textbf{error matrix}:
-\begin{align}
-\Delta S_\text{obs} &= S_{\text{obs},\,2:T} \;-\; S_{\text{obs},\,1:T\!-\!1}, \label{eq:delta_s_obs} \\[4pt]
-E &= \Delta S_\text{obs} \;-\; \Delta S^*, \quad E_{t,e} \in \{-2,\ldots,+2\}. \label{eq:error_matrix}
-\end{align}
-A perfect generation yields $E = \mathbf{0}$.
-Every non-zero entry localizes a failure to a specific transition--entity pair $(t, e)$.
+Given $S_\text{obs}$, we compute the observed state transition matrix $\Delta S_\text{obs} = S_{\text{obs},\,2:T} - S_{\text{obs},\,1:T\!-\!1}$.
+The core of our evaluation is the \emph{error matrix}, which captures all narrative deviations in a single algebraic object.
 
-\paragraph{Failure taxonomy.}
-The algebraic structure of $E$ induces four exhaustive failure types (Fig.~\ref{fig:overview}(c)):
+\begin{definition}[Error Matrix]
+\label{def:error_matrix}
+Let $\Delta S^*$ be the prescribed transition matrix.
+The error matrix $E \in \{-2,\ldots,+2\}^{(T-1) \times N}$ is:
+\begin{equation}
+E \;=\; \Delta S_\text{obs} \;-\; \Delta S^*.
+\label{eq:error_matrix}
+\end{equation}
+A perfect narrative execution yields $E = \mathbf{0}$.
+Any non-zero entry uniquely localizes a failure to a specific transition--entity pair $(t, e)$.
+\end{definition}
 
-\smallskip
-\begin{center}
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}llll@{}}
-\toprule
-Type & Name & Condition & Meaning \\
-\midrule
-I   & Context Bleeding & $\Delta S^*\!=\!-1$, $E > 0$ & should exit, persists \\
-II  & Amnesia          & $\Delta S^*\!=\!+1$, $E < 0$ & should enter, absent \\
-III & Spurious         & $\Delta S^*\!=\!0$, $E \neq 0$ & unprescribed change \\
-IV  & Reversal         & $|E| = 2$ & opposite transition \\
-\bottomrule
-\end{tabular}
-\end{center}
-\smallskip
+The algebraic structure of $E$ naturally induces an exhaustive taxonomy of narrative failures (Fig.~\ref{fig:overview}(c)).
 
-\noindent Type~IV is the most severe: the observed transition is \emph{diametrically opposite} to prescribed, making it a strict subset of Types~I/II that reflects compounded failure.
-Since Type~IV entries simultaneously satisfy the condition for Type~I or~II, the failure counts in Table~\ref{tab:failures} report each type independently; a single $|E_{t,e}| = 2$ entry contributes to both its parent type and to Type~IV.
+\begin{definition}[Failure Taxonomy]
+\label{def:failure_taxonomy}
+Based on the joint state of $(E_{t,e},\, \Delta S^*_{t,e})$, we classify transition failures into four types:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Type~I} (Context Bleeding): $\Delta S^*_{t,e} = -1$ and $E_{t,e} > 0$. An entity persists when it should have exited.
+  \item \textbf{Type~II} (Amnesia): $\Delta S^*_{t,e} = +1$ and $E_{t,e} < 0$. An entity fails to appear at its prescribed entry.
+  \item \textbf{Type~III} (Spurious): $\Delta S^*_{t,e} = 0$ and $E_{t,e} \neq 0$. An unprescribed change occurs in a hold cell.
+  \item \textbf{Type~IV} (Reversal): $|E_{t,e}| = 2$. The observed transition is diametrically opposite to the prescription.
+\end{itemize}
+\end{definition}
 
-\subsection{$\ell_0$-Norm Metrics}
+\noindent\emph{Note.}\;
+Type~IV represents the most severe compounded failure and is algebraically a strict subset of Types~I/II: a single $|E_{t,e}| = 2$ entry simultaneously satisfies the condition for its parent type and for Type~IV.
+The failure counts in Table~\ref{tab:failures} report each type independently.
+
+\subsection{Density-Normalized $\ell_0$-Norm Metrics}
 \label{sec:metrics}
 
-\paragraph{Prescribed Transition Match (PTM).}
-PTM measures \emph{microscopic transition fidelity} by restricting evaluation to prescribed cells ($\Delta S^* \neq 0$).
-Let $\mathcal{M} \in \{0,1\}^{(T-1)\times N}$ be the \emph{prescription mask} with $\mathcal{M}_{t,e} = \mathbb{1}[\Delta S^*_{t,e} \neq 0]$.
+A naive approach to quantifying $E$ would be to compute the Frobenius norm $\lVert E \rVert_F$.
+However, in a standard narrative matrix, hold cells ($\Delta S^*_{t,e} = 0$) outnumber active transitions by 2--4$\times$.
+Consequently, VLM detection noise in hold cells dominates the unnormalized distance, drowning the true narrative signal ($\lVert E \rVert_F$ achieves only 1 of 6 pairwise significances at $\alpha = 0.05$; Appendix).
+To rigorously isolate narrative fidelity, we decompose the evaluation into two complementary $\ell_0$-norm metrics.
+
+\begin{definition}[Prescribed Transition Match (PTM)]
+\label{def:ptm}
+PTM quantifies \emph{microscopic transition fidelity} by evaluating only the prescribed dynamic changes.
+Let $\mathcal{M} \in \{0,1\}^{(T-1) \times N}$ be the binary prescription mask with $\mathcal{M}_{t,e} = \mathbb{1}[\Delta S^*_{t,e} \neq 0]$.
 Then:
 \begin{equation}
 \boxed{\;\text{PTM} = 1 - \frac{\lVert E \odot \mathcal{M} \rVert_0}{\lVert \mathcal{M} \rVert_0}\;}
 \label{eq:ptm}
 \end{equation}
-where $\odot$ denotes the Hadamard product, $\lVert \cdot \rVert_0$ counts non-zero entries, and $\lVert \mathcal{M} \rVert_0$ is the number of prescribed transitions.
-By masking out hold cells, PTM eliminates the dominant VLM noise source while retaining the entries that distinguish narrative success from failure.
+where $\odot$ denotes the Hadamard product, $\lVert \cdot \rVert_0$ counts non-zero entries, and $\lVert \mathcal{M} \rVert_0$ is the total number of prescribed transitions.
+\end{definition}
 
-\paragraph{Entity Presence Accuracy (EPA).}
-EPA measures \emph{macroscopic cast compliance} on the presence matrix $S$:
+\noindent By masking out hold cells, PTM elegantly eliminates the dominant source of VLM noise while capturing the exact operations that define storytelling.
+
+\begin{definition}[Entity Presence Accuracy (EPA)]
+\label{def:epa}
+EPA assesses \emph{macroscopic cast compliance} by computing the element-wise accuracy of the presence states:
 \begin{equation}
 \boxed{\;\text{EPA} = 1 - \frac{\lVert S_\text{obs} - S^* \rVert_0}{T \cdot N}\;}
 \label{eq:epa}
 \end{equation}
-While PTM asks ``did the right \emph{transitions} happen?'', EPA asks ``are the right \emph{entities} present?''
-Both metrics count discrete mismatches via $\ell_0$-norms in complementary matrix subspaces---prescribed transitions for PTM, full presence for EPA---unifying them under a single algebraic framework.
+\end{definition}
+
+\noindent Together, PTM (``Did the right \emph{transitions} happen?'') and EPA (``Are the right \emph{entities} present?'') provide a complete, density-normalized evaluation of multi-shot video generation---counting discrete mismatches via $\ell_0$-norms in complementary matrix subspaces.
 
 
 %% ============================================================
