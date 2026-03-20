@@ -1,556 +1,357 @@
 """
-DIAGONAL: 내러티브 평가 대시보드 & 인간 평가
-=============================================
-streamlit run streamlit_app/app.py
+DIAGONAL 내러티브 평가
 """
-
 import streamlit as st
-import json
-import random
-import datetime
-import numpy as np
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+import json, random, datetime, numpy as np, pandas as pd
+import plotly.express as px, plotly.graph_objects as go
 from pathlib import Path
 from collections import defaultdict
 
-# ---------------------------------------------------------------------------
-# Paths
-# ---------------------------------------------------------------------------
 APP_DIR = Path(__file__).parent
 DATA_DIR = APP_DIR / "data"
 PROMPTS_PATH = DATA_DIR / "prompts_subset.json"
-EVAL_RESULTS_PATH = DATA_DIR / "vlm_fullscale_merged.json"
-KEYFRAMES_DIR = DATA_DIR / "keyframes"
-HUMAN_EVAL_OUTPUT = DATA_DIR / "human_eval_results.json"
+EVAL_PATH = DATA_DIR / "vlm_fullscale_merged.json"
+KF_DIR = DATA_DIR / "keyframes"
+OUTPUT_PATH = DATA_DIR / "human_eval_results.json"
 
 MODELS = ["storydiff", "echoshot", "vgot", "vic"]
-MODEL_LABELS = {
-    "storydiff": "StoryDiffusion",
-    "echoshot": "EchoShot",
-    "vgot": "VGoT",
-    "vic": "VIC",
-}
-NUM_SCENARIOS = 40
-SEED = 42
+MLABEL = {"storydiff": "StoryDiffusion", "echoshot": "EchoShot", "vgot": "VGoT", "vic": "VIC"}
+SEED, N_SCEN = 42, 40
 
-PATTERN_DESC = {
-    "Relay": "A → AB → B (순차 전달)",
-    "Sequential_Relay": "A → AB → B (순차 전달)",
-    "Split": "AB → A → B (분리)",
-    "Accumulation": "A → AB → ABC (누적 등장)",
-    "Convergence": "A → B → AB (수렴)",
-    "Sliding_Window": "AB → BC → C (슬라이딩)",
-    "Reduction": "ABC → AB → A (점진 퇴장)",
-    "Reverse_Relay": "B → AB → A (역순 전달)",
+PAT_KR = {
+    "Relay": "Relay: A → AB → B", "Sequential_Relay": "Relay: A → AB → B",
+    "Split": "Split: AB → A → B", "Accumulation": "Accumulation: A → AB → ABC",
+    "Convergence": "Convergence: A → B → AB", "Sliding_Window": "Sliding Window: AB → BC → C",
+    "Reduction": "Reduction: ABC → AB → A", "Reverse_Relay": "Reverse Relay: B → AB → A",
 }
 
-LIKERT_KR = {
-    1: "1 — 전혀 안 맞음",
-    2: "2 — 부족함",
-    3: "3 — 보통",
-    4: "4 — 양호",
-    5: "5 — 완벽히 일치",
+CSS = """<style>
+* { font-family: 'Pretendard', -apple-system, sans-serif !important; }
+.main .block-container { max-width: 900px; padding: 1rem 1rem; }
+[data-testid="stImage"] img { border-radius: 6px; }
+.card { border-radius: 10px; padding: 10px 12px 6px; margin-bottom: 10px; }
+.card-a { background: #EBF5FB; border: 2px solid #3498DB; }
+.card-b { background: #FDEDEC; border: 2px solid #E74C3C; }
+.card-title { font-weight: 800; font-size: 1.05rem; margin-bottom: 6px; }
+.title-a { color: #2980B9; }
+.title-b { color: #C0392B; }
+.info-box { background: #F8F9FA; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;
+  border-left: 4px solid #3498DB; }
+.ptable { border-collapse: collapse; font-size: 0.78rem; margin: 4px 0; width: auto; }
+.ptable th, .ptable td { border: 1px solid #bbb; padding: 2px 8px; text-align: center; }
+.p-yes { background: #A9DFBF; font-weight: 700; }
+.p-no { background: #F5B7B1; }
+.conf-row { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+.conf-btn { padding: 6px 14px; border-radius: 20px; cursor: pointer;
+  border: 2px solid #bbb; background: white; font-size: 0.85rem; }
+@media (max-width: 640px) {
+  .main .block-container { padding: 0.5rem; }
+  [data-testid="column"] { padding: 0 2px !important; }
 }
+</style>"""
 
-# ---------------------------------------------------------------------------
-# Custom CSS — compact layout, mobile-friendly
-# ---------------------------------------------------------------------------
-CUSTOM_CSS = """
-<style>
-    /* Smaller image captions */
-    .stImage > div > div > p { font-size: 0.75rem !important; margin: 0 !important; }
-    /* Compact radio buttons */
-    .stRadio > div { gap: 0.2rem !important; }
-    .stRadio label { font-size: 0.85rem !important; }
-    /* Tighter section spacing */
-    .block-container { padding-top: 1.5rem !important; padding-bottom: 1rem !important; }
-    /* Card style for video groups */
-    .video-card {
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 8px 10px 4px 10px;
-        margin-bottom: 8px;
-        background: #fafafa;
-    }
-    .video-card-a { border-color: #4285F4; }
-    .video-card-b { border-color: #EA4335; }
-    .video-label {
-        font-weight: 700;
-        font-size: 1rem;
-        margin-bottom: 4px;
-        text-align: center;
-    }
-    .label-a { color: #4285F4; }
-    .label-b { color: #EA4335; }
-    /* Presence matrix */
-    .presence-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 4px 0; }
-    .presence-table th, .presence-table td {
-        border: 1px solid #ccc; padding: 3px 6px; text-align: center;
-    }
-    .present { background: #C8E6C9; }
-    .absent { background: #FFCDD2; }
-    /* Info box */
-    .scenario-info {
-        background: #F3F4F6; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px;
-        font-size: 0.9rem; line-height: 1.5;
-    }
-    /* Mobile: stack columns */
-    @media (max-width: 768px) {
-        .stColumns > div { min-width: 100% !important; }
-        .video-card { padding: 6px; }
-    }
-</style>
-"""
-
-# ---------------------------------------------------------------------------
-# Data loading
-# ---------------------------------------------------------------------------
-
+# ---- Data ----
 @st.cache_data
-def load_eval_results():
-    with open(EVAL_RESULTS_PATH) as f:
-        return json.load(f)
+def load_eval():
+    with open(EVAL_PATH) as f: return json.load(f)
 
 @st.cache_data
 def load_prompts():
-    with open(PROMPTS_PATH) as f:
-        return json.load(f)
+    with open(PROMPTS_PATH) as f: return json.load(f)
 
 @st.cache_data
-def build_eval_index():
-    data = load_eval_results()
-    idx = {}
-    by_prefix = {}
-    for entry in data:
-        idx[(entry["method"], entry["vid"])] = entry
-        prefix = "_".join(entry["vid"].split("_")[:2])
-        by_prefix.setdefault(entry["method"], {})[prefix] = entry
-    return idx, by_prefix
+def build_index():
+    data = load_eval()
+    bp = {}
+    for d in data:
+        pfx = "_".join(d["vid"].split("_")[:2])
+        bp.setdefault(d["method"], {})[pfx] = d
+    return bp
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def presence_html(s_matrix, entities, title="S*"):
-    """Compact colored presence table."""
-    n_shots = len(s_matrix)
-    n_ents = len(s_matrix[0]) if n_shots else 0
-    ent_labels = entities[:n_ents]
-
-    hdr = "<tr><th></th>" + "".join(f"<th>{e}</th>" for e in ent_labels) + "</tr>"
+# ---- Helpers ----
+def presence_table(mat, ents):
+    n = len(mat[0]) if mat else 0
+    el = ents[:n]
+    h = "<tr><th></th>" + "".join(f"<th>{e}</th>" for e in el) + "</tr>"
     rows = ""
-    for i in range(n_shots):
-        cells = ""
-        for j in range(n_ents):
-            v = s_matrix[i][j] if j < len(s_matrix[i]) else 0
-            cls = "present" if v == 1 else "absent"
-            txt = "O" if v == 1 else "X"
-            cells += f"<td class='{cls}'>{txt}</td>"
-        rows += f"<tr><td><b>Shot {i+1}</b></td>{cells}</tr>"
-    return f"<table class='presence-table'>{hdr}{rows}</table>"
+    for i, row in enumerate(mat):
+        cells = "".join(
+            f"<td class='{'p-yes' if (row[j] if j < len(row) else 0) else 'p-no'}'>"
+            f"{'●' if (row[j] if j < len(row) else 0) else '·'}</td>"
+            for j in range(n)
+        )
+        rows += f"<tr><td><b>S{i+1}</b></td>{cells}</tr>"
+    return f"<table class='ptable'>{h}{rows}</table>"
 
-
-def render_shots_inline(model, vid, col):
-    """Render 3 shots in a single horizontal row inside col."""
-    if model == "storydiff":
-        kf_dir = KEYFRAMES_DIR / vid
-        imgs = []
-        for i in range(1, 4):
-            p = kf_dir / f"shot0{i}.jpg"
-            if not p.exists():
-                p = kf_dir / f"shot0{i}.png"
-            imgs.append(str(p) if p.exists() else None)
-
-        subcols = col.columns(3)
-        for i, (sc, img) in enumerate(zip(subcols, imgs)):
-            if img:
-                sc.image(img, caption=f"Shot {i+1}", use_container_width=True)
+def find_shots(model, vid):
+    d = KF_DIR / f"{model}_{vid}"
+    imgs = []
+    for i in range(1, 4):
+        for ext in [".jpg", ".png"]:
+            p = d / f"shot{i}{ext}"
+            if p.exists():
+                imgs.append(str(p)); break
+        else:
+            # Try old naming
+            p2 = d / f"shot0{i}{ext}"
+            for ext2 in [".jpg", ".png"]:
+                p3 = d / f"shot0{i}{ext2}"
+                if p3.exists():
+                    imgs.append(str(p3)); break
             else:
-                sc.caption(f"Shot {i+1}: N/A")
-    else:
-        col.info(f"{MODEL_LABELS.get(model, model)} 키프레임 미제공 (클라우드 한정)")
+                imgs.append(None)
+    return imgs
+
+def show_shots_row(model, vid, container):
+    imgs = find_shots(model, vid)
+    cols = container.columns(3, gap="small")
+    for i, (c, img) in enumerate(zip(cols, imgs)):
+        if img:
+            c.image(img, use_container_width=True)
+            c.caption(f"Shot {i+1}")
+        else:
+            c.markdown(f"<div style='background:#eee;border-radius:6px;height:100px;"
+                       f"display:flex;align-items:center;justify-content:center;color:#999;'>"
+                       f"Shot {i+1}<br>N/A</div>", unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------------------------
-# Page 1: 대시보드
-# ---------------------------------------------------------------------------
-
+# ===========================================================================
+# 대시보드
+# ===========================================================================
 def page_dashboard():
-    st.markdown("## 📊 STEM 평가 결과 대시보드")
-    data = load_eval_results()
+    st.markdown("## 📊 평가 결과 대시보드")
+    data = load_eval()
     df = pd.DataFrame(data)
 
-    # --- 요약 카드 ---
+    # 요약 카드
     cols = st.columns(4)
     for i, m in enumerate(MODELS):
-        sub = df[df["method"] == m]
-        ptm = sub["match_prescribed"].mean()
-        epa = sub["epa"].mean()
-        cols[i].metric(MODEL_LABELS[m], f"PTM {ptm:.3f}", f"EPA {epa:.3f}")
+        s = df[df["method"] == m]
+        cols[i].metric(MLABEL[m], f"{s['match_prescribed'].mean():.3f}",
+                       f"EPA {s['epa'].mean():.3f}")
 
-    # --- 바 차트 ---
-    st.markdown("### 모델별 PTM & EPA")
+    # 바 차트
     fig = go.Figure()
-    for metric, color, name in [
-        ("match_prescribed", "#4285F4", "PTM"),
-        ("epa", "#34A853", "EPA"),
-    ]:
-        means = df.groupby("method")[metric].mean().reindex(MODELS)
-        stds = df.groupby("method")[metric].std().reindex(MODELS)
-        fig.add_trace(go.Bar(
-            x=[MODEL_LABELS[m] for m in MODELS], y=means,
-            error_y=dict(type="data", array=stds, visible=True),
-            name=name, marker_color=color,
-        ))
-    fig.update_layout(barmode="group", yaxis_title="점수", height=350, margin=dict(t=30))
+    for metric, color, nm in [("match_prescribed","#3498DB","PTM"),("epa","#2ECC71","EPA")]:
+        mu = df.groupby("method")[metric].mean().reindex(MODELS)
+        sd = df.groupby("method")[metric].std().reindex(MODELS)
+        fig.add_trace(go.Bar(x=[MLABEL[m] for m in MODELS], y=mu,
+            error_y=dict(type="data",array=sd,visible=True), name=nm, marker_color=color))
+    fig.update_layout(barmode="group", yaxis_title="점수", height=320, margin=dict(t=20,b=30))
     st.plotly_chart(fig, use_container_width=True)
 
-    # --- 패턴별 히트맵 ---
-    st.markdown("### 패턴별 PTM 히트맵")
-    pivot = df.pivot_table(values="match_prescribed", index="pattern", columns="method", aggfunc="mean")
-    pivot = pivot[MODELS]
-    pivot.columns = [MODEL_LABELS[m] for m in MODELS]
-    fig2 = px.imshow(pivot.round(3), text_auto=True, color_continuous_scale="Blues",
-                     labels=dict(color="PTM"), aspect="auto")
-    fig2.update_layout(height=300, margin=dict(t=20))
-    st.plotly_chart(fig2, use_container_width=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("### 패턴별 PTM")
+        pv = df.pivot_table("match_prescribed", "pattern", "method", "mean")[MODELS]
+        pv.columns = [MLABEL[m] for m in MODELS]
+        fig2 = px.imshow(pv.round(3), text_auto=True, color_continuous_scale="Blues",
+                         labels=dict(color="PTM"), aspect="auto")
+        fig2.update_layout(height=280, margin=dict(t=10,b=10))
+        st.plotly_chart(fig2, use_container_width=True)
 
-    # --- 실패 분포 ---
-    st.markdown("### 실패 유형 분포 (영상 단위 %)")
-    failure_rows = []
-    for d in data:
-        m = d["method"]
-        E, dS = d["E_error"], d["delta_S_ideal"]
-        types = set()
-        for t in range(len(E)):
-            for e in range(len(E[t])):
-                if abs(E[t][e]) == 2:
-                    types.add("IV 반전")
-                elif dS[t][e] == -1 and E[t][e] > 0:
-                    types.add("I 잔류")
-                elif dS[t][e] == 1 and E[t][e] < 0:
-                    types.add("II 미등장")
-                elif dS[t][e] == 0 and E[t][e] != 0:
-                    types.add("III 무단전환")
-        if not types:
-            types.add("없음 (완벽)")
-        for ft in types:
-            failure_rows.append({"모델": MODEL_LABELS[m], "실패 유형": ft})
-    fdf = pd.DataFrame(failure_rows)
-    fdf_pct = fdf.groupby(["모델", "실패 유형"]).size().reset_index(name="cnt")
-    fdf_pct["비율"] = fdf_pct.apply(
-        lambda r: 100 * r["cnt"] / len([d for d in data if MODEL_LABELS[d["method"]] == r["모델"]]), axis=1)
-    fig3 = px.bar(fdf_pct, x="모델", y="비율", color="실패 유형", barmode="group",
-                  labels={"비율": "영상 비율 (%)"}, height=350)
-    fig3.update_layout(margin=dict(t=20))
-    st.plotly_chart(fig3, use_container_width=True)
-
-    # --- 코히어런스-컴플라이언스 트레이드오프 ---
-    st.markdown("### 일관성-준수 트레이드오프")
-    ptm_means = df.groupby("method")["match_prescribed"].mean().reindex(MODELS)
-    ic_vals = {"storydiff": 0.81, "echoshot": 0.85, "vgot": 0.88, "vic": 0.94}
-    fig4 = go.Figure()
-    for m in MODELS:
-        fig4.add_trace(go.Scatter(
-            x=[ptm_means[m]], y=[ic_vals[m]], mode="markers+text",
-            text=[MODEL_LABELS[m]], textposition="top center",
-            marker=dict(size=14), name=MODEL_LABELS[m],
-        ))
-    fig4.update_layout(
-        xaxis_title="PTM (내러티브 준수도) →", yaxis_title="Identity Consistency →",
-        height=350, showlegend=False, margin=dict(t=20),
-    )
-    fig4.add_annotation(text="ρₛ = −1.0 (n=4)", x=0.15, y=0.92,
-                        showarrow=False, font=dict(size=13, color="red"))
-    st.plotly_chart(fig4, use_container_width=True)
+    with c2:
+        st.markdown("### 일관성-준수 트레이드오프")
+        ptm_mu = df.groupby("method")["match_prescribed"].mean().reindex(MODELS)
+        ic = {"storydiff":0.81,"echoshot":0.85,"vgot":0.88,"vic":0.94}
+        fig4 = go.Figure()
+        for m in MODELS:
+            fig4.add_trace(go.Scatter(x=[ptm_mu[m]], y=[ic[m]], mode="markers+text",
+                text=[MLABEL[m]], textposition="top center", marker=dict(size=13), showlegend=False))
+        fig4.update_layout(xaxis_title="PTM →", yaxis_title="IC →",
+                           height=280, margin=dict(t=10,b=30))
+        fig4.add_annotation(text="ρₛ=−1.0", x=0.15, y=0.92, showarrow=False,
+                            font=dict(size=12, color="red"))
+        st.plotly_chart(fig4, use_container_width=True)
 
 
-# ---------------------------------------------------------------------------
-# Page 2: 인간 평가
-# ---------------------------------------------------------------------------
-
-def page_human_eval():
-    st.markdown("## 🎬 인간 평가: 내러티브 준수도")
-
-    evaluator = st.sidebar.text_input("이름 입력", key="eval_name")
-    if not evaluator:
-        st.info("👈 왼쪽 사이드바에 이름을 입력해 주세요.")
-        return
-
+# ===========================================================================
+# 인간 평가
+# ===========================================================================
+def page_eval():
     prompts = load_prompts()
-    _, by_prefix = build_eval_index()
-
-    prompt_keys = list(prompts.keys())
+    bp = build_index()
+    keys = list(prompts.keys())
     rng = random.Random(SEED)
-    scenarios = rng.sample(prompt_keys, min(NUM_SCENARIOS, len(prompt_keys)))
+    scenarios = rng.sample(keys, min(N_SCEN, len(keys)))
 
     rng2 = random.Random(SEED)
-    model_pairs = {}
+    pairs = {}
     for sid in scenarios:
         ms = MODELS[:]
         rng2.shuffle(ms)
-        pair = ms[:2]
-        if rng2.random() < 0.5:
-            pair = pair[::-1]
-        model_pairs[sid] = {"A": pair[0], "B": pair[1]}
+        p = ms[:2]
+        if rng2.random() < 0.5: p = p[::-1]
+        pairs[sid] = {"A": p[0], "B": p[1]}
 
-    if "eval_idx" not in st.session_state:
-        st.session_state.eval_idx = 0
-    idx = st.session_state.eval_idx
+    # Sidebar
+    evaluator = st.sidebar.text_input("✏️ 이름", key="nm")
+    if not evaluator:
+        st.markdown("## 🎬 인간 평가")
+        st.info("👈 사이드바에 이름을 입력하고 시작하세요.")
+        st.markdown("""
+        ### 평가 방법
+        1. **시나리오 정보** 확인 (패턴, 개체, 배경)
+        2. **영상 A / B** 의 3개 Shot 비교
+        3. **어느 쪽이 내러티브를 더 잘 따르는지** 선택
+        4. **확신도** 선택
+        5. **다음** 클릭
+        """)
+        return
 
-    st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**진행률:** {idx} / {len(scenarios)}")
-    st.sidebar.progress(idx / max(len(scenarios), 1))
+    if "idx" not in st.session_state: st.session_state.idx = 0
+    idx = st.session_state.idx
+    total = len(scenarios)
 
-    if idx >= len(scenarios):
-        st.success("✅ 모든 평가를 완료했습니다! 감사합니다.")
+    st.sidebar.markdown(f"**{idx}/{total}** 완료")
+    st.sidebar.progress(idx / max(total, 1))
+
+    if idx >= total:
+        st.markdown("## ✅ 평가 완료!")
+        st.success("모든 시나리오를 평가했습니다. 감사합니다!")
         st.balloons()
         return
 
     sid = scenarios[idx]
-    scenario = prompts[sid]
-    meta = scenario["metadata"]
-    pattern = meta["pattern_type"]
-    pair = model_pairs[sid]
-    prefix = "_".join(sid.split("_")[:2])
-    entities = list(meta["core_entities"].values())
+    sc = prompts[sid]
+    meta = sc["metadata"]
+    pat = meta["pattern_type"]
+    pair = pairs[sid]
+    pfx = "_".join(sid.split("_")[:2])
+    ents = list(meta["core_entities"].values())
 
-    # --- 시나리오 정보 박스 ---
-    desc = PATTERN_DESC.get(pattern, pattern)
-    info_html = f"""
-    <div class='scenario-info'>
-        <b>📌 시나리오 {idx+1}/{len(scenarios)}</b><br>
-        <b>패턴:</b> {pattern.replace('Sequential_', '')} &nbsp;—&nbsp; {desc}<br>
-        <b>등장 개체:</b> {', '.join(entities)}<br>
-        <b>배경:</b> {meta.get('theme', 'N/A').replace('_', ' ')}
-    </div>
-    """
-    st.markdown(info_html, unsafe_allow_html=True)
+    # 시나리오 정보
+    st.markdown(f"""
+    <div class='info-box'>
+        <b>시나리오 {idx+1}/{total}</b> &nbsp;|&nbsp;
+        <b>{pat.replace('Sequential_','')}</b>: {PAT_KR.get(pat, pat)}<br>
+        👤 <b>개체:</b> {', '.join(ents)} &nbsp;|&nbsp;
+        🏠 <b>배경:</b> {meta.get('theme','').replace('_',' ')}
+    </div>""", unsafe_allow_html=True)
 
-    # --- 처방된 존재 매트릭스 S* ---
-    for m_name in [pair["A"], pair["B"]]:
-        entry = by_prefix.get(m_name, {}).get(prefix)
-        if entry and "S_ideal" in entry:
-            st.markdown("**처방된 등장 매트릭스 (S*):**")
-            st.markdown(presence_html(entry["S_ideal"], entry.get("entities", entities)), unsafe_allow_html=True)
+    # S* 매트릭스
+    for mn in [pair["A"], pair["B"]]:
+        e = bp.get(mn, {}).get(pfx)
+        if e and "S_ideal" in e:
+            st.markdown("**처방된 등장 (S*)** — " + presence_table(e["S_ideal"], e.get("entities", ents)),
+                        unsafe_allow_html=True)
             break
 
-    # --- 영상 A / B 를 한 줄에 3 shot씩 ---
+    # 영상 A
+    st.markdown("<div class='card card-a'><div class='card-title title-a'>🔵 영상 A</div>",
+                unsafe_allow_html=True)
+    ea = bp.get(pair["A"], {}).get(pfx)
+    if ea:
+        show_shots_row(pair["A"], ea["vid"], st)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # 영상 B
+    st.markdown("<div class='card card-b'><div class='card-title title-b'>🔴 영상 B</div>",
+                unsafe_allow_html=True)
+    eb = bp.get(pair["B"], {}).get(pfx)
+    if eb:
+        show_shots_row(pair["B"], eb["vid"], st)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # 평가 질문 (2개만)
     st.markdown("---")
 
-    for side, css_class, label_class, label_text in [
-        ("A", "video-card-a", "label-a", "🔵 영상 A"),
-        ("B", "video-card-b", "label-b", "🔴 영상 B"),
-    ]:
-        model = pair[side]
-        entry = by_prefix.get(model, {}).get(prefix)
-        vid = entry["vid"] if entry else ""
+    pref = st.radio(
+        "❓ **어느 영상이 내러티브 패턴을 더 잘 따르나요?**",
+        ["🔵 A가 더 나음", "🔴 B가 더 나음", "⚖️ 비슷함"],
+        key=f"pref_{idx}", horizontal=True,
+    )
 
-        st.markdown(f"<div class='video-card {css_class}'><div class='video-label {label_class}'>{label_text}</div>", unsafe_allow_html=True)
-
-        if model == "storydiff" and entry:
-            kf_dir = KEYFRAMES_DIR / vid
-            imgs = []
-            for i in range(1, 4):
-                p = kf_dir / f"shot0{i}.jpg"
-                if not p.exists():
-                    p = kf_dir / f"shot0{i}.png"
-                imgs.append(str(p) if p.exists() else None)
-
-            c1, c2, c3 = st.columns(3)
-            for ci, (col, img) in enumerate(zip([c1, c2, c3], imgs)):
-                if img:
-                    col.image(img, caption=f"Shot {ci+1}", use_container_width=True)
-                else:
-                    col.caption(f"Shot {ci+1}: N/A")
-
-            # 관측된 S_obs 도 표시
-            if entry and "S_obs" in entry:
-                st.markdown(
-                    f"<small><b>관측된 존재 (S_obs):</b></small>"
-                    + presence_html(entry["S_obs"], entry.get("entities", entities), "S_obs"),
-                    unsafe_allow_html=True,
-                )
-        elif entry:
-            st.info(f"{MODEL_LABELS.get(model, model)} — 클라우드에서 키프레임 미제공")
-            if "S_obs" in entry:
-                st.markdown(
-                    f"<small><b>관측된 존재 (S_obs):</b></small>"
-                    + presence_html(entry["S_obs"], entry.get("entities", entities), "S_obs"),
-                    unsafe_allow_html=True,
-                )
-            ptm_v = entry.get("match_prescribed", 0)
-            epa_v = entry.get("epa", 0)
-            st.caption(f"PTM: {ptm_v:.2f} | EPA: {epa_v:.2f}")
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # --- 평가 폼 ---
-    st.markdown("---")
-    st.markdown("### ✍️ 평가")
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("**🔵 영상 A 점수**")
-        likert_a = st.radio("내러티브 준수도 (A):", [1, 2, 3, 4, 5],
-                            format_func=lambda x: LIKERT_KR[x], key=f"la_{idx}", index=2,
-                            label_visibility="collapsed")
-    with c2:
-        st.markdown("**🔴 영상 B 점수**")
-        likert_b = st.radio("내러티브 준수도 (B):", [1, 2, 3, 4, 5],
-                            format_func=lambda x: LIKERT_KR[x], key=f"lb_{idx}", index=2,
-                            label_visibility="collapsed")
-
-    st.markdown("**어느 영상이 내러티브를 더 잘 따르나요?**")
-    pref = st.radio("선호:", ["A", "B", "비슷함"],
-                    key=f"pref_{idx}", horizontal=True, label_visibility="collapsed")
+    conf = st.select_slider(
+        "📏 **확신도**",
+        options=["매우 불확실", "약간 불확실", "보통", "꽤 확실", "매우 확실"],
+        value="보통", key=f"conf_{idx}",
+    )
 
     if st.button("다음 ➡️", type="primary", use_container_width=True):
-        record = {
+        pref_map = {"🔵 A가 더 나음": "A", "🔴 B가 더 나음": "B", "⚖️ 비슷함": "Tie"}
+        conf_map = {"매우 불확실": 1, "약간 불확실": 2, "보통": 3, "꽤 확실": 4, "매우 확실": 5}
+        rec = {
             "evaluator": evaluator,
-            "timestamp": datetime.datetime.now().isoformat(),
-            "vid": sid,
-            "pattern": pattern,
-            "model_a": pair["A"],
-            "model_b": pair["B"],
-            "likert_a": likert_a,
-            "likert_b": likert_b,
-            "preference": pref,
+            "ts": datetime.datetime.now().isoformat(),
+            "vid": sid, "pattern": pat,
+            "model_a": pair["A"], "model_b": pair["B"],
+            "preference": pref_map[pref],
+            "confidence": conf_map[conf],
         }
         results = []
-        if HUMAN_EVAL_OUTPUT.exists():
-            with open(HUMAN_EVAL_OUTPUT) as f:
-                results = json.load(f)
-        results.append(record)
-        with open(HUMAN_EVAL_OUTPUT, "w") as f:
-            json.dump(results, f, indent=2)
-        st.session_state.eval_idx = idx + 1
+        if OUTPUT_PATH.exists():
+            with open(OUTPUT_PATH) as f: results = json.load(f)
+        results.append(rec)
+        with open(OUTPUT_PATH, "w") as f: json.dump(results, f, indent=2)
+        st.session_state.idx = idx + 1
         st.rerun()
 
 
-# ---------------------------------------------------------------------------
-# Page 3: 평가 결과
-# ---------------------------------------------------------------------------
-
-def page_eval_results():
-    st.markdown("## 📋 인간 평가 결과")
-    if not HUMAN_EVAL_OUTPUT.exists():
+# ===========================================================================
+# 결과
+# ===========================================================================
+def page_results():
+    st.markdown("## 📋 평가 결과")
+    if not OUTPUT_PATH.exists():
         st.info("아직 제출된 평가가 없습니다.")
         return
-    with open(HUMAN_EVAL_OUTPUT) as f:
-        results = json.load(f)
+    with open(OUTPUT_PATH) as f: results = json.load(f)
     if not results:
         st.info("아직 제출된 평가가 없습니다.")
         return
 
-    st.metric("총 평가 수", len(results))
     rdf = pd.DataFrame(results)
+    st.metric("총 평가 수", len(results))
 
-    # 모델별 Likert 점수
-    rows = []
+    # 모델별 승률
+    wins = defaultdict(lambda: {"승": 0, "패": 0, "무": 0})
     for _, r in rdf.iterrows():
-        rows.append({"모델": MODEL_LABELS.get(r["model_a"], r["model_a"]), "점수": r["likert_a"]})
-        rows.append({"모델": MODEL_LABELS.get(r["model_b"], r["model_b"]), "점수": r["likert_b"]})
-    scores_df = pd.DataFrame(rows)
-    st.markdown("### 모델별 평균 Likert 점수")
-    summary = scores_df.groupby("모델")["점수"].agg(["mean", "std", "count"]).round(2)
-    summary.columns = ["평균", "표준편차", "평가 수"]
-    st.dataframe(summary, use_container_width=True)
-
-    # 선호도
-    st.markdown("### 모델별 승리 횟수")
-    wins = defaultdict(int)
-    for _, r in rdf.iterrows():
+        ma, mb = r["model_a"], r["model_b"]
         if r["preference"] == "A":
-            wins[r["model_a"]] += 1
+            wins[ma]["승"] += 1; wins[mb]["패"] += 1
         elif r["preference"] == "B":
-            wins[r["model_b"]] += 1
-    wins_df = pd.DataFrame([
-        {"모델": MODEL_LABELS.get(m, m), "승리": wins.get(m, 0)} for m in MODELS
+            wins[mb]["승"] += 1; wins[ma]["패"] += 1
+        else:
+            wins[ma]["무"] += 1; wins[mb]["무"] += 1
+
+    wdf = pd.DataFrame([
+        {"모델": MLABEL.get(m, m), **wins[m],
+         "승률": f"{100*wins[m]['승']/max(wins[m]['승']+wins[m]['패']+wins[m]['무'],1):.0f}%"}
+        for m in MODELS
     ])
-    st.dataframe(wins_df, use_container_width=True)
+    st.dataframe(wdf, use_container_width=True, hide_index=True)
 
-    # 평가자별 수
-    st.markdown("### 평가자별 제출 수")
-    evaluator_counts = rdf["evaluator"].value_counts().reset_index()
-    evaluator_counts.columns = ["평가자", "평가 수"]
-    st.dataframe(evaluator_counts, use_container_width=True)
+    # 확신도 분포
+    if "confidence" in rdf.columns:
+        st.markdown("### 확신도 분포")
+        fig = px.histogram(rdf, x="confidence", nbins=5, labels={"confidence": "확신도"})
+        fig.update_layout(height=250, margin=dict(t=10))
+        st.plotly_chart(fig, use_container_width=True)
 
-
-# ---------------------------------------------------------------------------
-# 안내 페이지
-# ---------------------------------------------------------------------------
-
-def page_guide():
-    st.markdown("""
-    ## 📖 평가 안내
-
-    ### 평가 목적
-    생성된 멀티-샷 영상이 **지정된 내러티브 패턴**을 얼마나 잘 따르는지 평가합니다.
-
-    ### 평가 방법
-    1. **시나리오 정보**를 확인하세요 (패턴, 등장 개체, 배경)
-    2. **처방된 등장 매트릭스 S***를 확인하세요 (각 Shot에서 누가 있어야 하는지)
-    3. **영상 A**와 **영상 B**의 3개 Shot 이미지를 비교하세요
-    4. 각 영상에 1~5점 Likert 점수를 부여하세요
-    5. 어느 영상이 더 나은지 선택하세요
-    6. **다음** 버튼으로 진행하세요
-
-    ### 점수 기준
-    | 점수 | 의미 |
-    |------|------|
-    | 1 | 전혀 안 맞음 — 처방된 개체 등장/퇴장이 전혀 반영되지 않음 |
-    | 2 | 부족함 — 일부만 맞고 대부분 틀림 |
-    | 3 | 보통 — 절반 정도 맞음 |
-    | 4 | 양호 — 대부분 맞지만 일부 오류 |
-    | 5 | 완벽 — 모든 전환이 정확히 일치 |
-
-    ### 패턴 설명
-    | 패턴 | 구조 | 설명 |
-    |------|------|------|
-    | Relay | A → AB → B | A 먼저, B 합류 후 A 퇴장 |
-    | Split | AB → A → B | 함께 있다가 B 퇴장, A 퇴장+B 재등장 |
-    | Accumulation | A → AB → ABC | 개체가 하나씩 추가 |
-    | Convergence | A → B → AB | A 퇴장, B 등장, 둘 다 등장 |
-    | Sliding Window | AB → BC → C | 개체가 순차적으로 교체 |
-    | Reduction | ABC → AB → A | 개체가 하나씩 퇴장 |
-    | Reverse Relay | B → AB → A | Relay의 역순 |
-    """)
+    # 평가자별
+    st.markdown("### 평가자별 제출")
+    st.dataframe(rdf["evaluator"].value_counts().reset_index().rename(
+        columns={"evaluator": "평가자", "count": "평가 수"}),
+        use_container_width=True, hide_index=True)
 
 
-# ---------------------------------------------------------------------------
+# ===========================================================================
 # Main
-# ---------------------------------------------------------------------------
-
+# ===========================================================================
 def main():
-    st.set_page_config(
-        page_title="DIAGONAL 내러티브 평가",
-        page_icon="🎬",
-        layout="wide",
-    )
-    st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+    st.set_page_config(page_title="DIAGONAL 평가", page_icon="🎬", layout="centered")
+    st.markdown(CSS, unsafe_allow_html=True)
 
     st.sidebar.markdown("# 🎬 DIAGONAL")
-    st.sidebar.markdown("**멀티-샷 영상 내러티브 평가**")
+    st.sidebar.markdown("멀티샷 영상 내러티브 평가")
     st.sidebar.markdown("---")
 
-    page = st.sidebar.radio(
-        "메뉴",
-        ["📊 대시보드", "🎬 인간 평가", "📋 평가 결과", "📖 평가 안내"],
-    )
+    page = st.sidebar.radio("메뉴", ["📊 대시보드", "🎬 평가하기", "📋 결과 보기"])
 
-    if page == "📊 대시보드":
-        page_dashboard()
-    elif page == "🎬 인간 평가":
-        page_human_eval()
-    elif page == "📋 평가 결과":
-        page_eval_results()
-    else:
-        page_guide()
-
+    if "📊" in page: page_dashboard()
+    elif "🎬" in page: page_eval()
+    else: page_results()
 
 if __name__ == "__main__":
     main()
