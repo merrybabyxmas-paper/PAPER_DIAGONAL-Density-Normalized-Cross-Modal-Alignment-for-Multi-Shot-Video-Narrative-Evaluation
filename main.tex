@@ -14,6 +14,8 @@
 \usepackage{bm}
 \usepackage{enumitem}
 \usepackage{pifont}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
 \usepackage{colortbl}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,decorations.pathreplacing,matrix}
@@ -226,50 +228,55 @@ We zero-pad all matrices to $\{-1,0,+1\}^{2 \times 3}$ so that 2-entity patterns
 This enables a unified proof over $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
 The extension to arbitrary $T$ and $N$ is given in Appendix~B (Theorem~2).
 
-\subsection{Basis Patterns and Linear Operators}
+\subsection{Linear Operators on Narrative Matrices}
 \label{sec:basis}
 
-Two patterns form the algebraic basis of the narrative space.
-All matrices are in canonical $2 \times 3$ form.
+We define two operators that manipulate the narrative topology.
 
-\paragraph{Relay ($\calB_1$): $A \to AB \to B$.}
-One entity hands off to another:
+\begin{definition}[Column Permutation]
+\label{def:col_perm}
+Let $\sigma_{ij}$ denote the transposition swapping columns $i$ and $j$.
+The column permutation operator reassigns entity roles without altering the causal topology:
+\begin{equation}
+(\sigma_{ij} \circ \Delta S)_{t,e} = \Delta S_{t,\,\sigma_{ij}^{-1}(e)}.
+\label{eq:col_perm}
+\end{equation}
+Compositions read left-to-right: $\sigma_{23} \circ \sigma_{12}$ first swaps columns 1--2, then 2--3.
+\end{definition}
+
+\begin{definition}[Time Reversal]
+\label{def:time_rev}
+The time reversal operator $\calT$ inverts the temporal order and negates all signs, converting entries to exits and vice versa:
+\begin{equation}
+(\calT \circ \Delta S)_{t,e} = -\Delta S_{(T\!-\!1)-t,\,e}.
+\label{eq:time_rev}
+\end{equation}
+\end{definition}
+
+\begin{definition}[Basis Matrices]
+\label{def:basis}
+Two matrices form the algebraic basis of the narrative space (all in canonical $2 \times 3$ form):
+
+\emph{Relay} ($\calB_1$): a sequential hand-off ($A \!\to\! AB \!\to\! B$):
 \begin{equation}
 \calB_1 = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}.
 \label{eq:basis_relay}
 \end{equation}
 
-\paragraph{Split ($\calB_2$): $AB \to A \to B$.}
-Co-occurring entities separate into alternating scenes:
+\emph{Split} ($\calB_2$): co-occurring entities separate ($AB \!\to\! A \!\to\! B$):
 \begin{equation}
 \calB_2 = \begin{bmatrix} 0 & -1 & 0 \\ -1 & +1 & 0 \end{bmatrix}.
 \label{eq:basis_split}
 \end{equation}
+\end{definition}
 
-Five additional patterns are obtained via two operators:
-
-\paragraph{Column permutation} $\sigma \in \Sigma_3$ swaps entity roles:
-\begin{equation}
-(\sigma \cdot \Delta S)_{t,e} = \Delta S_{t,\,\sigma^{-1}(e)}.
-\label{eq:col_perm}
-\end{equation}
-For example, swapping columns 1 and 2 of $\calB_1$ yields \textbf{Reverse Relay} ($B \!\to\! AB \!\to\! A$).
-
-\paragraph{Time reversal} $\calT$ negates and reverses the rows:
-\begin{equation}
-(\calT\Delta S)_{t,e} = -\Delta S_{(T\!-\!1)-t,\,e},
-\label{eq:time_rev}
-\end{equation}
-converting exits into entries and vice versa.
-Applying $\calT$ to $\calB_1$ yields \textbf{Convergence} ($A \!\to\! B \!\to\! AB$).
-
-\paragraph{Derived patterns.}
+Five additional patterns are constructed from $\calB_1$, $\calB_2$ via $\sigma_{ij}$, $\calT$, and $\mathbb{Z}$-linear combination:
 \begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{Accumulation} ($A \!\to\! AB \!\to\! ABC$): $\left[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\right]$, from $\calB_1$ via column permutation + addition. Introduces a third entity.
-  \item \textbf{Reduction} ($ABC \!\to\! AB \!\to\! A$): time-reversal of Accumulation.
-  \item \textbf{Convergence} ($A \!\to\! B \!\to\! AB$): time-reversal of Relay.
-  \item \textbf{Reverse Relay} ($B \!\to\! AB \!\to\! A$): column permutation of Relay.
-  \item \textbf{Sliding Window} ($AB \!\to\! BC \!\to\! C$): the most demanding pattern with 4 non-zero transitions (Table~\ref{tab:pattern_dist}).
+  \item \textbf{Reverse Relay} ($B \!\to\! AB \!\to\! A$): $\sigma_{12} \circ \calB_1 = \calT \circ \calB_1 = \left[\begin{smallmatrix} +1 & 0 & 0 \\ 0 & -1 & 0 \end{smallmatrix}\right]$.
+  \item \textbf{Convergence} ($A \!\to\! B \!\to\! AB$): $\calT \circ (\sigma_{12} \circ \calB_2) = \left[\begin{smallmatrix} -1 & +1 & 0 \\ +1 & 0 & 0 \end{smallmatrix}\right]$.
+  \item \textbf{Accumulation} ($A \!\to\! AB \!\to\! ABC$): $E_{12} + E_{23} = \left[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\right]$, where $E_{ij} \in \operatorname{span}_{\mathbb{Z}}(\calB_1, \calB_2, \Sigma_3)$ by Theorem~\ref{thm:completeness}. Introduces a third entity.
+  \item \textbf{Reduction} ($ABC \!\to\! AB \!\to\! A$): $\calT \circ (\text{Accumulation}) = \left[\begin{smallmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{smallmatrix}\right]$.
+  \item \textbf{Sliding Window} ($AB \!\to\! BC \!\to\! C$): $-E_{11} + E_{13} - E_{22} = \left[\begin{smallmatrix} -1 & 0 & +1 \\ 0 & -1 & 0 \end{smallmatrix}\right]$, involving all 3 entities across both transitions.
 \end{itemize}
 
 \subsection{Completeness Theorem}
@@ -280,36 +287,36 @@ Applying $\calT$ to $\calB_1$ yields \textbf{Convergence} ($A \!\to\! B \!\to\! 
 Under column permutation $\sigma \in \Sigma_3$ and integer-coefficient linear combination, the two basis patterns $\calB_1$ (Relay) and $\calB_2$ (Split) generate all matrices in $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
 \end{theorem}
 
-\begin{proof}[Proof sketch]
+\begin{proof}
 It suffices to construct all six standard basis matrices $E_{ij}$ (1 in position $(i,j)$, 0 elsewhere) from $\calB_1$ and $\calB_2$, since any integer matrix is a $\mathbb{Z}$-linear combination of $\{E_{ij}\}$.
 
-\emph{Step 1: Construct $E_{11} - E_{21}$.}\;
-Define three column permutations of $\calB_1$:
-\begin{align}
-\calB_1^{(12)} &= \begin{bmatrix} +1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}, \qquad
-\calB_1^{(13)} = \begin{bmatrix} 0 & 0 & +1 \\ -1 & 0 & 0 \end{bmatrix}, \label{eq:perm_b1_12_13} \\[4pt]
-\calB_1^{(23)} &= \begin{bmatrix} 0 & +1 & 0 \\ 0 & 0 & -1 \end{bmatrix}. \label{eq:perm_b1_23}
-\end{align}
-Sum all three permutations and take their pairwise difference:
-\begin{align}
-\calB_1^{(12)} + \calB_1^{(13)} + \calB_1^{(23)} &= \begin{bmatrix} 1 & 1 & 1 \\ -1 & -1 & -1 \end{bmatrix}, \label{eq:sum_perms} \\[4pt]
-\calB_1^{(12)} - \calB_1^{(23)} &= \begin{bmatrix} 1 & -1 & 0 \\ 0 & -1 & 1 \end{bmatrix}. \label{eq:diff_perms}
-\end{align}
-Combining Eqs.~\ref{eq:sum_perms}--\ref{eq:diff_perms} yields:
+\emph{Step 1: Isolate $E_{11} - E_{21}$.}\;
+We compute two permutations of $\calB_1$:
 \begin{equation}
-E_{11} - E_{21} = \begin{bmatrix} 1 & 0 & 0 \\ -1 & 0 & 0 \end{bmatrix}.
-\label{eq:e11_e21}
+\sigma_{13} \circ \calB_1 = \begin{bmatrix} 0 & +1 & 0 \\ 0 & 0 & -1 \end{bmatrix}, \quad
+\sigma_{23} \circ \sigma_{12} \circ \calB_1 = \begin{bmatrix} +1 & 0 & 0 \\ 0 & 0 & -1 \end{bmatrix}.
+\label{eq:two_perms}
 \end{equation}
+The linear combination $\calB_1 - (\sigma_{13} \circ \calB_1) + (\sigma_{23} \circ \sigma_{12} \circ \calB_1)$ yields:
+\begin{align}
+&\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}
+- \begin{bmatrix} 0 & +1 & 0 \\ 0 & 0 & -1 \end{bmatrix}
++ \begin{bmatrix} +1 & 0 & 0 \\ 0 & 0 & -1 \end{bmatrix} \notag \\[3pt]
+&\;= \begin{bmatrix} +1 & 0 & 0 \\ -1 & 0 & 0 \end{bmatrix}
+\;= E_{11} - E_{21}. \label{eq:e11_e21}
+\end{align}
 
-\emph{Step 2: Isolate individual $E_{ij}$.}\;
-Let $\calB_2^{(12)}$ denote $\calB_2$ with columns 1 and 2 swapped.
-Adding Eq.~\ref{eq:e11_e21} to $\calB_2^{(12)}$:
-\begin{equation}
-(E_{11} - E_{21}) + \calB_2^{(12)} = \begin{bmatrix} 1 & 0 & 0 \\ -1 & 0 & 0 \end{bmatrix} + \begin{bmatrix} -1 & 0 & 0 \\ +1 & -1 & 0 \end{bmatrix} = \begin{bmatrix} 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix} = -E_{22}.
-\label{eq:isolate_e22}
-\end{equation}
-From $E_{22}$, column permutations yield $E_{21}$ and $E_{23}$.
-Subtracting $E_{21}$ from Eq.~\ref{eq:e11_e21} gives $E_{11}$, and further column permutations produce $E_{12}$ and $E_{13}$:
+\emph{Step 2: Extract the standard basis $\{E_{ij}\}$.}\;
+Adding $\sigma_{12} \circ \calB_2 = \left[\begin{smallmatrix} -1 & 0 & 0 \\ +1 & -1 & 0 \end{smallmatrix}\right]$ to Eq.~\ref{eq:e11_e21} isolates $-E_{22}$:
+\begin{align}
+(E_{11} - E_{21}) + \sigma_{12} \circ \calB_2
+&= \begin{bmatrix} +1 & 0 & 0 \\ -1 & 0 & 0 \end{bmatrix}
+ + \begin{bmatrix} -1 & 0 & 0 \\ +1 & -1 & 0 \end{bmatrix} \notag \\[3pt]
+&= \begin{bmatrix} 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix} = -E_{22}. \label{eq:isolate_e22}
+\end{align}
+From $E_{22}$, column permutations yield $E_{21} = \sigma_{12} \circ E_{22}$ and $E_{23} = \sigma_{23} \circ E_{22}$.
+\emph{Adding} $E_{21}$ to Eq.~\ref{eq:e11_e21}: $(E_{11} - E_{21}) + E_{21} = E_{11}$.
+Column permutations of $E_{11}$ produce $E_{12} = \sigma_{12} \circ E_{11}$ and $E_{13} = \sigma_{13} \circ E_{11}$:
 \begin{equation}
 \{E_{11},\, E_{12},\, E_{13},\, E_{21},\, E_{22},\, E_{23}\} \;\subset\; \operatorname{span}_{\mathbb{Z}}\!\bigl(\calB_1,\, \calB_2,\, \Sigma_3\bigr). \qedhere
 \label{eq:all_eij}
@@ -317,6 +324,7 @@ Subtracting $E_{21}$ from Eq.~\ref{eq:e11_e21} gives $E_{11}$, and further colum
 \end{proof}
 
 \noindent The complete derivation with all intermediate matrices is provided in Appendix~A.
+Note that all permutations of $\calB_1$ share the row-sum constraint $(+1, -1)$, so $\calB_2$ is essential to break this symmetry---no subset of $\calB_1$ permutations alone can span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
 
 \paragraph{Implications.}
 
@@ -493,8 +501,8 @@ Relay & $A \to AB \to B$ & 200 & 2 & Basis \\
 Split & $AB \to A \to B$ & 200 & 3 & Basis \\
 Accumulation & $A \to AB \to ABC$ & 200 & 2 & Derived \\
 \midrule
-Convergence & $A \to B \to AB$ & 100 & 4 & Derived \\
-Sliding Window & $AB \to BC \to C$ & 100 & 4 & Derived \\
+Convergence & $A \to B \to AB$ & 100 & 3 & Derived \\
+Sliding Window & $AB \to BC \to C$ & 100 & 3 & Derived \\
 Reduction & $ABC \to AB \to A$ & 100 & 2 & Derived \\
 Reverse Relay & $B \to AB \to A$ & 100 & 2 & Derived \\
 \bottomrule
@@ -605,7 +613,7 @@ Crucially, these rankings are \emph{consistently reversed} compared to Identity 
 While the sample of evaluated architectures ($n\!=\!4$) limits broad statistical generalization, the perfect rank reversal ($\rho_s = -1.0$) highlights a clear empirical trend that we term the \emph{coherence--compliance trade-off} (\S\ref{sec:pareto}): embedding-similarity metrics reward static entity persistence at the expense of narrative dynamics.
 
 \textbf{Finding 3: StoryDiffusion leads across patterns.}
-SD achieves highest PTM in 6 of 7 patterns, with the largest advantage on Sliding Window (0.357 vs.\ 0.270, the most demanding pattern with 4 prescribed transitions).
+SD achieves highest PTM in 6 of 7 patterns, with the largest advantage on Sliding Window (0.357 vs.\ 0.270), the pattern involving all 3 entities across both transitions.
 
 \subsection{Metric Sensitivity Across Patterns}
 \label{sec:pattern_analysis}
@@ -614,7 +622,7 @@ The per-pattern breakdown in Table~\ref{tab:main} reveals how \stem{} metrics ex
 
 \textbf{Pattern difficulty gradient.}
 PTM spread (best minus worst) varies from 0.11 (Relay, Reverse Relay) to 0.28 (Sliding Window), confirming that more complex patterns produce stronger metric discrimination.
-The 4-transition patterns (Convergence, Sliding Window) consistently separate all four methods, while 2-transition patterns (Relay) show smaller inter-method gaps.
+The 3-transition patterns (Split, Convergence, Sliding Window) consistently separate all four methods, while 2-transition patterns (Relay) show smaller inter-method gaps.
 
 \textbf{Architectural patterns emerge.}
 StoryDiffusion's Consistent Self-Attention excels at Sliding Window (0.357) and Convergence (0.277), the patterns requiring complex multi-entity transitions.
