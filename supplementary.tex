@@ -237,10 +237,19 @@ Entity Types & Count & \% \\
 
 
 %% ============================================================
+\section{Prompt Quality Control}
+\label{app:quality_control}
+
+All prompts undergo automated validation ensuring entity--pattern topology consistency: the set of entities mentioned in each shot description must exactly match the presence matrix $S$ for the target pattern.
+Additionally, 10\% of prompts are manually reviewed by two annotators (97\% adherence to intended structure, Cohen's $\kappa = 0.91$).
+Prompts that describe ambiguous scenarios (e.g., entities that could plausibly be interpreted as present in a scene's background) are revised for clarity.
+
+
+%% ============================================================
 \section{Sample Prompts}
 \label{app:prompts}
 
-Each prompt has three variants: \texttt{gen\_prompt} (+ quality tags), \texttt{eval\_prompt} (clean scene for CLIP), \texttt{diag\_prompt} (entity probe).
+Each prompt has two variants: \texttt{gen\_prompt} (+ quality tags for generation) and \texttt{eval\_prompt} (clean scene descriptions for evaluation). Entity names are extracted directly from the eval prompts for VLM entity queries.
 
 \begin{table}[h]
 \caption{Relay pattern sample ($A \to AB \to B$).}
@@ -253,15 +262,15 @@ Shot & Field & Prompt \\
 \midrule
 \multirow{2}{*}{1}
   & eval & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
-  & diag & a toddler \\
+  & entity &a toddler \\
 \midrule
 \multirow{2}{*}{2}
   & eval & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
-  & diag & a toddler and a mother together \\
+  & entity &a toddler and a mother together \\
 \midrule
 \multirow{2}{*}{3}
   & eval & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
-  & diag & a mother \\
+  & entity &a mother \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -276,13 +285,13 @@ Shot & Field & Prompt \\
 Shot & Field & Prompt \\
 \midrule
 1 & eval & A lone eagle soaring above a dense forest canopy at dawn \\
-  & diag & an eagle \\
+  & entity &an eagle \\
 \midrule
 2 & eval & An eagle and a fox standing at the edge of a forest clearing \\
-  & diag & an eagle and a fox \\
+  & entity &an eagle and a fox \\
 \midrule
 3 & eval & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
-  & diag & an eagle, a fox, and a rabbit \\
+  & entity &an eagle, a fox, and a rabbit \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -297,13 +306,13 @@ Shot & Field & Prompt \\
 Shot & Field & Prompt \\
 \midrule
 1 & eval & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
-  & diag & a chef and a waiter \\
+  & entity &a chef and a waiter \\
 \midrule
 2 & eval & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
-  & diag & a waiter and a sommelier \\
+  & entity &a waiter and a sommelier \\
 \midrule
 3 & eval & A sommelier examining a wine bottle under warm chandelier light, alone \\
-  & diag & a sommelier \\
+  & entity &a sommelier \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -330,7 +339,7 @@ VGoT      & Kolors+DC & T2I$\to$I2V & 25+50 & 512$\times$512 & 16 \\
 \end{tabular}
 \end{table}
 
-All models use seed = 42, negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark''.
+All models use a fixed seed, negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark''.
 All four models successfully generated 1000 videos each (4,000 total).
 
 
@@ -748,7 +757,7 @@ Source videos and analysis scripts: \texttt{gt/two\_cats/} and \texttt{eval\_gt\
 
 \begin{itemize}[leftmargin=*,nosep]
 \item All evaluation code, prompts, and 4,000 generated videos are released.
-\item Random seed: 42 (generation and ablation bootstraps).
+\item Fixed random seed for generation and ablation bootstraps.
 \item VLM detector: Qwen2-VL-7B-Instruct (fp16, greedy decoding).
 \item Entity query: ``Is there a \{entity\} visible in this image? Answer only Yes or No.''
 \item 1 middle frame per shot (3 frames per video).
