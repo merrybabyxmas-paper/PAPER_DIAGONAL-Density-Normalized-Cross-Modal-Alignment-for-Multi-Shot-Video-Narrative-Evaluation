@@ -31,7 +31,7 @@
 
 \begin{document}
 
-\title{Supplementary Material for\\Spanning the Narrative Space: State Transition Matrix Matching\\for Multi-Shot Video Evaluation}
+\title{Supplementary Material for\\The Algebra of Storytelling: A State Transition Benchmark\\for Spanning Multi-Entity Multi-Shot Narratives}
 
 \author{Anonymous Authors}
 \affiliation{\institution{Anonymous Institution}}
@@ -749,6 +749,93 @@ The VLM achieves 100\% detection accuracy on these unambiguous, real-world image
 (3)~the lower TPR/TNR observed on generated images (\S\ref{app:vlm_quality}) reflects entity ambiguity in generation outputs, not a limitation of the detection pipeline.
 
 Source videos and analysis scripts: \texttt{gt/two\_cats/} and \texttt{eval\_gt\_failures.py}.
+
+
+%% ============================================================
+\section{Metric Discriminability Comparison}
+\label{app:metric_discriminability}
+
+We compare the discriminative power of three candidate metrics: PTM ($\ell_0$-norm on prescribed cells), EPA (entity presence accuracy), and raw Frobenius distance $\|E\|_F$.
+
+\begin{table}[h]
+\caption{Discriminability of candidate metrics. $H$: Kruskal--Wallis statistic across 4 models. Sig.\ pairs: number of pairwise Mann--Whitney $U$ tests significant at $\alpha = 0.005$ (out of 6).}
+\centering
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Metric & $H$ & $p$ & Sig.\ pairs \\
+\midrule
+PTM              & \textbf{302.7} & $< 10^{-65}$ & \textbf{6/6} \\
+EPA              & 46.0           & $5.5 \times 10^{-10}$ & 4/6 \\
+$\|E\|_F$        & 8.9            & 0.031 & 1/6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+PTM achieves 33$\times$ the $H$-statistic of $\|E\|_F$ and resolves all 6 pairwise comparisons, confirming that projecting onto the prescribed subspace ($E \odot M$) removes hold-cell noise that masks model differences.
+EPA is intermediate (4/6 pairs), reflecting its role as a macroscopic complement rather than a primary metric.
+The Frobenius norm resolves only the Echo--VGoT pair, and its ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does not match the PTM ranking---confirming it is confounded by unprescribed transitions.
+
+
+%% ============================================================
+\section{Sample Size Sensitivity}
+\label{app:sample_size}
+
+A key reviewer concern is whether 1,000 scenarios per model are necessary.
+We subsample $N \in \{50, 100, 200, 300, 500, 750, 1000\}$ scenarios (with replacement, $B = 1{,}000$ bootstrap iterations) and measure two stability criteria: (1)~\emph{rank preservation}: the fraction of bootstrap samples in which the 4-model PTM ranking matches the full-dataset ranking; (2)~\emph{full significance}: the fraction in which all 6 pairwise Mann--Whitney $U$ tests are significant at $p < 0.05$.
+
+\begin{table}[h]
+\caption{Rank stability as a function of dataset size.}
+\centering
+\small
+\begin{tabular}{@{}ccc@{}}
+\toprule
+$N$ & Rank preserved (\%) & All 6 sig.\ (\%) \\
+\midrule
+50   & 72.8 & 21.3 \\
+100  & 82.4 & 44.6 \\
+200  & 89.7 & 72.1 \\
+300  & 94.4 & 86.3 \\
+500  & 97.6 & 96.5 \\
+750  & 99.2 & 99.4 \\
+1000 & 99.8 & 99.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At $N = 300$, rank preservation exceeds 94\% and full significance exceeds 86\%, establishing a practical minimum for future benchmarks.
+The 1,000-scenario design provides $>$99.8\% stability across both criteria, ensuring the reported results are robust to sampling variability.
+
+
+%% ============================================================
+\section{Cross-Pattern Rank Consistency}
+\label{app:rank_consistency}
+
+To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and measure concordance via Kendall's coefficient of concordance $W$.
+
+\begin{table}[h]
+\caption{Per-pattern PTM rankings (1 = best). Bold: deviation from overall ranking.}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Pattern & SD & Echo & VGoT & VIC \\
+\midrule
+Relay          & 1 & 2 & 3 & 4 \\
+Split          & 1 & 2 & 3 & 4 \\
+Accumulation   & 1 & 2 & 4 & 3 \\
+Convergence    & 1 & 2 & 4 & 3 \\
+Sliding Window & 1 & 2 & 3 & 4 \\
+Reduction      & 1 & 2 & 3 & 4 \\
+Reverse Relay  & 2 & \textbf{1} & 3 & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
+StoryDiffusion ranks 1st in 6/7 patterns; EchoShot claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
+The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's specific DynamiCrafter bottleneck on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 
 
 %% ============================================================
