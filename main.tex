@@ -285,21 +285,23 @@ It suffices to construct all six standard basis matrices $E_{ij}$ (1 in position
 
 \emph{Step 1: Construct $E_{11} - E_{21}$.}\;
 Define three column permutations of $\calB_1$:
-\begin{equation}
-\calB_1^{(12)} = \begin{bmatrix} +1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix},\quad
-\calB_1^{(13)} = \begin{bmatrix} 0 & 0 & +1 \\ -1 & 0 & 0 \end{bmatrix},\quad
-\calB_1^{(23)} = \begin{bmatrix} 0 & +1 & 0 \\ 0 & 0 & -1 \end{bmatrix}.
-\label{eq:permuted_b1}
-\end{equation}
-Summing: $\calB_1^{(12)} + \calB_1^{(13)} + \calB_1^{(23)} = \left[\begin{smallmatrix} 1 & 1 & 1 \\ -1 & -1 & -1 \end{smallmatrix}\right]$.
-Differencing: $\calB_1^{(12)} - \calB_1^{(23)} = \left[\begin{smallmatrix} 1 & -1 & 0 \\ 0 & -1 & 1 \end{smallmatrix}\right]$.
-Combining yields $E_{11} - E_{21}$.
+\begin{align}
+\calB_1^{(12)} &= \begin{bmatrix} +1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}, \qquad
+\calB_1^{(13)} = \begin{bmatrix} 0 & 0 & +1 \\ -1 & 0 & 0 \end{bmatrix}, \label{eq:perm_b1_12_13} \\[4pt]
+\calB_1^{(23)} &= \begin{bmatrix} 0 & +1 & 0 \\ 0 & 0 & -1 \end{bmatrix}. \label{eq:perm_b1_23}
+\end{align}
+Sum all three permutations and take their pairwise difference:
+\begin{align}
+\calB_1^{(12)} + \calB_1^{(13)} + \calB_1^{(23)} &= \begin{bmatrix} 1 & 1 & 1 \\ -1 & -1 & -1 \end{bmatrix}, \label{eq:sum_perms} \\[4pt]
+\calB_1^{(12)} - \calB_1^{(23)} &= \begin{bmatrix} 1 & -1 & 0 \\ 0 & -1 & 1 \end{bmatrix}. \label{eq:diff_perms}
+\end{align}
+Combining Eqs.~\ref{eq:sum_perms}--\ref{eq:diff_perms} yields the matrix $E_{11} - E_{21}$.
 
 \emph{Step 2: Isolate individual $E_{ij}$.}\;
-Adding $E_{11} - E_{21}$ to a permuted variant of $\calB_2$ isolates $-E_{22}$.
-Column permutations then yield $E_{21}$ and $E_{23}$; subtracting from Step~1 gives $E_{11}$, with further permutations producing $E_{12}$ and $E_{13}$.
+Adding $E_{11} - E_{21}$ to a column-permuted variant of $\calB_2$ isolates $-E_{22}$.
+Column permutations of $E_{22}$ then yield $E_{21}$ and $E_{23}$; subtracting from Step~1 gives $E_{11}$, with further permutations producing $E_{12}$ and $E_{13}$.
 
-The complete algebraic derivation is provided in Appendix~A. \qedhere
+The complete derivation with all intermediate matrices is in Appendix~A. \qedhere
 \end{proof}
 
 \paragraph{Implications.}
