@@ -47,14 +47,14 @@
 \label{app:proof}
 
 \begin{theorem}[Completeness of the Narrative Space]
-Under column permutation $\calP_{ij}$ and integer-coefficient linear combination, the two basis matrices $\calB_1$ (Relay) and $\calB_2$ (Split) span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
+Under character role swapping $\calP_{ij}$ and integer-coefficient linear combination, the two basis matrices $\calB_1$ (Relay) and $\calB_2$ (Split) span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
 \end{theorem}
 
 \begin{proof}
 We construct all six standard basis matrices $E_{ij}$ from $\calB_1$ and $\calB_2$.
 
 \textbf{Step~1: Column isolation.}
-Define three permutation variants of $\calB_1$:
+Define three character role swapping variants of $\calB_1$:
 $v_1 = \calB_1 = E_{12} - E_{21}$,
 $v_2 = \calP_{13}(\calB_1) = E_{12} - E_{23}$,
 $v_3 = \calP_{23}(\calP_{12}(\calB_1)) = E_{11} - E_{23}$.
@@ -64,7 +64,7 @@ X = (E_{11} - E_{23}) - (E_{12} - E_{23}) + (E_{12} - E_{21}) = E_{11} - E_{21}.
 \end{equation}
 
 \textbf{Step~2: Dimension breaking via $\calB_2$.}
-Apply column permutation: $\calP_{12}(\calB_2) = -E_{11} + E_{21} - E_{22}$.
+Apply character role swapping: $\calP_{12}(\calB_2) = -E_{11} + E_{21} - E_{22}$.
 Adding to $X$:
 \begin{equation}
 X + \calP_{12}(\calB_2) = (E_{11} - E_{21}) + (-E_{11} + E_{21} - E_{22}) = -E_{22}.
@@ -72,7 +72,7 @@ X + \calP_{12}(\calB_2) = (E_{11} - E_{21}) + (-E_{11} + E_{21} - E_{22}) = -E_{
 Thus $E_{22} = -(X + \calP_{12}(\calB_2))$.
 
 \textbf{Step~3: Propagation.}
-From $E_{22}$, column permutations yield $E_{21} = \calP_{12}(E_{22})$ and $E_{23} = \calP_{23}(E_{22})$.
+From $E_{22}$, character role swapping yields $E_{21} = \calP_{12}(E_{22})$ and $E_{23} = \calP_{23}(E_{22})$.
 From $X = E_{11} - E_{21}$ and the now-known $E_{21}$: $E_{11} = X + E_{21}$.
 Similarly, $E_{12} = \calP_{12}(E_{11})$ and $E_{13} = \calP_{13}(E_{11})$.
 
@@ -85,7 +85,7 @@ Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combi
 \section{\texorpdfstring{Topological Generalization to $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$}{Topological Generalization to M\_(T-1)xN(Z)}}
 \label{app:generalization}
 
-In the main paper (\S3), Theorem~1 proved that the basis set $\calB = \{\calB_1, \calB_2\}$ spans the local narrative space $\mathbb{M}_{2\times 3}(\mathbb{Z})$ under the symmetric group of column permutations $\Sigma_3$.
+In the main paper (\S3), Theorem~1 proved that the basis set $\calB = \{\calB_1, \calB_2\}$ spans the local narrative space $\mathbb{M}_{2\times 3}(\mathbb{Z})$ under the symmetric group of character role swappings $\Sigma_3$.
 Here, we prove that this local spanning property generalizes to the global multi-shot space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ for any $T \geq 3$ and $N \geq 3$.
 
 \subsection{Operator Definitions and Validity}
@@ -120,7 +120,7 @@ The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local trans
 \subsection{Lemma 1: Spatial Extension}
 
 \begin{lemma}
-The set $\hat{\calB} = \{\hat{\calB}_1, \hat{\calB}_2\}$ spans $\mathbb{M}_{2\times N}(\mathbb{Z})$ under the permutation group $\Sigma_N$.
+The set $\hat{\calB} = \{\hat{\calB}_1, \hat{\calB}_2\}$ spans $\mathbb{M}_{2\times N}(\mathbb{Z})$ under the character role swapping group $\Sigma_N$.
 \end{lemma}
 
 \begin{proof}
@@ -130,7 +130,7 @@ Let $E_{i,j}^{2\times 3}$ be the elementary matrix in $\mathbb{M}_{2\times 3}(\m
 \]
 Let $\hat{E}_{i,j}^{2\times N} = \mathcal{Z}_N(E_{i,j}^{2\times 3})$. Since $\mathcal{Z}_N$ is linear, $\hat{E}_{i,j}^{2\times N} \in \operatorname{span}(\hat{\calB})^{\Sigma_3}$.
 
-For any target column $k \in \{1, \ldots, N\}$, there exists a permutation $\sigma \in \Sigma_N$ such that:
+For any target column $k \in \{1, \ldots, N\}$, there exists a character role swapping $\sigma \in \Sigma_N$ such that:
 \[
 E_{i,k}^{2\times N} = \sigma\bigl(\hat{E}_{i,1}^{2\times N}\bigr).
 \]
@@ -856,7 +856,7 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's spec
 \item PTM: prescribed transitions only ($\Delta S^* \neq 0$), no threshold.
 \item EPA: exact match $S_\text{obs}[t,k] = S^*[t,k]$, no threshold.
 \item Bootstrap: $B = 10{,}000$ iterations, percentile CIs.
-\item Permutation test: 1,000 entity-column permutations.
+\item Permutation test: 1,000 character role swappings.
 \item Hardware: 4$\times$ NVIDIA RTX 4090 (24 GB each).
 \item Evaluation runtime: $\sim$20 minutes for 4,000 videos (VLM inference).
 \item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.

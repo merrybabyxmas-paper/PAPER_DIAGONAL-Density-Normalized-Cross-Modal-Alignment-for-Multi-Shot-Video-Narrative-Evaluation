@@ -69,7 +69,7 @@
 Multi-shot video generation models can now produce visually coherent sequences, yet they face a fundamental \emph{coherence--compliance trade-off}: the mechanisms that maintain visual consistency across shots---shared attention, in-context conditioning---prevent models from executing the dynamic entity entrances and exits that define storytelling.
 Current evaluation paradigms, heavily optimized for visual quality and visual consistency, systematically overlook this trade-off by reducing complex narrative dynamics to simple frame-by-frame image comparisons.
 We present the \diagonal{} framework, which formalizes multi-entity, multi-shot narratives into state transition matrices that algebraically encode character entrances and exits. 
-Crucially, we prove that \textbf{every conceivable narrative topology} can be generated from just two fundamental basis patterns (Relay and Split) by applying intuitive narrative operations---such as time reversal and character swapping---along with pattern combinations (\textbf{Theorem~\ref{thm:completeness}}).
+Crucially, we prove that \textbf{every conceivable narrative topology} can be generated from just two fundamental basis patterns (Relay and Split) by applying intuitive narrative operations---such as time reversal and character role swapping---along with pattern combinations (\textbf{Theorem~\ref{thm:completeness}}).
 This elevates video evaluation from heuristic prompting to \emph{mathematically complete formal verification}.
 To evaluate generated videos, we introduce \stem{} (State Transition Error Matching). Instead of relying on scalar similarities, \stem{} constructs an error matrix that isolates all narrative deviations by comparing the observed transitions against the prescribed script. This matrix is then density-normalized to decouple detector noise from true narrative signals, yielding two complementary metrics: \emph{Prescribed Transition Match} (PTM) for microscopic transition fidelity and \emph{Entity Presence Accuracy} (EPA) for macroscopic cast compliance.
 On the MEMS-1K benchmark across four major video generation architectures, PTM clearly discriminates model performances, revealing a vast capability gap and a consistent rank reversal against Identity Consistency---empirically exposing the previously invisible architectural tension.
@@ -254,7 +254,7 @@ This canonical projection enables a unified completeness proof over a single mat
 
 To systematically span the narrative space, we define two linear operators that manipulate narrative topologies.
 
-\begin{definition}[Character Role Swapping / Column Permutation]
+\begin{definition}[Character Role Swapping]
 \label{def:col_perm}
 Let $\sigma_{ij}$ denote the transposition swapping columns $i$ and $j$. This operator reassigns entity roles without altering the underlying causal topology:
 \begin{equation}
@@ -299,7 +299,7 @@ We now prove that the \diagonal{} framework mathematically covers all possible s
 
 \begin{theorem}[Completeness of the Narrative Space]
 \label{thm:completeness}
-Under character role swapping (column permutation $\sigma \in \Sigma_3$) and integer-coefficient linear combination, the two basis patterns $\calB_1$ (Relay) and $\calB_2$ (Split) span the entire state transition matrix space $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
+Under character role swapping ($\sigma \in \Sigma_3$) and integer-coefficient linear combination, the two basis patterns $\calB_1$ (Relay) and $\calB_2$ (Split) span the entire state transition matrix space $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
 \end{theorem}
 
 \begin{proof}
@@ -329,14 +329,14 @@ By adding a permuted Split matrix ($\sigma_{12} \circ \calB_2 = \left[\begin{sma
  + \begin{bmatrix} -1 & 0 & 0 \\ +1 & -1 & 0 \end{bmatrix} \notag \\[3pt]
 &= \begin{bmatrix} 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix} = -E_{22}. \label{eq:isolate_e22}
 \end{align}
-Multiplying by $-1$ yields $E_{22}$. Applying column permutations to $E_{22}$ generates the remaining row-2 matrices: $E_{21} = \sigma_{12} \circ E_{22}$ and $E_{23} = \sigma_{23} \circ E_{22}$. Next, adding the extracted $E_{21}$ back to Eq.~\ref{eq:e11_e21} isolates $E_{11}$ since $(E_{11} - E_{21}) + E_{21} = E_{11}$. Subsequent column permutations of $E_{11}$ produce $E_{12} = \sigma_{12} \circ E_{11}$ and $E_{13} = \sigma_{13} \circ E_{11}$, giving:
+Multiplying by $-1$ yields $E_{22}$. Applying character role swapping to $E_{22}$ generates the remaining row-2 matrices: $E_{21} = \sigma_{12} \circ E_{22}$ and $E_{23} = \sigma_{23} \circ E_{22}$. Next, adding the extracted $E_{21}$ back to Eq.~\ref{eq:e11_e21} isolates $E_{11}$ since $(E_{11} - E_{21}) + E_{21} = E_{11}$. Subsequent character role swapping of $E_{11}$ produces $E_{12} = \sigma_{12} \circ E_{11}$ and $E_{13} = \sigma_{13} \circ E_{11}$, giving:
 \begin{equation}
 \{E_{11},\, E_{12},\, E_{13},\, E_{21},\, E_{22},\, E_{23}\} \;\subset\; \operatorname{span}_{\mathbb{Z}}\!\bigl(\calB_1,\, \calB_2,\, \Sigma_3\bigr). \qedhere
 \label{eq:all_eij}
 \end{equation}
 \end{proof}
 
-\noindent A step-by-step derivation including all intermediate matrices is provided in Appendix~A. Crucially, all column permutations of $\calB_1$ share an invariant row-sum constraint (row 1 sums to $+1$, row 2 sums to $-1$). Therefore, $\calB_2$ is mathematically essential to break this symmetry; no combination of $\calB_1$ variants alone can span the full space.
+\noindent A step-by-step derivation including all intermediate matrices is provided in Appendix~A. Crucially, all character role swappings of $\calB_1$ share an invariant row-sum constraint (row 1 sums to $+1$, row 2 sums to $-1$). Therefore, $\calB_2$ is mathematically essential to break this symmetry; no combination of $\calB_1$ variants alone can span the full space.
 
 \subsection{Theoretical \& Practical Implications}
 \label{sec:implications}
