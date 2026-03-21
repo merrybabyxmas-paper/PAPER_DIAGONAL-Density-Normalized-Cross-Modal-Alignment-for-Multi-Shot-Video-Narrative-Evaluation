@@ -1,0 +1,1322 @@
+{
+  "DM1K_336_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Domestic_Kitchen",
+      "core_entities": {
+        "A": "chef",
+        "B": "waiter"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A chef stands still in a professional restaurant kitchen.",
+        "gen_prompt": "A chef stands still in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A waiter runs towards the chef in a professional restaurant kitchen.",
+        "gen_prompt": "A waiter runs towards the chef in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the waiter monitors in a professional restaurant kitchen, the chef is entirely out of frame.",
+        "gen_prompt": "Only the waiter monitors in a professional restaurant kitchen, the chef is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_744_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "visitor",
+        "B": "orderly"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A visitor reads in a clean hospital room.",
+        "gen_prompt": "A visitor reads in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A orderly walks towards the visitor in a clean hospital room.",
+        "gen_prompt": "A orderly walks towards the visitor in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the orderly checks a report in a clean hospital room, the visitor is entirely out of frame.",
+        "gen_prompt": "Only the orderly checks a report in a clean hospital room, the visitor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_040_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "nurse",
+        "B": "surgeon"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A nurse works in a clean hospital room.",
+        "gen_prompt": "A nurse works in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A surgeon walks towards the nurse in a clean hospital room.",
+        "gen_prompt": "A surgeon walks towards the nurse in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the surgeon checks a report in a clean hospital room, the nurse is entirely out of frame.",
+        "gen_prompt": "Only the surgeon checks a report in a clean hospital room, the nurse is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_869_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "visitor",
+        "B": "orderly"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A visitor sits in a clean hospital room.",
+        "gen_prompt": "A visitor sits in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A orderly walks towards the visitor in a clean hospital room.",
+        "gen_prompt": "A orderly walks towards the visitor in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the orderly works in a clean hospital room, the visitor is entirely out of frame.",
+        "gen_prompt": "Only the orderly works in a clean hospital room, the visitor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_260_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Urban_Library",
+      "core_entities": {
+        "A": "tutor",
+        "B": "pupil"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A tutor stands still in a quiet university library.",
+        "gen_prompt": "A tutor stands still in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A pupil moves towards the tutor in a quiet university library.",
+        "gen_prompt": "A pupil moves towards the tutor in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the pupil checks a phone in a quiet university library, the tutor is entirely out of frame.",
+        "gen_prompt": "Only the pupil checks a phone in a quiet university library, the tutor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_422_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Urban_Cafe",
+      "core_entities": {
+        "A": "waiter",
+        "B": "manager"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A waiter organizes items in a modern coffee shop.",
+        "gen_prompt": "A waiter organizes items in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A manager moves towards the waiter in a modern coffee shop.",
+        "gen_prompt": "A manager moves towards the waiter in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the manager cleans the surface in a modern coffee shop, the waiter is entirely out of frame.",
+        "gen_prompt": "Only the manager cleans the surface in a modern coffee shop, the waiter is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_279_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Urban_Library",
+      "core_entities": {
+        "A": "student",
+        "B": "librarian"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A student reads in a quiet university library.",
+        "gen_prompt": "A student reads in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A librarian walks towards the student in a quiet university library.",
+        "gen_prompt": "A librarian walks towards the student in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the librarian monitors in a quiet university library, the student is entirely out of frame.",
+        "gen_prompt": "Only the librarian monitors in a quiet university library, the student is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_046_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Accumulation",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "visitor",
+        "B": "orderly"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A visitor rests in a clean hospital room.",
+        "gen_prompt": "A visitor rests in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A orderly runs towards the visitor in a clean hospital room.",
+        "gen_prompt": "A orderly runs towards the visitor in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the orderly makes notes in a clean hospital room, the visitor is entirely out of frame.",
+        "gen_prompt": "Only the orderly makes notes in a clean hospital room, the visitor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_489_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Convergence",
+      "theme": "Nature_Park",
+      "core_entities": {
+        "A": "dog",
+        "B": "owner"
+      },
+      "entity_types": {
+        "A": "A",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A dog sits in a green city park.",
+        "gen_prompt": "A dog sits in a green city park., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A owner moves towards the dog in a green city park.",
+        "gen_prompt": "A owner moves towards the dog in a green city park., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the owner stands in a green city park, the dog is entirely out of frame.",
+        "gen_prompt": "Only the owner stands in a green city park, the dog is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_989_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Convergence",
+      "theme": "Nature_Park",
+      "core_entities": {
+        "A": "frisbee player",
+        "B": "spectator"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A frisbee player waits in a green city park.",
+        "gen_prompt": "A frisbee player waits in a green city park., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A spectator walks towards the frisbee player in a green city park.",
+        "gen_prompt": "A spectator walks towards the frisbee player in a green city park., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the spectator stands in a green city park, the frisbee player is entirely out of frame.",
+        "gen_prompt": "Only the spectator stands in a green city park, the frisbee player is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_690_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Convergence",
+      "theme": "Urban_Street",
+      "core_entities": {
+        "A": "delivery cyclist",
+        "B": "pedestrian"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A delivery cyclist stands still on a busy city sidewalk.",
+        "gen_prompt": "A delivery cyclist stands still on a busy city sidewalk., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A pedestrian moves towards the delivery cyclist on a busy city sidewalk.",
+        "gen_prompt": "A pedestrian moves towards the delivery cyclist on a busy city sidewalk., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the pedestrian looks around on a busy city sidewalk, the delivery cyclist is entirely out of frame.",
+        "gen_prompt": "Only the pedestrian looks around on a busy city sidewalk, the delivery cyclist is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_726_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Convergence",
+      "theme": "Nature_Beach",
+      "core_entities": {
+        "A": "swimmer",
+        "B": "crab"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "A"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A swimmer waits on a sandy tropical beach.",
+        "gen_prompt": "A swimmer waits on a sandy tropical beach., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A crab walks towards the swimmer on a sandy tropical beach.",
+        "gen_prompt": "A crab walks towards the swimmer on a sandy tropical beach., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the crab walks on a sandy tropical beach, the swimmer is entirely out of frame.",
+        "gen_prompt": "Only the crab walks on a sandy tropical beach, the swimmer is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_999_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reduction",
+      "theme": "Domestic_LivingRoom",
+      "core_entities": {
+        "A": "cat",
+        "B": "dog"
+      },
+      "entity_types": {
+        "A": "A",
+        "B": "A"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A cat sits in a sunlit living room.",
+        "gen_prompt": "A cat sits in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A dog runs towards the cat in a sunlit living room.",
+        "gen_prompt": "A dog runs towards the cat in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the dog rests in a sunlit living room, the cat is entirely out of frame.",
+        "gen_prompt": "Only the dog rests in a sunlit living room, the cat is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_882_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reduction",
+      "theme": "Urban_Street",
+      "core_entities": {
+        "A": "police officer",
+        "B": "jogger"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A police officer stands still on a busy city sidewalk.",
+        "gen_prompt": "A police officer stands still on a busy city sidewalk., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A jogger moves towards the police officer on a busy city sidewalk.",
+        "gen_prompt": "A jogger moves towards the police officer on a busy city sidewalk., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the jogger reads on a busy city sidewalk, the police officer is entirely out of frame.",
+        "gen_prompt": "Only the jogger reads on a busy city sidewalk, the police officer is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_908_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reduction",
+      "theme": "Urban_Cafe",
+      "core_entities": {
+        "A": "customer",
+        "B": "barista"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A customer rests in a modern coffee shop.",
+        "gen_prompt": "A customer rests in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A barista moves towards the customer in a modern coffee shop.",
+        "gen_prompt": "A barista moves towards the customer in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the barista monitors in a modern coffee shop, the customer is entirely out of frame.",
+        "gen_prompt": "Only the barista monitors in a modern coffee shop, the customer is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_957_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reduction",
+      "theme": "Nature_Forest",
+      "core_entities": {
+        "A": "hiker",
+        "B": "guide"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A hiker waits in a dense pine forest.",
+        "gen_prompt": "A hiker waits in a dense pine forest., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A guide walks towards the hiker in a dense pine forest.",
+        "gen_prompt": "A guide walks towards the hiker in a dense pine forest., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the guide looks around in a dense pine forest, the hiker is entirely out of frame.",
+        "gen_prompt": "Only the guide looks around in a dense pine forest, the hiker is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_475_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Urban_Cafe",
+      "core_entities": {
+        "A": "guest",
+        "B": "server"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A guest stands in a modern coffee shop.",
+        "gen_prompt": "A guest stands in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A server moves towards the guest in a modern coffee shop.",
+        "gen_prompt": "A server moves towards the guest in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the server cleans the surface in a modern coffee shop, the guest is entirely out of frame.",
+        "gen_prompt": "Only the server cleans the surface in a modern coffee shop, the guest is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_508_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Domestic_Kitchen",
+      "core_entities": {
+        "A": "pastry chef",
+        "B": "apprentice"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A pastry chef stands in a professional restaurant kitchen.",
+        "gen_prompt": "A pastry chef stands in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A apprentice runs towards the pastry chef in a professional restaurant kitchen.",
+        "gen_prompt": "A apprentice runs towards the pastry chef in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the apprentice monitors in a professional restaurant kitchen, the pastry chef is entirely out of frame.",
+        "gen_prompt": "Only the apprentice monitors in a professional restaurant kitchen, the pastry chef is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_093_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Domestic_LivingRoom",
+      "core_entities": {
+        "A": "cat",
+        "B": "dog"
+      },
+      "entity_types": {
+        "A": "A",
+        "B": "A"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A cat grazes in a sunlit living room.",
+        "gen_prompt": "A cat grazes in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A dog walks towards the cat in a sunlit living room.",
+        "gen_prompt": "A dog walks towards the cat in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the dog looks around in a sunlit living room, the cat is entirely out of frame.",
+        "gen_prompt": "Only the dog looks around in a sunlit living room, the cat is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_242_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Domestic_Kitchen",
+      "core_entities": {
+        "A": "pastry chef",
+        "B": "apprentice"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A pastry chef stands in a professional restaurant kitchen.",
+        "gen_prompt": "A pastry chef stands in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A apprentice runs towards the pastry chef in a professional restaurant kitchen.",
+        "gen_prompt": "A apprentice runs towards the pastry chef in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the apprentice checks a report in a professional restaurant kitchen, the pastry chef is entirely out of frame.",
+        "gen_prompt": "Only the apprentice checks a report in a professional restaurant kitchen, the pastry chef is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_918_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Urban_Library",
+      "core_entities": {
+        "A": "tutor",
+        "B": "pupil"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A tutor waits in a quiet university library.",
+        "gen_prompt": "A tutor waits in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A pupil runs towards the tutor in a quiet university library.",
+        "gen_prompt": "A pupil runs towards the tutor in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the pupil looks around in a quiet university library, the tutor is entirely out of frame.",
+        "gen_prompt": "Only the pupil looks around in a quiet university library, the tutor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_288_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Domestic_Kitchen",
+      "core_entities": {
+        "A": "cook",
+        "B": "dishwasher"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A cook stands in a professional restaurant kitchen.",
+        "gen_prompt": "A cook stands in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A dishwasher walks towards the cook in a professional restaurant kitchen.",
+        "gen_prompt": "A dishwasher walks towards the cook in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the dishwasher cleans the surface in a professional restaurant kitchen, the cook is entirely out of frame.",
+        "gen_prompt": "Only the dishwasher cleans the surface in a professional restaurant kitchen, the cook is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_555_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Urban_Cafe",
+      "core_entities": {
+        "A": "customer",
+        "B": "barista"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A customer reads in a modern coffee shop.",
+        "gen_prompt": "A customer reads in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A barista moves towards the customer in a modern coffee shop.",
+        "gen_prompt": "A barista moves towards the customer in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the barista stands still in a modern coffee shop, the customer is entirely out of frame.",
+        "gen_prompt": "Only the barista stands still in a modern coffee shop, the customer is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_415_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Relay",
+      "theme": "Domestic_LivingRoom",
+      "core_entities": {
+        "A": "toddler",
+        "B": "mother"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A toddler waits in a sunlit living room.",
+        "gen_prompt": "A toddler waits in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A mother moves towards the toddler in a sunlit living room.",
+        "gen_prompt": "A mother moves towards the toddler in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the mother waits in a sunlit living room, the toddler is entirely out of frame.",
+        "gen_prompt": "Only the mother waits in a sunlit living room, the toddler is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_271_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reverse_Relay",
+      "theme": "Domestic_LivingRoom",
+      "core_entities": {
+        "A": "grandfather",
+        "B": "grandchild"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A grandfather reads in a sunlit living room.",
+        "gen_prompt": "A grandfather reads in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A grandchild walks towards the grandfather in a sunlit living room.",
+        "gen_prompt": "A grandchild walks towards the grandfather in a sunlit living room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the grandchild stands in a sunlit living room, the grandfather is entirely out of frame.",
+        "gen_prompt": "Only the grandchild stands in a sunlit living room, the grandfather is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_655_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reverse_Relay",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "nurse",
+        "B": "surgeon"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A nurse stands in a clean hospital room.",
+        "gen_prompt": "A nurse stands in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A surgeon runs towards the nurse in a clean hospital room.",
+        "gen_prompt": "A surgeon runs towards the nurse in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the surgeon stands still in a clean hospital room, the nurse is entirely out of frame.",
+        "gen_prompt": "Only the surgeon stands still in a clean hospital room, the nurse is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_090_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reverse_Relay",
+      "theme": "Professional_Office",
+      "core_entities": {
+        "A": "intern",
+        "B": "mentor"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A intern looks around in a bright open-plan office.",
+        "gen_prompt": "A intern looks around in a bright open-plan office., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A mentor approaches the intern in a bright open-plan office.",
+        "gen_prompt": "A mentor approaches the intern in a bright open-plan office., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the mentor cleans the surface in a bright open-plan office, the intern is entirely out of frame.",
+        "gen_prompt": "Only the mentor cleans the surface in a bright open-plan office, the intern is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_651_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Reverse_Relay",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "visitor",
+        "B": "orderly"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A visitor stands in a clean hospital room.",
+        "gen_prompt": "A visitor stands in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A orderly approaches the visitor in a clean hospital room.",
+        "gen_prompt": "A orderly approaches the visitor in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the orderly works in a clean hospital room, the visitor is entirely out of frame.",
+        "gen_prompt": "Only the orderly works in a clean hospital room, the visitor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_647_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Sliding_Window",
+      "theme": "Urban_Library",
+      "core_entities": {
+        "A": "tutor",
+        "B": "pupil"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A tutor organizes items in a quiet university library.",
+        "gen_prompt": "A tutor organizes items in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A pupil walks towards the tutor in a quiet university library.",
+        "gen_prompt": "A pupil walks towards the tutor in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the pupil waits in a quiet university library, the tutor is entirely out of frame.",
+        "gen_prompt": "Only the pupil waits in a quiet university library, the tutor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_320_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Sliding_Window",
+      "theme": "Urban_Street",
+      "core_entities": {
+        "A": "street performer",
+        "B": "tourist"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A street performer stands still on a busy city sidewalk.",
+        "gen_prompt": "A street performer stands still on a busy city sidewalk., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A tourist runs towards the street performer on a busy city sidewalk.",
+        "gen_prompt": "A tourist runs towards the street performer on a busy city sidewalk., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the tourist waits on a busy city sidewalk, the street performer is entirely out of frame.",
+        "gen_prompt": "Only the tourist waits on a busy city sidewalk, the street performer is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_735_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Sliding_Window",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "nurse",
+        "B": "surgeon"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A nurse waits in a clean hospital room.",
+        "gen_prompt": "A nurse waits in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A surgeon walks towards the nurse in a clean hospital room.",
+        "gen_prompt": "A surgeon walks towards the nurse in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the surgeon checks a report in a clean hospital room, the nurse is entirely out of frame.",
+        "gen_prompt": "Only the surgeon checks a report in a clean hospital room, the nurse is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_220_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Sliding_Window",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "patient",
+        "B": "doctor"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A patient sits in a clean hospital room.",
+        "gen_prompt": "A patient sits in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A doctor walks towards the patient in a clean hospital room.",
+        "gen_prompt": "A doctor walks towards the patient in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the doctor makes notes in a clean hospital room, the patient is entirely out of frame.",
+        "gen_prompt": "Only the doctor makes notes in a clean hospital room, the patient is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_278_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "patient",
+        "B": "doctor"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A patient waits in a clean hospital room.",
+        "gen_prompt": "A patient waits in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A doctor walks towards the patient in a clean hospital room.",
+        "gen_prompt": "A doctor walks towards the patient in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the doctor makes notes in a clean hospital room, the patient is entirely out of frame.",
+        "gen_prompt": "Only the doctor makes notes in a clean hospital room, the patient is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_125_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Professional_Hospital",
+      "core_entities": {
+        "A": "nurse",
+        "B": "surgeon"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A nurse stands still in a clean hospital room.",
+        "gen_prompt": "A nurse stands still in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A surgeon approaches the nurse in a clean hospital room.",
+        "gen_prompt": "A surgeon approaches the nurse in a clean hospital room., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the surgeon monitors in a clean hospital room, the nurse is entirely out of frame.",
+        "gen_prompt": "Only the surgeon monitors in a clean hospital room, the nurse is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_872_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Nature_Park",
+      "core_entities": {
+        "A": "dog",
+        "B": "owner"
+      },
+      "entity_types": {
+        "A": "A",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A dog sniffs the ground in a green city park.",
+        "gen_prompt": "A dog sniffs the ground in a green city park., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A owner runs towards the dog in a green city park.",
+        "gen_prompt": "A owner runs towards the dog in a green city park., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the owner sits in a green city park, the dog is entirely out of frame.",
+        "gen_prompt": "Only the owner sits in a green city park, the dog is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_533_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Professional_Office",
+      "core_entities": {
+        "A": "employee",
+        "B": "manager"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A employee looks around in a bright open-plan office.",
+        "gen_prompt": "A employee looks around in a bright open-plan office., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A manager walks towards the employee in a bright open-plan office.",
+        "gen_prompt": "A manager walks towards the employee in a bright open-plan office., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the manager works in a bright open-plan office, the employee is entirely out of frame.",
+        "gen_prompt": "Only the manager works in a bright open-plan office, the employee is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_958_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Domestic_Kitchen",
+      "core_entities": {
+        "A": "cook",
+        "B": "dishwasher"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A cook works in a professional restaurant kitchen.",
+        "gen_prompt": "A cook works in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A dishwasher runs towards the cook in a professional restaurant kitchen.",
+        "gen_prompt": "A dishwasher runs towards the cook in a professional restaurant kitchen., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the dishwasher works in a professional restaurant kitchen, the cook is entirely out of frame.",
+        "gen_prompt": "Only the dishwasher works in a professional restaurant kitchen, the cook is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_665_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Urban_Cafe",
+      "core_entities": {
+        "A": "customer",
+        "B": "barista"
+      },
+      "entity_types": {
+        "A": "H",
+        "B": "P"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A customer stands in a modern coffee shop.",
+        "gen_prompt": "A customer stands in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A barista approaches the customer in a modern coffee shop.",
+        "gen_prompt": "A barista approaches the customer in a modern coffee shop., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the barista works in a modern coffee shop, the customer is entirely out of frame.",
+        "gen_prompt": "Only the barista works in a modern coffee shop, the customer is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_704_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Urban_Library",
+      "core_entities": {
+        "A": "tutor",
+        "B": "pupil"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A tutor waits in a quiet university library.",
+        "gen_prompt": "A tutor waits in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A pupil walks towards the tutor in a quiet university library.",
+        "gen_prompt": "A pupil walks towards the tutor in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the pupil waits in a quiet university library, the tutor is entirely out of frame.",
+        "gen_prompt": "Only the pupil waits in a quiet university library, the tutor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  },
+  "DM1K_232_Sequential_Relay": {
+    "metadata": {
+      "pattern_type": "Split",
+      "theme": "Urban_Library",
+      "core_entities": {
+        "A": "tutor",
+        "B": "pupil"
+      },
+      "entity_types": {
+        "A": "P",
+        "B": "H"
+      }
+    },
+    "system_settings": {
+      "camera": "static, eye-level shot",
+      "positive_suffix": ", masterpiece, cinematic lighting, 4k resolution, photorealistic",
+      "negative_prompt": "low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark"
+    },
+    "shots": {
+      "shot_1": {
+        "eval_prompt": "A tutor works in a quiet university library.",
+        "gen_prompt": "A tutor works in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_2": {
+        "eval_prompt": "A pupil moves towards the tutor in a quiet university library.",
+        "gen_prompt": "A pupil moves towards the tutor in a quiet university library., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      },
+      "shot_3": {
+        "eval_prompt": "Only the pupil stands in a quiet university library, the tutor is entirely out of frame.",
+        "gen_prompt": "Only the pupil stands in a quiet university library, the tutor is entirely out of frame., masterpiece, cinematic lighting, 4k resolution, photorealistic"
+      }
+    }
+  }
+}
