@@ -697,13 +697,13 @@ def main():
 
     page = st.sidebar.radio(
         "메뉴",
-        ["📊 자동 평가 대시보드", "🎬 인간 평가하기", "📋 결과 & 분석"],
+        ["🎬 인간 평가하기", "📊 자동 평가 대시보드", "📋 결과 & 분석"],
     )
 
-    if "📊" in page:
-        page_dashboard()
-    elif "🎬" in page:
+    if "🎬" in page:
         page_eval()
+    elif "📊" in page:
+        page_dashboard()
     else:
         page_results()
 
