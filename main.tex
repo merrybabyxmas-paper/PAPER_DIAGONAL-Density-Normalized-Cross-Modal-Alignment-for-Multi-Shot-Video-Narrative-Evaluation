@@ -120,64 +120,61 @@ To formalize this mathematically sound evaluation, we contribute the following:
   \item \textbf{MEMS-1K Benchmark} (\S\ref{sec:dataset}): A mathematically verified dataset of 1{,}000 multi-entity, multi-shot scenarios spanning 7 narrative patterns. We evaluate 4{,}000 videos across four distinct architectures, revealing a \textbf{four-type failure taxonomy} that provides structured diagnostics for the coherence--compliance trade-off.
 \end{itemize}
 
+
 % FIGURE 1: Combined overview — STEM pipeline + Completeness + Failure taxonomy
 \begin{figure*}[t]
 \centering\setlength{\abovecaptionskip}{4pt}\setlength{\belowcaptionskip}{0pt}%
 %
-% ===== TOP: (a) STEM Evaluation Pipeline — full width, compact =====
+% ===== TOP: (a) STEM Evaluation Pipeline — Trimming fixed to prevent top-clipping =====
 \begin{tikzpicture}[remember picture]
 \node[inner sep=0pt] (pipelineImg) {%
-  \includegraphics[width=0.88\textwidth,trim=0 5 0 5,clip]{figures/OVERALL_a_method.png}};
-\coordinate (anchorB) at ([xshift=-0.05\textwidth]pipelineImg.south);
-\coordinate (anchorC) at ([xshift=0.18\textwidth]pipelineImg.south);
+  % trim의 마지막 숫자를 0으로 바꾸어 상단이 잘리는 것을 방지합니다.
+  % (왼쪽 아래 오른쪽 위 순서: 0 5 0 0)
+  \includegraphics[width=0.82\textwidth,trim=0 5 0 0,clip]{figures/OVERALL_a_method.png}};
 \end{tikzpicture}%
-\par\vspace{-1pt}
+\par\vspace{-4pt}
 {\footnotesize\sffamily\bfseries (a) STEM Evaluation Pipeline}%
-\par\vspace{3pt}
-\noindent\begin{tikzpicture}\draw[gray!40, line width=0.3pt] (0,0) -- (0.88\textwidth,0);\end{tikzpicture}%
-\par\vspace{3pt}
+\par\vspace{6pt}
 %
-% ===== BOTTOM: (b) and (c) side by side, scaled down =====
-\begin{minipage}[t]{0.44\textwidth}
-\centering
+% 가로 구분선 (Horizontal Divider)
+\noindent\begin{tikzpicture}\draw[gray!35, line width=0.4pt] (0,0) -- (0.82\textwidth,0);\end{tikzpicture}%
+\par\nointerlineskip 
+%
+% ===== BOTTOM: (b) and (c) side by side with T-shaped divider =====
+\begin{minipage}[t]{0.46\textwidth}
+\centering\vspace{8pt}
 \begin{tikzpicture}[remember picture]
 \node[inner sep=0pt] (spanImg) {%
   \includegraphics[width=\textwidth,trim=0 5 0 5,clip]{figures/OVERALL_b_span.png}};
 \end{tikzpicture}%
-\par\vspace{1pt}
-{\footnotesize\sffamily\bfseries (b) SPAN Completeness}
+\par\vspace{2pt}
+{\footnotesize\sffamily\bfseries (b) \diagonal{} Completeness}
 \end{minipage}%
 \hfill
+% 세로 구분선 (Vertical Divider)
 \begin{minipage}[t]{0.005\textwidth}
-\centering\vspace{0pt}\color{gray!35}\rule{0.3pt}{2.8cm}
+\centering\vspace{0pt}\color{gray!35}\rule{0.4pt}{4.2cm}
 \end{minipage}%
 \hfill
-\begin{minipage}[t]{0.44\textwidth}
-\centering
+\begin{minipage}[t]{0.46\textwidth}
+\centering\vspace{8pt}
 \begin{tikzpicture}[remember picture]
 \node[inner sep=0pt] (failImg) {%
   \includegraphics[width=\textwidth,trim=0 5 0 5,clip]{figures/OVERALL_c_failure.png}};
 \end{tikzpicture}%
-\par\vspace{1pt}
+\par\vspace{2pt}
 {\footnotesize\sffamily\bfseries (c) Failure Taxonomy}
 \end{minipage}%
 %
-% ===== Dashed connectors =====
-\begin{tikzpicture}[remember picture, overlay]
-\draw[cyan!70!blue, dashed, line width=0.8pt, rounded corners=3pt, -{Stealth[length=3.5pt]}]
-  (anchorB) -- ([yshift=4pt]spanImg.north);
-\draw[orange!80!red, dashed, line width=0.8pt, rounded corners=3pt, -{Stealth[length=3.5pt]}]
-  (anchorC) -- ([yshift=4pt]failImg.north);
-\end{tikzpicture}
-
-\caption{\textbf{\diagonal{} framework overview.}
-\textbf{(a)}~The \stem{} pipeline: a VLM projects each shot into a binary presence vector, forming $S_\text{obs}$. Temporal differencing yields $\Delta S_\text{obs}$, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ diagnoses failures and feeds PTM/EPA metrics.
-\textbf{(b)}~Completeness theorem: two basis matrices ($\calB_1$: Relay, $\calB_2$: Split) generate all elementary matrices $E_{ij}$ via character role swapping and integer combination, spanning any $\Delta S \in \mathbb{M}_{2\times3}(\mathbb{Z})$.
-\textbf{(c)}~Four failure types classified by $(E_{t,e},\,\Delta S^*_{t,e})$: Type~I Context Bleeding ($E\!=\!+1$, $\Delta S^*\!=\!-1$), Type~II Amnesia ($E\!=\!-1$, $\Delta S^*\!=\!+1$), Type~III Spurious ($E\!\neq\!0$, $\Delta S^*\!=\!0$), Type~IV Reversal ($|E|\!=\!2$).}
+\vspace{12pt} 
+\caption{\textbf{\diagonal{} framework overview.} [cite: 1910]
+\textbf{(a)}~The \stem{} pipeline: a VLM projects each shot into a binary presence vector, forming $S_\text{obs}$. [cite: 1910] Temporal differencing yields $\Delta S_\text{obs}$, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ diagnoses failures and feeds PTM/EPA metrics. [cite: 1911]
+\textbf{(b)}~Completeness theorem: two basis matrices ($\calB_1$: Relay, $\calB_2$: Split) generate all elementary matrices $E_{ij}$, spanning any $\Delta S \in \mathbb{M}_{2\times3}(\mathbb{Z})$. [cite: 1912]
+\textbf{(c)}~Four failure types: Type~I Context Bleeding, Type~II Amnesia, Type~III Spurious, and Type~IV Reversal. [cite: 1913]}
 \label{fig:overview}
-\label{fig:completeness}
-\label{fig:metrics}
 \end{figure*}
+
+
 
 %% ============================================================
 \section{Related Work}
