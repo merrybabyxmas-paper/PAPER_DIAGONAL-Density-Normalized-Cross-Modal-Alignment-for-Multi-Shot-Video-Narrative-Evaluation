@@ -123,6 +123,9 @@ To formalize this mathematically sound evaluation, we contribute the following:
 % FIGURE 1: Combined overview — STEM pipeline + Completeness + Failure taxonomy
 \begin{figure*}[t]
 \centering
+\scalebox{0.72}{%
+\begin{minipage}{\textwidth}
+\centering
 % --- (a) STEM pipeline ---
 \textbf{(a)} STEM Evaluation Pipeline\par\smallskip
 \begin{tikzpicture}[remember picture]
@@ -147,7 +150,7 @@ To formalize this mathematically sound evaluation, we contribute the following:
 \begin{minipage}[t]{0.02\textwidth}
 \centering
 \vspace{0pt}
-\color{gray!60}\rule{0.6pt}{4.8cm}
+\color{gray!60}\rule{0.6pt}{3.4cm}
 \end{minipage}%
 \hfill
 \begin{minipage}[t]{0.44\textwidth}
@@ -165,6 +168,8 @@ To formalize this mathematically sound evaluation, we contribute the following:
 \draw[orange!80!red, dashed, line width=1.2pt, rounded corners=3pt, -{Stealth[length=5pt]}]
   (errorBot) -- ([yshift=5pt]imgC.north);
 \end{tikzpicture}
+\end{minipage}
+}% end scalebox
 
 \caption{\textbf{\diagonal{} framework overview.}
 \textbf{(a)}~The \stem{} pipeline: a VLM projects each shot into a binary presence vector, forming $S_\text{obs}$. Temporal differencing yields $\Delta S_\text{obs}$, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ diagnoses failures and feeds PTM/EPA metrics.
