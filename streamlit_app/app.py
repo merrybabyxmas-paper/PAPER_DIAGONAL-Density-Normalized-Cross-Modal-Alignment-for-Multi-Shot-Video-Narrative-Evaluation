@@ -449,18 +449,18 @@ def page_eval():
             st.markdown("**🔵 A 준수도**")
             st.radio("A", [1, 2, 3, 4, 5],
                      format_func=lambda x: likert_labels[x-1],
-                     key=f"la_{global_idx}", index=2,
+                     key=f"la_{global_idx}", index=1,
                      label_visibility="collapsed")
         with q2:
             st.markdown("**🔴 B 준수도**")
             st.radio("B", [1, 2, 3, 4, 5],
                      format_func=lambda x: likert_labels[x-1],
-                     key=f"lb_{global_idx}", index=2,
+                     key=f"lb_{global_idx}", index=1,
                      label_visibility="collapsed")
         with q3:
             st.markdown("**❓ 종합 판단**")
             st.radio("선호", pref_options,
-                     key=f"pf_{global_idx}",
+                     key=f"pf_{global_idx}", index=3,
                      label_visibility="collapsed")
 
     # ── 배치 제출 버튼 ──
@@ -476,9 +476,9 @@ def page_eval():
         }
         new_records = []
         for global_idx, trial in batch:
-            la = st.session_state.get(f"la_{global_idx}", 3)
-            lb = st.session_state.get(f"lb_{global_idx}", 3)
-            pf = st.session_state.get(f"pf_{global_idx}", pref_options[0])
+            la = st.session_state.get(f"la_{global_idx}", 2)
+            lb = st.session_state.get(f"lb_{global_idx}", 2)
+            pf = st.session_state.get(f"pf_{global_idx}", pref_options[3])
             new_records.append({
                 "evaluator": evaluator,
                 "timestamp": datetime.datetime.now().isoformat(),
