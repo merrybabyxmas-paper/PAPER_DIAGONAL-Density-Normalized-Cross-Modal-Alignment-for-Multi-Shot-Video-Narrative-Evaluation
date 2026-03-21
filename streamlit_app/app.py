@@ -277,8 +277,10 @@ def page_dashboard():
 
 
 # ═══════════════════════════════════════════════════════════════════════
-#  페이지: 인간 평가
+#  페이지: 인간 평가 (12개 배치, 스크롤 방식)
 # ═══════════════════════════════════════════════════════════════════════
+BATCH_SIZE = 12
+
 def page_eval():
     prompts = load_prompts()
     bp = build_index()
@@ -298,137 +300,160 @@ def page_eval():
 <li>각 비교에서 <b>처방된 등장 패턴(S*)</b>을 확인하세요</li>
 <li><b>영상 A</b>와 <b>영상 B</b>의 Shot 3개를 비교합니다</li>
 <li>각 영상이 패턴을 얼마나 따르는지 <b>5점 척도</b>로 평가</li>
-<li>종합적으로 <b>어느 쪽이 나은지</b> 선택</li>
-<li><b>[제출]</b> 클릭 → 다음 비교로 이동</li>
+<li><b>종합 판단</b> 4가지 중 하나를 선택</li>
+<li>아래로 스크롤하며 12개씩 평가 → <b>[이 페이지 제출]</b></li>
 </ol>
-<p style="margin-top:10px;color:#666;">총 <b>120개</b> 비교 (40 시나리오 × 3 모델쌍)</p>
+<p style="margin-top:10px;color:#666;">총 <b>120개</b> 비교 · 12개씩 10페이지</p>
 </div>""", unsafe_allow_html=True)
         return
 
-    # 진행 상황 계산
+    # 진행 상황
     all_results = load_results()
     my_done = {(r["vid"], r["model_a"], r["model_b"])
                for r in all_results if r.get("evaluator") == evaluator}
     completed = len(my_done)
 
+    # 미완료 trial 목록
+    remaining_trials = [
+        (i, t) for i, t in enumerate(trials)
+        if (t["scenario"], t["model_a"], t["model_b"]) not in my_done
+    ]
+
     st.sidebar.markdown("---")
     st.sidebar.markdown(f"### 진행: **{completed}** / {total}")
     st.sidebar.progress(min(completed / max(total, 1), 1.0))
-    remaining = total - completed
-    st.sidebar.caption(f"남은 비교: {remaining}개")
+    st.sidebar.caption(f"남은 비교: {len(remaining_trials)}개")
 
-    if completed >= total:
+    if not remaining_trials:
         st.markdown("## ✅ 평가 완료!")
         st.success("모든 120개 비교를 완료했습니다. 감사합니다! 🎉")
         st.balloons()
         return
 
-    # 다음 미완료 trial 찾기
-    idx = 0
-    for i, t in enumerate(trials):
-        if (t["scenario"], t["model_a"], t["model_b"]) not in my_done:
-            idx = i
-            break
+    # 현재 배치 (12개)
+    batch = remaining_trials[:BATCH_SIZE]
+    batch_page = completed // BATCH_SIZE + 1
+    total_pages = (total + BATCH_SIZE - 1) // BATCH_SIZE
 
-    trial = trials[idx]
-    sid = trial["scenario"]
-    sc = prompts.get(sid, {})
-    meta = sc.get("metadata", {})
-    pat = meta.get("pattern_type", "Unknown")
-    ma, mb = trial["model_a"], trial["model_b"]
-    pfx = "_".join(sid.split("_")[:2])
-    ents = list(meta.get("core_entities", {}).values())
+    st.markdown(f"## 🎬 평가 — 페이지 {batch_page}/{total_pages}")
+    st.caption(f"아래 {len(batch)}개 비교를 스크롤하며 평가한 후, 맨 아래 **[제출]** 버튼을 눌러주세요.")
 
-    # ── 상단: 시나리오 정보 ──
-    st.markdown(f"""
+    likert_labels = [
+        "1 — 전혀 안 따름 (대본 무시)",
+        "2 — 조금 따름",
+        "3 — 보통 (일부 오류 있음)",
+        "4 — 잘 따름",
+        "5 — 완벽히 따름 (등장/퇴장 완벽)",
+    ]
+
+    pref_options = ["🔵 A가 나음", "🔴 B가 나음",
+                    "✅ 둘 다 잘함", "❌ 둘 다 실패"]
+
+    # ── 배치 내 각 trial 렌더링 ──
+    for batch_idx, (global_idx, trial) in enumerate(batch):
+        sid = trial["scenario"]
+        sc = prompts.get(sid, {})
+        meta = sc.get("metadata", {})
+        pat = meta.get("pattern_type", "Unknown")
+        ma, mb = trial["model_a"], trial["model_b"]
+        pfx = "_".join(sid.split("_")[:2])
+        ents = list(meta.get("core_entities", {}).values())
+        item_num = completed + batch_idx + 1
+
+        st.markdown("---")
+
+        # 시나리오 정보
+        st.markdown(f"""
 <div class='info-box'>
-    <b>📌 비교 {completed+1} / {total}</b><br>
-    <b>패턴:</b> {PAT_NAME.get(pat, pat)}<br>
-    <b>등장 개체:</b> {', '.join(ents) if ents else 'N/A'}<br>
-    <b>배경:</b> {meta.get('theme','').replace('_',' ')}
+    <b>#{item_num}</b> &nbsp;|&nbsp;
+    <b>{PAT_NAME.get(pat, pat)}</b> &nbsp;|&nbsp;
+    👤 {', '.join(ents) if ents else '?'} &nbsp;|&nbsp;
+    🏠 {meta.get('theme','').replace('_',' ')}
 </div>""", unsafe_allow_html=True)
 
-    # ── S* 매트릭스 ──
-    for mn in [ma, mb]:
-        e = bp.get(mn, {}).get(pfx)
-        if e and "S_ideal" in e:
+        # S* 매트릭스
+        for mn in [ma, mb]:
+            e = bp.get(mn, {}).get(pfx)
+            if e and "S_ideal" in e:
+                st.markdown(
+                    "<div style='text-align:center;'>"
+                    "<small><b>🎯 처방 패턴 (S*)</b> — ● 등장 · 미등장</small>"
+                    "</div>" + presence_table(e["S_ideal"], e.get("entities", ents)),
+                    unsafe_allow_html=True,
+                )
+                break
+
+        # 영상 A / B 나란히
+        col_a, col_b = st.columns(2, gap="medium")
+        with col_a:
             st.markdown(
-                "<div style='text-align:center;'>"
-                "<b>🎯 처방된 등장 패턴 (S*)</b><br>"
-                "<small>● = 등장, · = 미등장 — 이 패턴대로 영상이 만들어졌는지 평가하세요</small>"
-                "</div>" + presence_table(e["S_ideal"], e.get("entities", ents)),
+                "<div class='card card-a'><div class='card-title title-a'>🔵 A</div>",
                 unsafe_allow_html=True,
             )
-            break
+            ea = bp.get(ma, {}).get(pfx)
+            if ea:
+                show_shots(ma, ea["vid"], st)
+            st.markdown("</div>", unsafe_allow_html=True)
+        with col_b:
+            st.markdown(
+                "<div class='card card-b'><div class='card-title title-b'>🔴 B</div>",
+                unsafe_allow_html=True,
+            )
+            eb = bp.get(mb, {}).get(pfx)
+            if eb:
+                show_shots(mb, eb["vid"], st)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("")
+        # Likert + 선호도 (한 줄에 압축)
+        q1, q2, q3 = st.columns([1, 1, 1.2], gap="medium")
+        with q1:
+            st.markdown("**🔵 A 준수도**")
+            st.radio("A", [1, 2, 3, 4, 5],
+                     format_func=lambda x: likert_labels[x-1],
+                     key=f"la_{global_idx}", index=2,
+                     label_visibility="collapsed")
+        with q2:
+            st.markdown("**🔴 B 준수도**")
+            st.radio("B", [1, 2, 3, 4, 5],
+                     format_func=lambda x: likert_labels[x-1],
+                     key=f"lb_{global_idx}", index=2,
+                     label_visibility="collapsed")
+        with q3:
+            st.markdown("**❓ 종합 판단**")
+            st.radio("선호", pref_options,
+                     key=f"pf_{global_idx}",
+                     label_visibility="collapsed")
 
-    # ── 영상 A / B 나란히 ──
-    col_left, col_right = st.columns(2, gap="medium")
-
-    with col_left:
-        st.markdown(
-            "<div class='card card-a'><div class='card-title title-a'>🔵 영상 A</div>",
-            unsafe_allow_html=True,
-        )
-        ea = bp.get(ma, {}).get(pfx)
-        if ea:
-            show_shots(ma, ea["vid"], st)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_right:
-        st.markdown(
-            "<div class='card card-b'><div class='card-title title-b'>🔴 영상 B</div>",
-            unsafe_allow_html=True,
-        )
-        eb = bp.get(mb, {}).get(pfx)
-        if eb:
-            show_shots(mb, eb["vid"], st)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # ── 평가 질문 ──
+    # ── 배치 제출 버튼 ──
     st.markdown("---")
-    st.markdown("### 📏 내러티브 준수도 평가")
-    st.caption("각 영상이 위 처방 패턴(S*)을 얼마나 잘 따르는지 평가해주세요.")
-
-    likert_labels = ["1 — 전혀 안 따름", "2 — 조금 따름", "3 — 보통",
-                     "4 — 잘 따름", "5 — 완벽히 따름"]
-
-    qa, qb = st.columns(2, gap="medium")
-    with qa:
-        st.markdown("**🔵 영상 A 준수도**")
-        la = st.radio("영상 A", options=[1, 2, 3, 4, 5],
-                      format_func=lambda x: likert_labels[x-1],
-                      key=f"la_{idx}", index=2, label_visibility="collapsed")
-    with qb:
-        st.markdown("**🔴 영상 B 준수도**")
-        lb = st.radio("영상 B", options=[1, 2, 3, 4, 5],
-                      format_func=lambda x: likert_labels[x-1],
-                      key=f"lb_{idx}", index=2, label_visibility="collapsed")
-
-    st.markdown("### ❓ 종합 선호")
-    pref = st.radio(
-        "두 영상을 비교했을 때, 어느 쪽이 내러티브를 더 잘 따르나요?",
-        ["🔵 A가 더 나음", "🔴 B가 더 나음", "⚖️ 비슷함"],
-        key=f"pf_{idx}", horizontal=True, label_visibility="collapsed",
-    )
-
     st.markdown("")
-    if st.button("✅ 제출하고 다음으로", type="primary", use_container_width=True):
-        pref_map = {"🔵 A가 더 나음": "A", "🔴 B가 더 나음": "B", "⚖️ 비슷함": "Tie"}
-        rec = {
-            "evaluator": evaluator,
-            "timestamp": datetime.datetime.now().isoformat(),
-            "vid": sid,
-            "pattern": pat,
-            "model_a": ma,
-            "model_b": mb,
-            "likert_a": la,
-            "likert_b": lb,
-            "preference": pref_map[pref],
+    if st.button(f"📮 이 페이지 {len(batch)}개 제출하고 다음으로",
+                 type="primary", use_container_width=True):
+        pref_map = {
+            "🔵 A가 나음": "A",
+            "🔴 B가 나음": "B",
+            "✅ 둘 다 잘함": "BothGood",
+            "❌ 둘 다 실패": "MutualFail",
         }
+        new_records = []
+        for global_idx, trial in batch:
+            la = st.session_state.get(f"la_{global_idx}", 3)
+            lb = st.session_state.get(f"lb_{global_idx}", 3)
+            pf = st.session_state.get(f"pf_{global_idx}", pref_options[0])
+            new_records.append({
+                "evaluator": evaluator,
+                "timestamp": datetime.datetime.now().isoformat(),
+                "vid": trial["scenario"],
+                "pattern": prompts.get(trial["scenario"], {})
+                           .get("metadata", {}).get("pattern_type", ""),
+                "model_a": trial["model_a"],
+                "model_b": trial["model_b"],
+                "likert_a": la,
+                "likert_b": lb,
+                "preference": pref_map.get(pf, "A"),
+            })
         results = load_results()
-        results.append(rec)
+        results.extend(new_records)
         save_results(results)
         st.rerun()
 
@@ -452,9 +477,10 @@ def page_results():
                 f"<div class='score-lbl'>평가자</div></div>", unsafe_allow_html=True)
     c2.markdown(f"<div class='score-card'><div class='score-val'>{len(rdf)}</div>"
                 f"<div class='score-lbl'>총 평가</div></div>", unsafe_allow_html=True)
-    tie_pct = 100 * (rdf["preference"] == "Tie").sum() / max(len(rdf), 1)
-    c3.markdown(f"<div class='score-card'><div class='score-val'>{tie_pct:.1f}%</div>"
-                f"<div class='score-lbl'>무승부율</div></div>", unsafe_allow_html=True)
+    mf_count = (rdf["preference"] == "MutualFail").sum()
+    mf_pct = 100 * mf_count / max(len(rdf), 1)
+    c3.markdown(f"<div class='score-card'><div class='score-val'>{mf_pct:.1f}%</div>"
+                f"<div class='score-lbl'>동반실패율</div></div>", unsafe_allow_html=True)
     target = n_evaluators * 120
     prog = min(100 * len(rdf) / max(target, 1), 100)
     c4.markdown(f"<div class='score-card'><div class='score-val'>{prog:.0f}%</div>"
@@ -464,26 +490,32 @@ def page_results():
 
     # ── 모델별 승률 ──
     st.markdown("### 🏆 모델별 승률")
-    wins = defaultdict(lambda: {"승": 0, "패": 0, "무": 0})
+    wins = defaultdict(lambda: {"승": 0, "패": 0, "둘다잘함": 0, "둘다실패": 0})
     for _, r in rdf.iterrows():
         a, b = r["model_a"], r["model_b"]
-        if r["preference"] == "A":
+        pref = r["preference"]
+        if pref == "A":
             wins[a]["승"] += 1; wins[b]["패"] += 1
-        elif r["preference"] == "B":
+        elif pref == "B":
             wins[b]["승"] += 1; wins[a]["패"] += 1
-        else:
-            wins[a]["무"] += 1; wins[b]["무"] += 1
+        elif pref == "BothGood":
+            wins[a]["둘다잘함"] += 1; wins[b]["둘다잘함"] += 1
+        elif pref == "MutualFail":
+            wins[a]["둘다실패"] += 1; wins[b]["둘다실패"] += 1
+        else:  # legacy "Tie"
+            wins[a]["둘다잘함"] += 1; wins[b]["둘다잘함"] += 1
 
     rows = []
     for m in MODELS:
-        t = wins[m]["승"] + wins[m]["패"] + wins[m]["무"]
+        t = sum(wins[m].values())
         wr = 100 * wins[m]["승"] / max(t, 1)
         rows.append({"모델": MLABEL[m], "승": wins[m]["승"], "패": wins[m]["패"],
-                      "무": wins[m]["무"], "승률": f"{wr:.1f}%"})
+                      "둘다잘함": wins[m]["둘다잘함"], "둘다실패": wins[m]["둘다실패"],
+                      "승률": f"{wr:.1f}%"})
     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
     # 승률 바 차트
-    wr_vals = [100 * wins[m]["승"] / max(wins[m]["승"]+wins[m]["패"]+wins[m]["무"], 1)
+    wr_vals = [100 * wins[m]["승"] / max(sum(wins[m].values()), 1)
                for m in MODELS]
     fig_wr = go.Figure(go.Bar(
         x=[MLABEL[m] for m in MODELS], y=wr_vals,
