@@ -1,0 +1,451 @@
+[
+  {
+    "vid": "DM1K_999_Reduction_009",
+    "method": "vgot",
+    "pattern": "Reduction",
+    "entities": [
+      "cat",
+      "dog",
+      "parrot"
+    ],
+    "S_ideal": [
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ]
+    ],
+    "S_obs": [
+      [
+        0,
+        1,
+        1
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ]
+    ],
+    "E_error": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ]
+    ],
+    "failures": [
+      "missed_exit_t2_e1"
+    ],
+    "fail_type": "Type I",
+    "match_prescribed": 0.5,
+    "epa": 0.5555555555555556
+  },
+  {
+    "vid": "DM1K_271_Reverse_Relay_042",
+    "method": "vic",
+    "pattern": "Reverse_Relay",
+    "entities": [
+      "grandfather",
+      "grandchild"
+    ],
+    "S_ideal": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "S_obs": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "E_error": [
+      [
+        -1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "failures": [
+      "missed_entry_t1_e0",
+      "missed_exit_t2_e1"
+    ],
+    "fail_type": "Type I",
+    "match_prescribed": 0.0,
+    "epa": 0.6666666666666666
+  },
+  {
+    "vid": "DM1K_726_Convergence_061",
+    "method": "storydiff",
+    "pattern": "Convergence",
+    "entities": [
+      "swimmer",
+      "crab"
+    ],
+    "S_ideal": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "S_obs": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "E_error": [
+      [
+        0,
+        0
+      ],
+      [
+        -1,
+        0
+      ]
+    ],
+    "failures": [
+      "missed_entry_t2_e0"
+    ],
+    "fail_type": "Type II",
+    "match_prescribed": 0.6666666666666666,
+    "epa": 0.8333333333333334
+  },
+  {
+    "vid": "DM1K_279_Accumulation_172",
+    "method": "vgot",
+    "pattern": "Accumulation",
+    "entities": [
+      "student",
+      "librarian",
+      "artist"
+    ],
+    "S_ideal": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        0
+      ],
+      [
+        1,
+        1,
+        1
+      ]
+    ],
+    "S_obs": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ]
+    ],
+    "E_error": [
+      [
+        0,
+        -1,
+        0
+      ],
+      [
+        0,
+        0,
+        -1
+      ]
+    ],
+    "failures": [
+      "missed_entry_t1_e1",
+      "missed_entry_t2_e2"
+    ],
+    "fail_type": "Type II",
+    "match_prescribed": 0.0,
+    "epa": 0.6666666666666666
+  },
+  {
+    "vid": "DM1K_489_Convergence_038",
+    "method": "storydiff",
+    "pattern": "Convergence",
+    "entities": [
+      "dog",
+      "owner"
+    ],
+    "S_ideal": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "S_obs": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "E_error": [
+      [
+        1,
+        -1
+      ],
+      [
+        -1,
+        0
+      ]
+    ],
+    "failures": [
+      "missed_exit_t1_e0",
+      "missed_entry_t1_e1",
+      "missed_entry_t2_e0"
+    ],
+    "fail_type": "Type II",
+    "match_prescribed": 0.0,
+    "epa": 0.3333333333333333
+  },
+  {
+    "vid": "DM1K_508_Relay_002",
+    "method": "vic",
+    "pattern": "Relay",
+    "entities": [
+      "pastry chef",
+      "apprentice"
+    ],
+    "S_ideal": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "S_obs": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "E_error": [
+      [
+        0,
+        -2
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "failures": [
+      "missed_entry_t1_e1",
+      "missed_exit_t2_e0"
+    ],
+    "fail_type": "Type IV",
+    "match_prescribed": 0.0,
+    "epa": 0.16666666666666666
+  },
+  {
+    "vid": "DM1K_958_Split_069",
+    "method": "vic",
+    "pattern": "Split",
+    "entities": [
+      "cook",
+      "dishwasher"
+    ],
+    "S_ideal": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "S_obs": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "E_error": [
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        -2
+      ]
+    ],
+    "failures": [
+      "missed_exit_t1_e1",
+      "missed_exit_t2_e0",
+      "missed_entry_t2_e1"
+    ],
+    "fail_type": "Type IV",
+    "match_prescribed": 0.0,
+    "epa": 0.3333333333333333
+  },
+  {
+    "vid": "DM1K_989_Convergence_056",
+    "method": "echoshot",
+    "pattern": "Convergence",
+    "entities": [
+      "frisbee player",
+      "spectator"
+    ],
+    "S_ideal": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "S_obs": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "E_error": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        -1
+      ]
+    ],
+    "failures": [
+      "spurious_t2_e1"
+    ],
+    "fail_type": "Type III",
+    "match_prescribed": 1.0,
+    "epa": 0.8333333333333334
+  }
+]

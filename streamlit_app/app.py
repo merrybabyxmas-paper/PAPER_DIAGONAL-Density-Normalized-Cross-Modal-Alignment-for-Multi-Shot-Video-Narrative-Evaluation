@@ -42,86 +42,132 @@ PAT_NAME = {
     "Reverse_Relay": "Reverse Relay: B → AB → A",
 }
 
+ENT_KO = {
+    "apprentice": "견습생", "barista": "바리스타", "cat": "고양이",
+    "chef": "요리사", "cook": "요리사", "crab": "게",
+    "customer": "손님", "delivery cyclist": "배달원", "dishwasher": "설거지사",
+    "doctor": "의사", "dog": "개", "employee": "직원",
+    "frisbee player": "프리스비선수", "grandchild": "손주", "grandfather": "할아버지",
+    "guest": "손님", "guide": "가이드", "hiker": "등산객",
+    "intern": "인턴", "jogger": "조깅하는사람", "librarian": "사서",
+    "manager": "매니저", "mentor": "멘토", "mother": "엄마",
+    "nurse": "간호사", "orderly": "간병인", "owner": "주인",
+    "pastry chef": "제과사", "patient": "환자", "pedestrian": "행인",
+    "police officer": "경찰", "pupil": "학생", "server": "서버",
+    "spectator": "관중", "street performer": "거리공연자", "student": "학생",
+    "surgeon": "외과의사", "swimmer": "수영선수", "toddler": "아기",
+    "tourist": "관광객", "tutor": "튜터", "visitor": "방문객", "waiter": "웨이터",
+}
+
 CSS = """<style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
-/* ── 글로벌: 모바일 다크모드에서 흰 글씨 방지 ── */
-*, body, html,
-.main, .main *, .block-container, .block-container *,
-[data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] *,
-[data-testid="stText"], [data-testid="stCaptionContainer"],
-p, span, li, ol, ul, label, small, h1, h2, h3, h4, h5, h6, div {
-    font-family: 'Pretendard', -apple-system, 'Segoe UI', sans-serif !important;
+/* ── 글로벌: 폰트 + 밝은 테마 강제 ── */
+* { font-family: 'Pretendard', -apple-system, 'Segoe UI', sans-serif !important; }
+
+/* 전체 앱을 밝은 배경 + 검정 글씨로 강제 (모바일 다크모드 무시) */
+html, body, [data-testid="stAppViewContainer"],
+[data-testid="stApp"], .main, .main *,
+[data-testid="stSidebar"], [data-testid="stSidebar"] * {
+    background-color: #FFFFFF !important;
     color: #1A1A1A !important;
 }
-/* Streamlit 위젯 라벨도 강제 검정 */
+/* 사이드바 약간 구분 */
+[data-testid="stSidebar"] { background-color: #F7F8FA !important; }
+
+/* 입력 필드, 라디오 등 위젯 */
 [data-testid="stWidgetLabel"] label,
 [data-testid="stWidgetLabel"] p,
+[data-baseweb="radio"] label,
+[data-baseweb="radio"] span,
 .stRadio label, .stRadio span,
-[data-baseweb="radio"] label { color: #1A1A1A !important; }
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] span,
+[data-testid="stMarkdownContainer"] b,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stCaptionContainer"] { color: #1A1A1A !important; }
+
+/* 버튼 텍스트는 흰색 유지 */
+button[kind="primary"], button[kind="primary"] p,
+button[kind="primary"] span,
+.stButton button[kind="primary"] { color: #FFFFFF !important; }
 
 .main .block-container { max-width: 960px; padding: 0.8rem 1rem; }
 [data-testid="stImage"] img { border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
 
 /* 카드 */
 .card { border-radius: 12px; padding: 14px 16px 8px; margin-bottom: 12px; }
-.card-a { background: linear-gradient(135deg, #EBF5FB 0%, #D6EAF8 100%); border: 2px solid #3498DB; }
-.card-b { background: linear-gradient(135deg, #FDEDEC 0%, #FADBD8 100%); border: 2px solid #E74C3C; }
+.card-a { background: linear-gradient(135deg, #EBF5FB 0%, #D6EAF8 100%) !important; border: 2px solid #3498DB; }
+.card-b { background: linear-gradient(135deg, #FDEDEC 0%, #FADBD8 100%) !important; border: 2px solid #E74C3C; }
+.card, .card * { color: #1A1A1A !important; }
 .card-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; letter-spacing: -0.3px; }
 .title-a { color: #2471A3 !important; }
 .title-b { color: #C0392B !important; }
 
 /* 시나리오 정보 박스 */
 .info-box {
-    background: linear-gradient(135deg, #F8F9FA 0%, #EBF5FB 100%);
+    background: linear-gradient(135deg, #F8F9FA 0%, #EBF5FB 100%) !important;
     border-radius: 10px; padding: 14px 18px; margin-bottom: 14px;
     border-left: 5px solid #2980B9;
     line-height: 1.6;
 }
-.info-box b { color: #2C3E50 !important; }
+.info-box, .info-box * { color: #2C3E50 !important; }
 
 /* S* 테이블 */
 .ptable { border-collapse: collapse; font-size: 0.82rem; margin: 6px auto; }
-.ptable th { background: #F0F3F5; color: #333 !important; }
-.ptable th, .ptable td { border: 1px solid #CBD5E0; padding: 4px 10px; text-align: center; color: #333 !important; }
-.p-yes { background: #A9DFBF; font-weight: 700; color: #1E8449 !important; }
-.p-no  { background: #F5B7B1; color: #922B21 !important; }
+.ptable th { background: #F0F3F5 !important; color: #333 !important; }
+.ptable th, .ptable td { border: 1px solid #CBD5E0; padding: 4px 10px; text-align: center; color: #333 !important; background-color: #FFF !important; }
+.p-yes { background: #A9DFBF !important; font-weight: 700; color: #1E8449 !important; }
+.p-no  { background: #F5B7B1 !important; color: #922B21 !important; }
 
 /* 가이드 박스 */
 .guide-box {
-    background: #FFFBEA; border-radius: 10px; padding: 16px 20px;
+    background: #FFFBEA !important; border-radius: 10px; padding: 16px 20px;
     border: 1px solid #F0C36D; margin: 12px 0;
 }
+.guide-box, .guide-box * { color: #333 !important; }
 .guide-box h4 { margin: 0 0 8px 0; color: #92600F !important; }
-.guide-box ol, .guide-box li { color: #333 !important; }
 .guide-box ol { margin: 0; padding-left: 20px; }
 .guide-box li { margin-bottom: 4px; line-height: 1.5; }
-.guide-box p { color: #555 !important; }
 
 /* 가이드라인 박스 */
 .guideline-box {
-    background: #FFF5F5; border-radius: 10px; padding: 16px 20px;
+    background: #FFF5F5 !important; border-radius: 10px; padding: 16px 20px;
     border: 1px solid #E57373; margin: 12px 0;
 }
+.guideline-box, .guideline-box * { color: #333 !important; }
 .guideline-box h4 { margin: 0 0 10px 0; color: #C62828 !important; }
-.guideline-box p, .guideline-box b, .guideline-box li { color: #333 !important; }
 .guideline-box ul { margin: 0; padding-left: 18px; }
 .guideline-box li { margin-bottom: 6px; line-height: 1.5; }
+
+/* 제출 확인 박스 */
+.submit-confirm, .submit-confirm * { color: #333 !important; }
 
 /* 스코어보드 */
 .score-card {
     text-align: center; padding: 12px; border-radius: 10px;
-    background: #F8F9FA; border: 1px solid #E0E0E0;
+    background: #F8F9FA !important; border: 1px solid #E0E0E0;
 }
+.score-card, .score-card * { color: #333 !important; }
 .score-val { font-size: 1.8rem; font-weight: 800; color: #2C3E50 !important; }
 .score-lbl { font-size: 0.8rem; color: #7F8C8D !important; margin-top: 2px; }
 
-/* 반응형 */
+/* 반응형 — 모바일에서도 columns 가로 유지 */
 @media (max-width: 768px) {
     .main .block-container { padding: 0.4rem 0.6rem; }
-    [data-testid="column"] { padding: 0 3px !important; }
     .card { padding: 10px 10px 6px; }
     .info-box { padding: 10px 12px; }
+
+    /* Streamlit columns를 모바일에서도 flex-row 강제 */
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
+        gap: 4px !important;
+    }
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+        min-width: 0 !important;
+        flex: 1 1 0 !important;
+        padding: 0 2px !important;
+    }
 }
 </style>"""
 
@@ -205,6 +251,7 @@ def find_shots(model, vid):
 
 
 def show_shots(model, vid, container):
+    """Shot 3장을 st.columns로 배치 (CSS로 모바일 3열 강제)."""
     imgs = find_shots(model, vid)
     cols = container.columns(3, gap="small")
     for i, (c, img) in enumerate(zip(cols, imgs)):
@@ -213,11 +260,29 @@ def show_shots(model, vid, container):
             c.caption(f"Shot {i+1}")
         else:
             c.markdown(
-                f"<div style='background:#F0F0F0;border-radius:8px;height:110px;"
+                f"<div style='background:#F0F0F0;border-radius:8px;height:80px;"
                 f"display:flex;align-items:center;justify-content:center;"
-                f"color:#999;font-size:0.85rem;'>Shot {i+1}<br>이미지 없음</div>",
+                f"color:#999;font-size:0.8rem;'>Shot {i+1}<br>없음</div>",
                 unsafe_allow_html=True,
             )
+
+
+def make_entity_flow(s_ideal, entities, korean=False):
+    """S_ideal 매트릭스에서 실제 개체 흐름 문자열 생성.
+    예: [[1,1],[1,0],[0,1]] + [dog, owner] → 'dog&owner → dog → owner'
+    korean=True → '개&주인 → 개 → 주인'
+    """
+    parts = []
+    for row in s_ideal:
+        present = []
+        for j in range(min(len(row), len(entities))):
+            if row[j]:
+                name = entities[j]
+                if korean:
+                    name = ENT_KO.get(name, name)
+                present.append(name)
+        parts.append("&".join(present) if present else "∅")
+    return " → ".join(parts)
 
 
 def load_results():
@@ -314,21 +379,37 @@ def page_eval():
     trials = build_trials()
     total = len(trials)
 
-    # ── 사이드바 ──
-    evaluator = st.sidebar.text_input("✏️ 평가자 이름", key="nm",
-                                       placeholder="예: 홍길동")
-    if not evaluator:
+    # ── 시작 전 화면: 이름 입력 + 평가 시작 ──
+    if "eval_started" not in st.session_state:
+        st.session_state.eval_started = False
+    if "eval_name" not in st.session_state:
+        st.session_state.eval_name = ""
+
+    if not st.session_state.eval_started:
         st.markdown("## 🎬 인간 평가")
+        st.markdown("")
+
+        # 이름 입력
+        st.markdown("### ✏️ 평가자 정보")
+        name_input = st.text_input(
+            "이름을 입력하세요",
+            placeholder="예: 홍길동",
+            key="name_input_field",
+        )
+
+        st.markdown("")
+
+        # 평가 안내
         st.markdown("""
 <div class='guide-box'>
 <h4>📋 평가 안내</h4>
 <ol>
-<li><b>사이드바에 이름 입력</b> 후 시작</li>
+<li>위에 <b>이름 입력</b> 후 아래 <b>[평가 시작]</b> 버튼 클릭</li>
 <li>각 비교에서 <b>처방된 등장 패턴(S*)</b>을 확인하세요</li>
 <li><b>영상 A</b>와 <b>영상 B</b>의 Shot 3개를 비교합니다</li>
 <li>각 영상이 패턴을 얼마나 따르는지 <b>5점 척도</b>로 평가</li>
 <li><b>종합 판단</b> 4가지 중 하나를 선택</li>
-<li>아래로 스크롤하며 12개씩 평가 → <b>[이 페이지 제출]</b></li>
+<li>아래로 스크롤하며 12개씩 평가 → <b>[제출]</b></li>
 </ol>
 <p style="margin-top:10px;color:#666;">총 <b>120개</b> 비교 · 12개씩 10페이지</p>
 </div>
@@ -344,37 +425,58 @@ def page_eval():
 <li><b>1점 (실패)</b> — 지시된 개체가 아예 등장하지 않거나, 프롬프트를 완전히 무시한 엉뚱한 영상.</li>
 </ul>
 </div>""", unsafe_allow_html=True)
+
+        st.markdown("")
+
+        # 시작 버튼
+        if st.button("🚀 평가 시작", type="primary", use_container_width=True):
+            if not name_input.strip():
+                st.error("⚠️ 이름을 먼저 입력해주세요!")
+            else:
+                st.session_state.eval_name = name_input.strip()
+                st.session_state.eval_started = True
+                st.rerun()
         return
 
-    # 진행 상황
+    # ── 평가 진행 중 ──
+    evaluator = st.session_state.eval_name
+
+    # 사이드바: 평가자 정보
+    st.sidebar.markdown(f"### 👤 {evaluator}")
+    if st.sidebar.button("🔙 처음으로 돌아가기"):
+        st.session_state.eval_started = False
+        st.session_state.eval_name = ""
+        st.rerun()
+
+    # 페이지 네비게이션 (session_state 기반)
+    total_pages = (total + BATCH_SIZE - 1) // BATCH_SIZE
+    if "eval_page" not in st.session_state:
+        st.session_state.eval_page = 0  # 0-indexed
+
+    page_idx = st.session_state.eval_page
+
+    # 진행 상황 계산
     all_results = load_results()
     my_done = {(r["vid"], r["model_a"], r["model_b"])
                for r in all_results if r.get("evaluator") == evaluator}
+    # 기존 답변을 (vid, model_a, model_b) → record 로 조회용
+    my_answers = {}
+    for r in all_results:
+        if r.get("evaluator") == evaluator:
+            my_answers[(r["vid"], r["model_a"], r["model_b"])] = r
     completed = len(my_done)
-
-    # 미완료 trial 목록
-    remaining_trials = [
-        (i, t) for i, t in enumerate(trials)
-        if (t["scenario"], t["model_a"], t["model_b"]) not in my_done
-    ]
 
     st.sidebar.markdown("---")
     st.sidebar.markdown(f"### 진행: **{completed}** / {total}")
     st.sidebar.progress(min(completed / max(total, 1), 1.0))
-    st.sidebar.caption(f"남은 비교: {len(remaining_trials)}개")
+    st.sidebar.markdown(f"📄 페이지 **{page_idx + 1}** / {total_pages}")
 
-    if not remaining_trials:
-        st.markdown("## ✅ 평가 완료!")
-        st.success("모든 120개 비교를 완료했습니다. 감사합니다! 🎉")
-        st.balloons()
-        return
+    # 현재 페이지 배치 (고정 순서)
+    start = page_idx * BATCH_SIZE
+    end = min(start + BATCH_SIZE, total)
+    batch = [(i, trials[i]) for i in range(start, end)]
 
-    # 현재 배치 (12개)
-    batch = remaining_trials[:BATCH_SIZE]
-    batch_page = completed // BATCH_SIZE + 1
-    total_pages = (total + BATCH_SIZE - 1) // BATCH_SIZE
-
-    st.markdown(f"## 🎬 평가 — 페이지 {batch_page}/{total_pages}")
+    st.markdown(f"## 🎬 평가 — 페이지 {page_idx + 1}/{total_pages}")
     st.caption(f"아래 {len(batch)}개 비교를 스크롤하며 평가한 후, 맨 아래 **[제출]** 버튼을 눌러주세요.")
 
     likert_labels = [
@@ -387,6 +489,7 @@ def page_eval():
 
     pref_options = ["🔵 A가 나음", "🔴 B가 나음",
                     "✅ 둘 다 잘함", "❌ 둘 다 실패"]
+    pref_reverse = {"A": 0, "B": 1, "BothGood": 2, "MutualFail": 3}
 
     # ── 배치 내 각 trial 렌더링 ──
     for batch_idx, (global_idx, trial) in enumerate(batch):
@@ -397,76 +500,130 @@ def page_eval():
         ma, mb = trial["model_a"], trial["model_b"]
         pfx = "_".join(sid.split("_")[:2])
         ents = list(meta.get("core_entities", {}).values())
-        item_num = completed + batch_idx + 1
+        item_num = start + batch_idx + 1
+
+        # 기존 답변 있으면 기본값으로 사용
+        prev = my_answers.get((sid, ma, mb))
+        default_la = (prev["likert_a"] - 1) if prev else 1  # index (0-based)
+        default_lb = (prev["likert_b"] - 1) if prev else 1
+        default_pf = pref_reverse.get(prev["preference"], 3) if prev else 3
 
         st.markdown("---")
 
-        # 시나리오 정보
+        # S* 에서 실제 개체 흐름 추출
+        entity_flow_en = ""
+        entity_flow_ko = ""
+        s_ideal_data = None
+        s_ideal_ents = ents
+        for mn in [ma, mb]:
+            e = bp.get(mn, {}).get(pfx)
+            if e and "S_ideal" in e:
+                s_ideal_data = e["S_ideal"]
+                s_ideal_ents = e.get("entities", ents)
+                entity_flow_en = make_entity_flow(s_ideal_data, s_ideal_ents, korean=False)
+                entity_flow_ko = make_entity_flow(s_ideal_data, s_ideal_ents, korean=True)
+                break
+
+        # 시나리오 정보 + 실제 개체 흐름 (EN + KO)
+        flow_html = ""
+        if entity_flow_en:
+            flow_html = (
+                f"<br>🎯 <b>정답:</b> "
+                f"<span style='font-size:1.05em;'>{entity_flow_ko}</span>"
+                f" <span style='font-size:0.85em;color:#666 !important;'>({entity_flow_en})</span>"
+            )
         st.markdown(f"""
 <div class='info-box'>
     <b>#{item_num}</b> &nbsp;|&nbsp;
     <b>{PAT_NAME.get(pat, pat)}</b> &nbsp;|&nbsp;
     👤 {', '.join(ents) if ents else '?'} &nbsp;|&nbsp;
     🏠 {meta.get('theme','').replace('_',' ')}
+    {flow_html}
 </div>""", unsafe_allow_html=True)
 
         # S* 매트릭스
-        for mn in [ma, mb]:
-            e = bp.get(mn, {}).get(pfx)
-            if e and "S_ideal" in e:
-                st.markdown(
-                    "<div style='text-align:center;'>"
-                    "<small><b>🎯 처방 패턴 (S*)</b> — ● 등장 · 미등장</small>"
-                    "</div>" + presence_table(e["S_ideal"], e.get("entities", ents)),
-                    unsafe_allow_html=True,
-                )
-                break
-
-        # 영상 A / B 나란히
-        col_a, col_b = st.columns(2, gap="medium")
-        with col_a:
+        if s_ideal_data:
             st.markdown(
-                "<div class='card card-a'><div class='card-title title-a'>🔵 A</div>",
+                "<div style='text-align:center;'>"
+                "<small><b>🎯 처방 패턴 (S*)</b> — ● 등장 · 미등장</small>"
+                "</div>" + presence_table(s_ideal_data, s_ideal_ents),
                 unsafe_allow_html=True,
             )
-            ea = bp.get(ma, {}).get(pfx)
-            if ea:
-                show_shots(ma, ea["vid"], st)
-            st.markdown("</div>", unsafe_allow_html=True)
-        with col_b:
-            st.markdown(
-                "<div class='card card-b'><div class='card-title title-b'>🔴 B</div>",
-                unsafe_allow_html=True,
+
+        # 정답 흐름 HTML (A/B 카드 안에 삽입)
+        answer_tag = ""
+        if entity_flow_ko:
+            answer_tag = (
+                f"<div style='font-size:0.85rem;margin:4px 0 6px;padding:4px 8px;"
+                f"background:rgba(255,255,255,0.7);border-radius:6px;"
+                f"color:#1A1A1A !important;'>"
+                f"🎯 <b style='color:#1A1A1A !important;'>정답:</b> "
+                f"<span style='color:#1A1A1A !important;'>{entity_flow_ko}</span></div>"
             )
-            eb = bp.get(mb, {}).get(pfx)
-            if eb:
-                show_shots(mb, eb["vid"], st)
-            st.markdown("</div>", unsafe_allow_html=True)
 
-        # Likert + 선호도 (한 줄에 압축)
-        q1, q2, q3 = st.columns([1, 1, 1.2], gap="medium")
-        with q1:
-            st.markdown("**🔵 A 준수도**")
-            st.radio("A", [1, 2, 3, 4, 5],
-                     format_func=lambda x: likert_labels[x-1],
-                     key=f"la_{global_idx}", index=1,
-                     label_visibility="collapsed")
-        with q2:
-            st.markdown("**🔴 B 준수도**")
-            st.radio("B", [1, 2, 3, 4, 5],
-                     format_func=lambda x: likert_labels[x-1],
-                     key=f"lb_{global_idx}", index=1,
-                     label_visibility="collapsed")
-        with q3:
-            st.markdown("**❓ 종합 판단**")
-            st.radio("선호", pref_options,
-                     key=f"pf_{global_idx}", index=3,
-                     label_visibility="collapsed")
+        # ── 영상 A (풀 너비) ──
+        st.markdown(
+            f"<div class='card card-a'>"
+            f"<div class='card-title title-a'>🔵 A</div>"
+            f"{answer_tag}",
+            unsafe_allow_html=True,
+        )
+        ea = bp.get(ma, {}).get(pfx)
+        if ea:
+            show_shots(ma, ea["vid"], st)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── 배치 제출 버튼 ──
+        # ── 영상 B (풀 너비) ──
+        st.markdown(
+            f"<div class='card card-b'>"
+            f"<div class='card-title title-b'>🔴 B</div>"
+            f"{answer_tag}",
+            unsafe_allow_html=True,
+        )
+        eb = bp.get(mb, {}).get(pfx)
+        if eb:
+            show_shots(mb, eb["vid"], st)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        # ── 준수도 + 종합판단 (세로 배치) ──
+        edited_tag = " ✏️" if prev else ""
+        st.markdown(f"**🔵 A 준수도**{edited_tag}")
+        st.radio("A", [1, 2, 3, 4, 5],
+                 format_func=lambda x: likert_labels[x-1],
+                 key=f"la_{global_idx}", index=default_la,
+                 horizontal=True, label_visibility="collapsed")
+
+        st.markdown(f"**🔴 B 준수도**{edited_tag}")
+        st.radio("B", [1, 2, 3, 4, 5],
+                 format_func=lambda x: likert_labels[x-1],
+                 key=f"lb_{global_idx}", index=default_lb,
+                 horizontal=True, label_visibility="collapsed")
+
+        st.markdown(f"**❓ 종합 판단**{edited_tag}")
+        st.radio("선호", pref_options,
+                 key=f"pf_{global_idx}", index=default_pf,
+                 horizontal=True, label_visibility="collapsed")
+
+    # ── 네비게이션 + 제출 ──
     st.markdown("---")
+
+    # 이전 / 다음 페이지 버튼
+    nav_left, nav_right = st.columns(2)
+    with nav_left:
+        if page_idx > 0:
+            if st.button("← 이전 페이지", use_container_width=True):
+                st.session_state.eval_page = page_idx - 1
+                st.rerun()
+    with nav_right:
+        if page_idx < total_pages - 1:
+            if st.button("다음 페이지 →", use_container_width=True):
+                st.session_state.eval_page = page_idx + 1
+                st.rerun()
+
     st.markdown("")
-    if st.button(f"📮 이 페이지 {len(batch)}개 제출하고 다음으로",
+
+    # 제출 버튼
+    if st.button(f"📮 이 페이지 {len(batch)}개 저장",
                  type="primary", use_container_width=True):
         pref_map = {
             "🔵 A가 나음": "A",
@@ -491,9 +648,17 @@ def page_eval():
                 "likert_b": lb,
                 "preference": pref_map.get(pf, "A"),
             })
+        # 기존 결과에서 이 평가자의 같은 trial 제거 후 새로 추가 (덮어쓰기)
         results = load_results()
+        overwrite_keys = {(r["vid"], r["model_a"], r["model_b"]) for r in new_records}
+        results = [r for r in results
+                   if not (r.get("evaluator") == evaluator
+                           and (r["vid"], r["model_a"], r["model_b"]) in overwrite_keys)]
         results.extend(new_records)
         save_results(results)
+        # 자동으로 다음 페이지로 이동 (마지막이 아니면)
+        if page_idx < total_pages - 1:
+            st.session_state.eval_page = page_idx + 1
         st.rerun()
 
 
@@ -684,6 +849,298 @@ def page_results():
 
 
 # ═══════════════════════════════════════════════════════════════════════
+#  페이지: Failure 브라우저 (논문 figure 선별용)
+# ═══════════════════════════════════════════════════════════════════════
+def explain_failures_ko(fails, ents, s_ideal):
+    """failure 코드를 S_ideal 기반으로 정확한 한글 설명으로 변환."""
+    explanations = []
+    for f in fails:
+        parts = f.split("_")
+        try:
+            if f.startswith("missed_exit"):
+                t_idx = int(parts[2][1:])  # t1 → 1 (transition index, 1-based)
+                e_idx = int(parts[3][1:])  # e2 → 2
+                ent_en = ents[e_idx] if e_idx < len(ents) else f"e{e_idx}"
+                ent_ko = ENT_KO.get(ent_en, ent_en)
+                # Shot t_idx에서는 있고, Shot t_idx+1에서는 없어야 하는데 계속 남아있음
+                explanations.append(
+                    f"Shot{t_idx}→{t_idx+1}: {ent_ko}({ent_en})가 "
+                    f"Shot{t_idx+1}에서 사라져야 하는데 계속 남아있음 (잔류)"
+                )
+            elif f.startswith("missed_entry"):
+                t_idx = int(parts[2][1:])
+                e_idx = int(parts[3][1:])
+                ent_en = ents[e_idx] if e_idx < len(ents) else f"e{e_idx}"
+                ent_ko = ENT_KO.get(ent_en, ent_en)
+                # Shot t_idx+1에서 등장해야 하는데 안 나옴
+                explanations.append(
+                    f"Shot{t_idx}→{t_idx+1}: {ent_ko}({ent_en})가 "
+                    f"Shot{t_idx+1}에서 나와야 하는데 안 나옴 (망각)"
+                )
+            elif f.startswith("spurious"):
+                t_idx = int(parts[1][1:])
+                e_idx = int(parts[2][1:])
+                ent_en = ents[e_idx] if e_idx < len(ents) else f"e{e_idx}"
+                ent_ko = ENT_KO.get(ent_en, ent_en)
+                # S_ideal 참조해서 정확한 설명
+                if s_ideal and t_idx < len(s_ideal) and e_idx < len(s_ideal[0]):
+                    before = s_ideal[t_idx][e_idx]      # Shot t_idx
+                    after = s_ideal[t_idx + 1][e_idx] if t_idx + 1 < len(s_ideal) else before
+                    if before == 1 and after == 1:
+                        # 둘 다 있어야 하는데 변화가 생김 → Shot t에서 없었다가 나타남
+                        explanations.append(
+                            f"Shot{t_idx}→{t_idx+1}: {ent_ko}({ent_en})가 "
+                            f"Shot{t_idx}에도 있어야 하는데 없다가 Shot{t_idx+1}에서 뒤늦게 나타남"
+                        )
+                    elif before == 0 and after == 0:
+                        # 둘 다 없어야 하는데 나타남
+                        explanations.append(
+                            f"Shot{t_idx}→{t_idx+1}: {ent_ko}({ent_en})가 "
+                            f"없어야 하는데 갑자기 나타남 (유령 등장)"
+                        )
+                    else:
+                        explanations.append(
+                            f"Shot{t_idx}→{t_idx+1}: {ent_ko}({ent_en})에 예상 밖 변화 발생"
+                        )
+                else:
+                    explanations.append(
+                        f"Shot{t_idx}→{t_idx+1}: {ent_ko}({ent_en})에 예상 밖 변화 발생"
+                    )
+            else:
+                explanations.append(f)
+        except (IndexError, ValueError):
+            explanations.append(f)
+    return explanations
+
+SELECTED_PATH = DATA_DIR / "selected_failures.json"
+
+def load_selected():
+    if SELECTED_PATH.exists():
+        with open(SELECTED_PATH) as f:
+            return json.load(f)
+    return []
+
+def save_selected(sel):
+    with open(SELECTED_PATH, "w") as f:
+        json.dump(sel, f, indent=2, ensure_ascii=False)
+
+def page_failure_browser():
+    st.markdown("## 🔍 Failure 예시 브라우저")
+    st.caption("논문 qualitative figure에 넣을 예시를 골라보세요. 썸네일 클릭 후 선택!")
+
+    data = load_eval()
+
+    # 선택된 항목
+    if "fb_selected" not in st.session_state:
+        st.session_state.fb_selected = load_selected()
+
+    # failure 분류
+    FAIL_TYPES = {
+        "Type I: Context Bleeding (missed_exit)": "missed_exit",
+        "Type II: Amnesia (missed_entry)": "missed_entry",
+        "Type III: Spurious": "spurious",
+        "Type IV: Reversal (E_error ±2)": "__reversal__",
+    }
+    FAIL_DESC = {
+        "Type I: Context Bleeding (missed_exit)": (
+            "🩸 <b>Type I — Context Bleeding (잔류 오류)</b><br>"
+            "퇴장해야 할 개체가 다음 샷에서도 계속 남아있는 경우.<br>"
+            "예: Relay(A→AB→B)에서 Shot 3에 A가 사라져야 하는데 여전히 보임."
+        ),
+        "Type II: Amnesia (missed_entry)": (
+            "🧠 <b>Type II — Amnesia (망각 오류)</b><br>"
+            "등장해야 할 개체가 해당 샷에 나타나지 않는 경우.<br>"
+            "예: Relay(A→AB→B)에서 Shot 2에 B가 등장해야 하는데 안 보임."
+        ),
+        "Type III: Spurious": (
+            "👻 <b>Type III — Spurious (유령 등장)</b><br>"
+            "대본에 없는 개체가 갑자기 나타나는 경우.<br>"
+            "예: Shot 1에 A만 있어야 하는데 B가 이미 보임."
+        ),
+        "Type IV: Reversal (E_error ±2)": (
+            "🔄 <b>Type IV — Reversal (역전 오류)</b><br>"
+            "등장/퇴장이 정반대로 일어난 경우.<br>"
+            "예: A가 들어와야 하는데 오히려 나가고, B가 나가야 하는데 오히려 들어옴."
+        ),
+    }
+
+    fc1, fc2, fc3 = st.columns(3)
+    with fc1:
+        sel_type = st.selectbox("Failure Type", list(FAIL_TYPES.keys()))
+
+    # 선택된 type 설명
+    st.markdown(
+        f"<div style='background:#FFF8E1;border:1px solid #FFD54F;border-radius:8px;"
+        f"padding:10px 14px;margin:8px 0;font-size:0.85rem;line-height:1.5;'>"
+        f"{FAIL_DESC[sel_type]}</div>",
+        unsafe_allow_html=True,
+    )
+    with fc2:
+        sel_model = st.selectbox("모델", ["전체"] + MODELS)
+    with fc3:
+        sel_pattern = st.selectbox("패턴", ["전체", "Relay", "Split", "Accumulation",
+                                            "Convergence", "Sliding_Window", "Reduction",
+                                            "Reverse_Relay"])
+
+    only_kf = st.checkbox("Keyframe 있는 것만", value=True)
+
+    fail_key = FAIL_TYPES[sel_type]
+
+    # 필터링
+    candidates = []
+    for r in data:
+        if sel_model != "전체" and r["method"] != sel_model:
+            continue
+        if sel_pattern != "전체" and r.get("pattern") != sel_pattern:
+            continue
+
+        if fail_key == "__reversal__":
+            has_rev = any(abs(v) == 2 for row in r.get("E_error", []) for v in row)
+            if not has_rev:
+                continue
+            r["_sort"] = len(r.get("failures", []))
+        else:
+            matching = [f for f in r.get("failures", []) if fail_key in f]
+            if not matching:
+                continue
+            other_fails = len([f for f in r.get("failures", []) if fail_key not in f])
+            r["_sort"] = other_fails
+
+        vid = r["vid"]
+        model = r["method"]
+        kf_dir = KF_DIR / f"{model}_{vid}"
+        has_kf = kf_dir.exists() and any(kf_dir.iterdir()) if kf_dir.exists() else False
+        r["_has_kf"] = has_kf
+
+        if only_kf and not has_kf:
+            continue
+
+        candidates.append(r)
+
+    candidates.sort(key=lambda x: (not x["_has_kf"], x["_sort"]))
+
+    st.markdown(f"**{len(candidates)}개 후보** (keyframe 있는 것 우선, 깔끔한 예시 우선)")
+
+    if not candidates:
+        st.warning("조건에 맞는 결과가 없습니다.")
+        return
+
+    # 페이지네이션
+    PAGE_SZ = 1000
+    total_pg = (len(candidates) + PAGE_SZ - 1) // PAGE_SZ
+    if "fb_page" not in st.session_state:
+        st.session_state.fb_page = 0
+    pg = st.session_state.fb_page
+    page_cands = candidates[pg * PAGE_SZ : (pg + 1) * PAGE_SZ]
+
+    if total_pg > 1:
+        p1, p2, p3 = st.columns([1, 2, 1])
+        with p1:
+            if pg > 0 and st.button("← 이전 1000개"):
+                st.session_state.fb_page -= 1
+                st.rerun()
+        p2.markdown(f"**페이지 {pg+1}/{total_pg}** ({pg*PAGE_SZ+1}~{min((pg+1)*PAGE_SZ, len(candidates))})")
+        with p3:
+            if pg < total_pg - 1 and st.button("다음 1000개 →"):
+                st.session_state.fb_page += 1
+                st.rerun()
+
+    st.markdown("---")
+
+    # 갤러리: 한 줄에 1개, 3 shot + 정보 + 선택 버튼
+    sel_keys = {(s["vid"], s["method"], s.get("fail_type", "")) for s in st.session_state.fb_selected}
+
+    for ci, r in enumerate(page_cands):
+        vid = r["vid"]
+        model = r["method"]
+        ents = r.get("entities", [])
+        fails = r.get("failures", [])
+        item_key = (vid, model, sel_type.split(":")[0])
+        is_selected = item_key in sel_keys
+
+        border_color = "#27AE60" if is_selected else "#DDD"
+        bg = "#E8F8F5" if is_selected else "#FAFAFA"
+
+        # 정보 + 선택 버튼 (한 줄)
+        n_other = len([f for f in fails if fail_key not in f]) if fail_key != "__reversal__" else 0
+        clean_tag = "🟢" if n_other == 0 else f"🟡+{n_other}"
+
+        # 정답 흐름 생성
+        s_ideal = r.get("S_ideal")
+        flow_en = make_entity_flow(s_ideal, ents, korean=False) if s_ideal else ""
+        flow_ko = make_entity_flow(s_ideal, ents, korean=True) if s_ideal else ""
+
+        info_col, btn_col = st.columns([4, 1])
+        with info_col:
+            st.markdown(
+                f"<div style='font-size:0.8rem;line-height:1.4;padding:4px 8px;"
+                f"background:{bg};border:1px solid {border_color};border-radius:6px;'>"
+                f"<b>#{pg*PAGE_SZ+ci+1}</b> {clean_tag} "
+                f"<b>{MLABEL.get(model, model)}</b> | "
+                f"{r.get('pattern','')}<br>"
+                f"🎯 정답: <b>{flow_ko}</b> ({flow_en})<br>"
+                f"<span style='font-size:0.65rem;color:#888;'>{vid}</span>"
+                f"</div>", unsafe_allow_html=True)
+        with btn_col:
+            btn_label = "✅ 선택됨" if is_selected else "☐ 선택"
+            gidx = pg * PAGE_SZ + ci
+            if st.button(btn_label, key=f"sel_{gidx}",
+                         use_container_width=True):
+                if is_selected:
+                    st.session_state.fb_selected = [
+                        s for s in st.session_state.fb_selected
+                        if not (s["vid"] == vid and s["method"] == model
+                                and s.get("fail_type", "") == sel_type.split(":")[0])
+                    ]
+                else:
+                    st.session_state.fb_selected.append({
+                        "vid": vid,
+                        "method": model,
+                        "pattern": r.get("pattern"),
+                        "entities": ents,
+                        "S_ideal": r.get("S_ideal"),
+                        "S_obs": r.get("S_obs"),
+                        "E_error": r.get("E_error"),
+                        "failures": fails,
+                        "fail_type": sel_type.split(":")[0],
+                        "match_prescribed": r.get("match_prescribed"),
+                        "epa": r.get("epa"),
+                    })
+                save_selected(st.session_state.fb_selected)
+                st.rerun()
+
+        # 3 Shot 표시
+        show_shots(model, vid, st)
+        st.markdown("")
+
+    # 하단: 선택된 항목 요약
+    st.markdown("---")
+    st.markdown("### ⭐ 선택된 항목")
+    selected = st.session_state.fb_selected
+    if not selected:
+        st.info("아직 선택된 항목이 없습니다.")
+    else:
+        for i, s in enumerate(selected):
+            sc1, sc2 = st.columns([5, 1])
+            sc1.markdown(
+                f"**{s.get('fail_type','')}** | {MLABEL.get(s['method'], s['method'])} | "
+                f"{s.get('pattern','')} | {', '.join(s.get('entities',[])[:3])} | "
+                f"`{s['vid']}`"
+            )
+            if sc2.button("삭제", key=f"del_{i}"):
+                st.session_state.fb_selected.pop(i)
+                save_selected(st.session_state.fb_selected)
+                st.rerun()
+
+        st.download_button(
+            "📥 선택 항목 JSON 다운로드",
+            data=json.dumps(selected, indent=2, ensure_ascii=False),
+            file_name="selected_failures.json",
+            mime="application/json",
+        )
+
+
+# ═══════════════════════════════════════════════════════════════════════
 #  메인
 # ═══════════════════════════════════════════════════════════════════════
 def main():
@@ -697,13 +1154,16 @@ def main():
 
     page = st.sidebar.radio(
         "메뉴",
-        ["🎬 인간 평가하기", "📊 자동 평가 대시보드", "📋 결과 & 분석"],
+        ["🎬 인간 평가하기", "📊 자동 평가 대시보드",
+         "📋 결과 & 분석", "🔍 Failure 브라우저"],
     )
 
     if "🎬" in page:
         page_eval()
     elif "📊" in page:
         page_dashboard()
+    elif "🔍" in page:
+        page_failure_browser()
     else:
         page_results()
 
