@@ -44,7 +44,22 @@ PAT_NAME = {
 
 CSS = """<style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-* { font-family: 'Pretendard', -apple-system, 'Segoe UI', sans-serif !important; }
+
+/* ── 글로벌: 모바일 다크모드에서 흰 글씨 방지 ── */
+*, body, html,
+.main, .main *, .block-container, .block-container *,
+[data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] *,
+[data-testid="stText"], [data-testid="stCaptionContainer"],
+p, span, li, ol, ul, label, small, h1, h2, h3, h4, h5, h6, div {
+    font-family: 'Pretendard', -apple-system, 'Segoe UI', sans-serif !important;
+    color: #1A1A1A !important;
+}
+/* Streamlit 위젯 라벨도 강제 검정 */
+[data-testid="stWidgetLabel"] label,
+[data-testid="stWidgetLabel"] p,
+.stRadio label, .stRadio span,
+[data-baseweb="radio"] label { color: #1A1A1A !important; }
+
 .main .block-container { max-width: 960px; padding: 0.8rem 1rem; }
 [data-testid="stImage"] img { border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
 
@@ -53,8 +68,8 @@ CSS = """<style>
 .card-a { background: linear-gradient(135deg, #EBF5FB 0%, #D6EAF8 100%); border: 2px solid #3498DB; }
 .card-b { background: linear-gradient(135deg, #FDEDEC 0%, #FADBD8 100%); border: 2px solid #E74C3C; }
 .card-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; letter-spacing: -0.3px; }
-.title-a { color: #2471A3; }
-.title-b { color: #C0392B; }
+.title-a { color: #2471A3 !important; }
+.title-b { color: #C0392B !important; }
 
 /* 시나리오 정보 박스 */
 .info-box {
@@ -63,31 +78,43 @@ CSS = """<style>
     border-left: 5px solid #2980B9;
     line-height: 1.6;
 }
-.info-box b { color: #2C3E50; }
+.info-box b { color: #2C3E50 !important; }
 
 /* S* 테이블 */
 .ptable { border-collapse: collapse; font-size: 0.82rem; margin: 6px auto; }
-.ptable th { background: #F0F3F5; }
-.ptable th, .ptable td { border: 1px solid #CBD5E0; padding: 4px 10px; text-align: center; }
-.p-yes { background: #A9DFBF; font-weight: 700; color: #1E8449; }
-.p-no  { background: #F5B7B1; color: #922B21; }
+.ptable th { background: #F0F3F5; color: #333 !important; }
+.ptable th, .ptable td { border: 1px solid #CBD5E0; padding: 4px 10px; text-align: center; color: #333 !important; }
+.p-yes { background: #A9DFBF; font-weight: 700; color: #1E8449 !important; }
+.p-no  { background: #F5B7B1; color: #922B21 !important; }
 
 /* 가이드 박스 */
 .guide-box {
     background: #FFFBEA; border-radius: 10px; padding: 16px 20px;
     border: 1px solid #F0C36D; margin: 12px 0;
 }
-.guide-box h4 { margin: 0 0 8px 0; color: #92600F; }
+.guide-box h4 { margin: 0 0 8px 0; color: #92600F !important; }
+.guide-box ol, .guide-box li { color: #333 !important; }
 .guide-box ol { margin: 0; padding-left: 20px; }
 .guide-box li { margin-bottom: 4px; line-height: 1.5; }
+.guide-box p { color: #555 !important; }
+
+/* 가이드라인 박스 */
+.guideline-box {
+    background: #FFF5F5; border-radius: 10px; padding: 16px 20px;
+    border: 1px solid #E57373; margin: 12px 0;
+}
+.guideline-box h4 { margin: 0 0 10px 0; color: #C62828 !important; }
+.guideline-box p, .guideline-box b, .guideline-box li { color: #333 !important; }
+.guideline-box ul { margin: 0; padding-left: 18px; }
+.guideline-box li { margin-bottom: 6px; line-height: 1.5; }
 
 /* 스코어보드 */
 .score-card {
     text-align: center; padding: 12px; border-radius: 10px;
     background: #F8F9FA; border: 1px solid #E0E0E0;
 }
-.score-val { font-size: 1.8rem; font-weight: 800; color: #2C3E50; }
-.score-lbl { font-size: 0.8rem; color: #7F8C8D; margin-top: 2px; }
+.score-val { font-size: 1.8rem; font-weight: 800; color: #2C3E50 !important; }
+.score-lbl { font-size: 0.8rem; color: #7F8C8D !important; margin-top: 2px; }
 
 /* 반응형 */
 @media (max-width: 768px) {
@@ -304,6 +331,18 @@ def page_eval():
 <li>아래로 스크롤하며 12개씩 평가 → <b>[이 페이지 제출]</b></li>
 </ol>
 <p style="margin-top:10px;color:#666;">총 <b>120개</b> 비교 · 12개씩 10페이지</p>
+</div>
+
+<div class='guideline-box'>
+<h4>🚨 평가 가이드라인: 무엇을 기준으로 점수를 매기나요?</h4>
+<p>본 평가는 영상의 <b>화질이나 미적 아름다움이 아닌</b>, <b>'지시된 개체가 제때 나타나고 제때 사라졌는가(서사 준수도)'</b>를 평가합니다.</p>
+<ul>
+<li><b>5점 (완벽)</b> — 처방 패턴(S*)의 타이밍에 맞춰 개체의 등장과 퇴장이 완벽하게 이루어진 경우.</li>
+<li><b>4점 (우수)</b> — 서사의 흐름(누가 들어오고 나가는지)은 맞췄으나, 퇴장해야 할 개체가 프레임 구석에 찰나의 잔상처럼 남는 등 아주 미세한 결함이 있는 경우.</li>
+<li><b>3점 (보통)</b> — 샷이 3개이므로 전환(Transition)이 2번 일어납니다. 이 중 <b>한 번은 성공</b>했으나, <b>다른 한 번은 실패</b>한 경우. (예: A→AB는 맞췄으나, AB→B에서 실패)</li>
+<li><b>2점 (미흡)</b> — 프롬프트에 있는 개체(예: 고양이)가 나오기는 하지만, 등장/퇴장 없이 처음부터 끝까지 가만히 있는 경우 (서사적 변화 실패).</li>
+<li><b>1점 (실패)</b> — 지시된 개체가 아예 등장하지 않거나, 프롬프트를 완전히 무시한 엉뚱한 영상.</li>
+</ul>
 </div>""", unsafe_allow_html=True)
         return
 
@@ -339,11 +378,11 @@ def page_eval():
     st.caption(f"아래 {len(batch)}개 비교를 스크롤하며 평가한 후, 맨 아래 **[제출]** 버튼을 눌러주세요.")
 
     likert_labels = [
-        "1 — 전혀 안 따름 (대본 무시)",
-        "2 — 조금 따름",
-        "3 — 보통 (일부 오류 있음)",
-        "4 — 잘 따름",
-        "5 — 완벽히 따름 (등장/퇴장 완벽)",
+        "1 — 실패 (대본 완전 무시 / 엉뚱한 개체)",
+        "2 — 미흡 (개체는 나오나 서사 변화 없음)",
+        "3 — 보통 (전환 2번 중 1번만 성공)",
+        "4 — 우수 (흐름은 맞으나 미세 잔상/오류)",
+        "5 — 완벽 (등장/퇴장 타이밍 완벽 일치)",
     ]
 
     pref_options = ["🔵 A가 나음", "🔴 B가 나음",
