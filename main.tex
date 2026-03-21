@@ -123,24 +123,60 @@ To formalize this mathematically sound evaluation, we contribute the following:
 % FIGURE 1: Combined overview — STEM pipeline + Completeness + Failure taxonomy
 \begin{figure*}[t]
 \centering
-% --- Left: (a) STEM pipeline ---
-\begin{minipage}[t]{0.62\textwidth}
+
+% ===== TOP: (a) STEM Evaluation Pipeline — full width =====
+\begin{tikzpicture}[remember picture]
+\node[inner sep=0pt] (pipelineImg) {%
+  \includegraphics[width=0.92\textwidth]{figures/OVERALL_a_method.png}};
+% Anchor points for dashed connectors to (b) and (c)
+\coordinate (anchorB) at ([xshift=-0.05\textwidth, yshift=-0.02\textwidth]pipelineImg.south);
+\coordinate (anchorC) at ([xshift=0.18\textwidth, yshift=-0.02\textwidth]pipelineImg.south);
+\end{tikzpicture}
+
+\vspace{-2pt}
+{\small\sffamily\bfseries (a) STEM Evaluation Pipeline}
+
+\vspace{6pt}
+% Thin separator
+\noindent\begin{tikzpicture}\draw[gray!40, line width=0.4pt] (0,0) -- (0.92\textwidth,0);\end{tikzpicture}
+\vspace{6pt}
+
+% ===== BOTTOM: (b) and (c) side by side =====
+\begin{minipage}[t]{0.46\textwidth}
 \centering
-\textbf{(a)} STEM Evaluation Pipeline\par\smallskip
-\includegraphics[width=\textwidth]{figures/OVERALL_a_method.png}
+\begin{tikzpicture}[remember picture]
+\node[inner sep=0pt] (spanImg) {%
+  \includegraphics[width=\textwidth]{figures/OVERALL_b_span.png}};
+\end{tikzpicture}
+\par\vspace{2pt}
+{\small\sffamily\bfseries (b) SPAN Completeness}
 \end{minipage}%
 \hfill
-% --- Right: (b) and (c) stacked vertically ---
-\begin{minipage}[t]{0.36\textwidth}
+% Vertical divider
+\begin{minipage}[t]{0.01\textwidth}
+\centering\vspace{0pt}
+\color{gray!40}\rule{0.4pt}{3.6cm}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.46\textwidth}
 \centering
-\textbf{(b)} SPAN Completeness\par\smallskip
-\includegraphics[width=\textwidth]{figures/OVERALL_b_span.png}
-\par\vspace{4pt}
-\noindent\begin{tikzpicture}\draw[gray!60, dashed, line width=0.6pt] (0,0) -- (\textwidth,0);\end{tikzpicture}
-\vspace{4pt}\par
-\textbf{(c)} Failure Taxonomy\par\smallskip
-\includegraphics[width=\textwidth]{figures/OVERALL_c_failure.png}
+\begin{tikzpicture}[remember picture]
+\node[inner sep=0pt] (failImg) {%
+  \includegraphics[width=\textwidth]{figures/OVERALL_c_failure.png}};
+\end{tikzpicture}
+\par\vspace{2pt}
+{\small\sffamily\bfseries (c) Failure Taxonomy}
 \end{minipage}
+
+% ===== Dashed connectors: pipeline → (b) theory, pipeline → (c) diagnosis =====
+\begin{tikzpicture}[remember picture, overlay]
+% ΔS* path → (b) SPAN
+\draw[cyan!70!blue, dashed, line width=0.9pt, rounded corners=4pt, -{Stealth[length=4pt]}]
+  (anchorB) -- ([yshift=6pt]spanImg.north);
+% Error matrix E → (c) Failure
+\draw[orange!80!red, dashed, line width=0.9pt, rounded corners=4pt, -{Stealth[length=4pt]}]
+  (anchorC) -- ([yshift=6pt]failImg.north);
+\end{tikzpicture}
 
 \caption{\textbf{\diagonal{} framework overview.}
 \textbf{(a)}~The \stem{} pipeline: a VLM projects each shot into a binary presence vector, forming $S_\text{obs}$. Temporal differencing yields $\Delta S_\text{obs}$, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ diagnoses failures and feeds PTM/EPA metrics.
