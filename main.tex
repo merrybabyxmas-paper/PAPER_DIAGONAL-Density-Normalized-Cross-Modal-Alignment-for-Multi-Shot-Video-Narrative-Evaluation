@@ -228,7 +228,7 @@ We first build the theoretical foundation: formulating narratives as state trans
 \subsection{Narratives as State Transition Matrices}
 \label{sec:formalization}
 
-A multi-shot video consists of $T$ consecutive shots depicting up to $N$ named entities (e.g., ``a chef,'' ``a dog''). To mathematically formalize their appearances, we define the binary \emph{presence matrix} $S \in \{0,1\}^{T \times N}$, which records entity visibility across shots: $S_{t,e} = 1$ if entity $e$ appears in shot $t$, and $0$ otherwise.
+A multi-shot video consists of $T$ consecutive shots depicting up to $N$ named entities (e.g., ``a tuxedo cat,'' ``a orange tabby''). To mathematically formalize their appearances, we define the binary \emph{presence matrix} $S \in \{0,1\}^{T \times N}$, which records entity visibility across shots: $S_{t,e} = 1$ if entity $e$ appears in shot $t$, and $0$ otherwise.
 
 To evaluate the dynamic storytelling (entrances and exits), we extract the narrative derivative via temporal differencing, yielding the \emph{state transition matrix} $\Delta S$:
 \begin{equation}
