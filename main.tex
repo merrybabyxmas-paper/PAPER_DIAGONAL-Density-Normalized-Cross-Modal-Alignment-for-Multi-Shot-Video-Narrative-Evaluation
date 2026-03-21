@@ -601,7 +601,7 @@ No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_failures.png}
-\caption{Qualitative examples of the four failure types on real generated frames. Each row shows the prescribed narrative, the GT presence matrix $S^*$, and the generated frames with detected failures highlighted. \textbf{Type~I}: entity persists past its prescribed exit. \textbf{Type~II}: entity fails to appear at its prescribed entry. \textbf{Type~III}: unprescribed entity appears in a hold cell. \textbf{Type~IV}: observed transition is opposite to prescribed ($|E|=2$).}
+\caption{Qualitative examples of the four failure types on real generated frames. Each row shows the prescribed pattern with $S^*$ (ideal) and $\hat{S}$ (observed) entity presence; green/red borders indicate correct/failed shots. \textbf{Type~I} (VGoT, Reduction): \emph{dog} persists in Shot~3 where only \emph{cat} should remain. \textbf{Type~II} (StoryDiffusion, Convergence): \emph{swimmer} fails to re-enter in Shot~3. \textbf{Type~III} (StoryDiffusion, Accumulation): \emph{waiter} vanishes in Shot~2 despite being prescribed in all shots. \textbf{Type~IV} (VIC, Split): entity transitions are reversed---\emph{dishwasher} enters where it should exit and vice versa ($|E|{=}2$).}
 \label{fig:qualitative}
 \end{figure}
 
