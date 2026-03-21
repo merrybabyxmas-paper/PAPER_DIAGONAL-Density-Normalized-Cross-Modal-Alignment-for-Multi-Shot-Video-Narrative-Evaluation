@@ -122,60 +122,52 @@ To formalize this mathematically sound evaluation, we contribute the following:
 
 % FIGURE 1: Combined overview — STEM pipeline + Completeness + Failure taxonomy
 \begin{figure*}[t]
-\centering
-
-% ===== TOP: (a) STEM Evaluation Pipeline — full width =====
+\centering\setlength{\abovecaptionskip}{4pt}\setlength{\belowcaptionskip}{0pt}%
+%
+% ===== TOP: (a) STEM Evaluation Pipeline — full width, compact =====
 \begin{tikzpicture}[remember picture]
 \node[inner sep=0pt] (pipelineImg) {%
-  \includegraphics[width=0.92\textwidth]{figures/OVERALL_a_method.png}};
-% Anchor points for dashed connectors to (b) and (c)
-\coordinate (anchorB) at ([xshift=-0.05\textwidth, yshift=-0.02\textwidth]pipelineImg.south);
-\coordinate (anchorC) at ([xshift=0.18\textwidth, yshift=-0.02\textwidth]pipelineImg.south);
-\end{tikzpicture}
-
-\vspace{-2pt}
-{\small\sffamily\bfseries (a) STEM Evaluation Pipeline}
-
-\vspace{6pt}
-% Thin separator
-\noindent\begin{tikzpicture}\draw[gray!40, line width=0.4pt] (0,0) -- (0.92\textwidth,0);\end{tikzpicture}
-\vspace{6pt}
-
-% ===== BOTTOM: (b) and (c) side by side =====
-\begin{minipage}[t]{0.46\textwidth}
+  \includegraphics[width=0.88\textwidth,trim=0 5 0 5,clip]{figures/OVERALL_a_method.png}};
+\coordinate (anchorB) at ([xshift=-0.05\textwidth]pipelineImg.south);
+\coordinate (anchorC) at ([xshift=0.18\textwidth]pipelineImg.south);
+\end{tikzpicture}%
+\par\vspace{-1pt}
+{\footnotesize\sffamily\bfseries (a) STEM Evaluation Pipeline}%
+\par\vspace{3pt}
+\noindent\begin{tikzpicture}\draw[gray!40, line width=0.3pt] (0,0) -- (0.88\textwidth,0);\end{tikzpicture}%
+\par\vspace{3pt}
+%
+% ===== BOTTOM: (b) and (c) side by side, scaled down =====
+\begin{minipage}[t]{0.44\textwidth}
 \centering
 \begin{tikzpicture}[remember picture]
 \node[inner sep=0pt] (spanImg) {%
-  \includegraphics[width=\textwidth]{figures/OVERALL_b_span.png}};
-\end{tikzpicture}
-\par\vspace{2pt}
-{\small\sffamily\bfseries (b) SPAN Completeness}
+  \includegraphics[width=\textwidth,trim=0 5 0 5,clip]{figures/OVERALL_b_span.png}};
+\end{tikzpicture}%
+\par\vspace{1pt}
+{\footnotesize\sffamily\bfseries (b) SPAN Completeness}
 \end{minipage}%
 \hfill
-% Vertical divider
-\begin{minipage}[t]{0.01\textwidth}
-\centering\vspace{0pt}
-\color{gray!40}\rule{0.4pt}{3.6cm}
+\begin{minipage}[t]{0.005\textwidth}
+\centering\vspace{0pt}\color{gray!35}\rule{0.3pt}{2.8cm}
 \end{minipage}%
 \hfill
-\begin{minipage}[t]{0.46\textwidth}
+\begin{minipage}[t]{0.44\textwidth}
 \centering
 \begin{tikzpicture}[remember picture]
 \node[inner sep=0pt] (failImg) {%
-  \includegraphics[width=\textwidth]{figures/OVERALL_c_failure.png}};
-\end{tikzpicture}
-\par\vspace{2pt}
-{\small\sffamily\bfseries (c) Failure Taxonomy}
-\end{minipage}
-
-% ===== Dashed connectors: pipeline → (b) theory, pipeline → (c) diagnosis =====
+  \includegraphics[width=\textwidth,trim=0 5 0 5,clip]{figures/OVERALL_c_failure.png}};
+\end{tikzpicture}%
+\par\vspace{1pt}
+{\footnotesize\sffamily\bfseries (c) Failure Taxonomy}
+\end{minipage}%
+%
+% ===== Dashed connectors =====
 \begin{tikzpicture}[remember picture, overlay]
-% ΔS* path → (b) SPAN
-\draw[cyan!70!blue, dashed, line width=0.9pt, rounded corners=4pt, -{Stealth[length=4pt]}]
-  (anchorB) -- ([yshift=6pt]spanImg.north);
-% Error matrix E → (c) Failure
-\draw[orange!80!red, dashed, line width=0.9pt, rounded corners=4pt, -{Stealth[length=4pt]}]
-  (anchorC) -- ([yshift=6pt]failImg.north);
+\draw[cyan!70!blue, dashed, line width=0.8pt, rounded corners=3pt, -{Stealth[length=3.5pt]}]
+  (anchorB) -- ([yshift=4pt]spanImg.north);
+\draw[orange!80!red, dashed, line width=0.8pt, rounded corners=3pt, -{Stealth[length=3.5pt]}]
+  (anchorC) -- ([yshift=4pt]failImg.north);
 \end{tikzpicture}
 
 \caption{\textbf{\diagonal{} framework overview.}
