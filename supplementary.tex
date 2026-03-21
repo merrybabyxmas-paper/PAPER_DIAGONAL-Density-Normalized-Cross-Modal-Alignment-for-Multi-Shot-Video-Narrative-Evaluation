@@ -38,6 +38,10 @@
 
 \maketitle
 
+\appendix
+\renewcommand{\thetheorem}{\arabic{theorem}}
+\renewcommand{\thelemma}{\arabic{lemma}}
+
 %% ============================================================
 \section{Completeness Theorem: Full Proof}
 \label{app:proof}
@@ -81,7 +85,7 @@ Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combi
 \section{\texorpdfstring{Topological Generalization to $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$}{Topological Generalization to M\_(T-1)xN(Z)}}
 \label{app:generalization}
 
-In Section~4, Theorem~1 proved that the basis set $\calB = \{\calB_1, \calB_2\}$ spans the local narrative space $\mathbb{M}_{2\times 3}(\mathbb{Z})$ under the symmetric group of column permutations $\Sigma_3$.
+In the main paper (\S3), Theorem~1 proved that the basis set $\calB = \{\calB_1, \calB_2\}$ spans the local narrative space $\mathbb{M}_{2\times 3}(\mathbb{Z})$ under the symmetric group of column permutations $\Sigma_3$.
 Here, we prove that this local spanning property generalizes to the global multi-shot space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ for any $T \geq 3$ and $N \geq 3$.
 
 \subsection{Operator Definitions and Validity}
@@ -156,6 +160,7 @@ Since $\mathcal{S}_\tau$ is linear, the summation preserves the spanning propert
 
 \subsection{Theorem 2: General Spanning}
 
+\setcounter{theorem}{1}
 \begin{theorem}[Topological Generalization]
 For any $T \geq 3$ and $N \geq 3$, every $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be expressed as:
 \begin{equation}
@@ -857,5 +862,8 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's spec
 \item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
 \end{itemize}
 
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
 
 \end{document}

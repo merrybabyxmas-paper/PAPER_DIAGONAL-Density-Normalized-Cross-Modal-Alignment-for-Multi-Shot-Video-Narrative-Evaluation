@@ -16,6 +16,7 @@
 \usepackage{pifont}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+\renewcommand{\thetheorem}{\arabic{theorem}}
 \usepackage{colortbl}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,decorations.pathreplacing,matrix}
@@ -68,7 +69,7 @@
 Multi-shot video generation models can now produce visually coherent sequences, yet they face a fundamental \emph{coherence--compliance trade-off}: the mechanisms that maintain visual consistency across shots---shared attention, in-context conditioning---prevent models from executing the dynamic entity entrances and exits that define storytelling.
 Current evaluation paradigms, heavily optimized for visual quality and visual consistency, systematically overlook this trade-off by reducing complex narrative dynamics to simple frame-by-frame image comparisons.
 We present the \diagonal{} framework, which formalizes multi-entity, multi-shot narratives into state transition matrices that algebraically encode character entrances and exits. 
-Crucially, we prove that \textbf{every conceivable narrative topology} can be generated from just two fundamental basis patterns (Relay and Split) by applying intuitive narrative operations---such as time reversal and character swapping---along with pattern combinations (\textbf{Theorem~1}).
+Crucially, we prove that \textbf{every conceivable narrative topology} can be generated from just two fundamental basis patterns (Relay and Split) by applying intuitive narrative operations---such as time reversal and character swapping---along with pattern combinations (\textbf{Theorem~\ref{thm:completeness}}).
 This elevates video evaluation from heuristic prompting to \emph{mathematically complete formal verification}.
 To evaluate generated videos, we introduce \stem{} (State Transition Error Matching). Instead of relying on scalar similarities, \stem{} constructs an error matrix that isolates all narrative deviations by comparing the observed transitions against the prescribed script. This matrix is then density-normalized to decouple detector noise from true narrative signals, yielding two complementary metrics: \emph{Prescribed Transition Match} (PTM) for microscopic transition fidelity and \emph{Entity Presence Accuracy} (EPA) for macroscopic cast compliance.
 On the MEMS-1K benchmark across four major video generation architectures, PTM clearly discriminates model performances, revealing a vast capability gap and a consistent rank reversal against Identity Consistency---empirically exposing the previously invisible architectural tension.
@@ -109,12 +110,12 @@ Current evaluation paradigms systematically overlook this architectural tension.
 
 The root problem of evaluating narrative dynamics is combinatorial. As the number of shots and characters increases, the possible configurations of character presence and absence grow exponentially. While recent multi-shot benchmarks~\cite{moviebench,locot2v,shotadapter} attempt to evaluate extended horizons, they rely entirely on empirically curated prompt sets. To the best of our knowledge, no existing benchmark provides mathematical assurance that their evaluated scenarios adequately cover this vast combinatorial narrative space. 
 
-We reformulate this problem through the lens of linear algebra. By abstracting a narrative script into a \emph{state transition matrix} that tracks character entrances and exits, we mathematically prove that \textbf{every conceivable multi-shot narrative topology} can be exactly generated from just \textbf{two fundamental algebraic basis patterns} (Relay and Split). Through intuitive narrative operations---namely, character role swapping and time reversal---combined with simple linear combinations, our framework spans the entire narrative space (\textbf{Theorem~1}). 
+We reformulate this problem through the lens of linear algebra. By abstracting a narrative script into a \emph{state transition matrix} that tracks character entrances and exits, we mathematically prove that \textbf{every conceivable multi-shot narrative topology} can be exactly generated from just \textbf{two fundamental algebraic basis patterns} (Relay and Split). Through intuitive narrative operations---namely, character role swapping and time reversal---combined with simple linear combinations, our framework spans the entire narrative space (\textbf{Theorem~\ref{thm:completeness}}). 
 To the best of our knowledge, this is the first result that elevates video generation evaluation from heuristic scenario selection to \emph{mathematically complete formal verification}: successfully testing a model on our basis-derived patterns rigorously certifies its capability across all possible narrative structures.
 
 To formalize this mathematically sound evaluation, we contribute the following:
 \begin{itemize}[leftmargin=*,nosep]
-  \item The \textbf{\diagonal{} framework} (\S\ref{sec:framework}): A theoretical formalization of multi-entity, multi-shot narratives as state transition matrices. We provide a rigorous proof that all possible narrative matrices are spanned by just two basis patterns (\textbf{Theorem~1}, \S\ref{sec:completeness}), with an extension to arbitrary lengths and cast sizes (\textbf{Theorem~2}, Appendix~B).
+  \item The \textbf{\diagonal{} framework} (\S\ref{sec:framework}): A theoretical formalization of multi-entity, multi-shot narratives as state transition matrices. We provide a rigorous proof that all possible narrative matrices are spanned by just two basis patterns (\textbf{Theorem~\ref{thm:completeness}}, \S\ref{sec:completeness}), with an extension to arbitrary lengths and cast sizes (\textbf{Theorem~2}, Appendix~B).
   \item The \textbf{\stem{} evaluation pipeline} (\S\ref{sec:stem}): A novel automated evaluation protocol built upon an algebraic \emph{error matrix}. By comparing generated transitions against the prescribed script, we derive density-normalized metrics---Prescribed Transition Match (PTM) and Entity Presence Accuracy (EPA)---to decouple true narrative fidelity from detector noise.
   \item \textbf{MEMS-1K Benchmark} (\S\ref{sec:dataset}): A mathematically verified dataset of 1{,}000 multi-entity, multi-shot scenarios spanning 7 narrative patterns. We evaluate 4{,}000 videos across four distinct architectures, revealing a \textbf{four-type failure taxonomy} that provides structured diagnostics for the coherence--compliance trade-off.
 \end{itemize}
@@ -400,7 +401,7 @@ Based on the joint state of $(E_{t,e},\, \Delta S^*_{t,e})$, we classify transit
 \subsection{Density-Normalized $\ell_0$-Norm Metrics}
 \label{sec:metrics}
 
-A naive aggregation of $E$ would compute its Frobenius norm $\lVert E \rVert_F$. However, because hold cells ($\Delta S^*_{t,e} = 0$) empirically outnumber active transitions by a factor of 2 to 4 in standard narratives, VLM detection noise in these static regions disproportionately inflates the unnormalized distance. This effectively drowns the true narrative signal ($\lVert E \rVert_F$ achieves only 1 of 6 pairwise significances at $\alpha = 0.05$; see Appendix). To rigorously isolate narrative fidelity, we decompose the evaluation into two complementary $\ell_0$-norm metrics.
+A naive aggregation of $E$ would compute its Frobenius norm $\lVert E \rVert_F$. However, because hold cells ($\Delta S^*_{t,e} = 0$) empirically outnumber active transitions by a factor of 2 to 4 in standard narratives, VLM detection noise in these static regions disproportionately inflates the unnormalized distance. This effectively drowns the true narrative signal ($\lVert E \rVert_F$ achieves only 1 of 6 pairwise significances at $\alpha = 0.05$; see Supplementary, Frobenius Distance Analysis). To rigorously isolate narrative fidelity, we decompose the evaluation into two complementary $\ell_0$-norm metrics.
 
 \begin{definition}[Prescribed Transition Match, PTM]
 \label{def:ptm}
@@ -511,8 +512,43 @@ PTM scores reveal a massive 3.5$\times$ capability gap, ranging from 0.243 (Stor
 \paragraph{Finding 3: StoryDiffusion Leads Across Topologies.}
 SD achieves the highest PTM in 6 of the 7 narrative patterns. Its advantage is particularly pronounced on \emph{Sliding Window} (0.357 vs. 0.270 for EchoShot), which is the most complex pattern involving all 3 entities across both state transitions.
 
-% [Table 3, Table 4는 기존 코드 그대로 유지 - 위치만 본문 흐름에 맞게 배치]
-% (여기에 Table 3, Table 4 LaTeX 코드 삽입)
+\begin{table*}[t]
+\caption{Main results. Best in \textbf{bold}. IC = Identity Consistency~\cite{shotadapter}. PTM = Prescribed Transition Match (primary). EPA = Entity Presence Accuracy (secondary). PTM 95\% CIs from $B = 10{,}000$ bootstrap. Per-pattern PTM shown for all 7 patterns (B = basis, D = derived).}
+\label{tab:main}
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}l cc cc ccccccc@{}}
+\toprule
+& \multicolumn{2}{c}{\textit{Overall}} & \multicolumn{2}{c}{\textit{95\% CI}} & \multicolumn{7}{c}{\textit{PTM by Pattern}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-12}
+Model & PTM$\uparrow$ & EPA$\uparrow$ & PTM low & PTM high & \rotatebox{65}{Relay\textsuperscript{B}} & \rotatebox{65}{Split\textsuperscript{B}} & \rotatebox{65}{Accum.\textsuperscript{D}} & \rotatebox{65}{Conv.\textsuperscript{D}} & \rotatebox{65}{Sl.~Win.\textsuperscript{D}} & \rotatebox{65}{Red.\textsuperscript{D}} & \rotatebox{65}{Rev.~Rel.\textsuperscript{D}} \\
+\midrule
+StoryDiff  & \textbf{.243} & \textbf{.593} & .226 & .262 & \textbf{.190} & \textbf{.233} & \textbf{.253} & \textbf{.277} & \textbf{.357} & \textbf{.250} & .200 \\
+EchoShot   & .167 & .563 & .151 & .183 & .138 & .165 & .095 & .187 & .270 & .195 & \textbf{.225} \\
+VGoT       & .094 & .554 & .082 & .115 & .085 & .108 & .070 & .053 & .103 & .110 & .150 \\
+VIC        & .070 & .546 & .060 & .082 & .080 & .048 & .072 & .067 & .077 & .080 & .080 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table}[t]
+\caption{Pairwise significance (PTM). $p$-values (Mann--Whitney $U$), Cohen's $d$.}
+\label{tab:significance}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& SD & Echo & VGoT & VIC \\
+\midrule
+SD & --- & $3.3\!\times\!10^{-10}$ & $6.0\!\times\!10^{-38}$ & $2.7\!\times\!10^{-53}$ \\
+Echo & $d{=}0.28$ & --- & $2.3\!\times\!10^{-11}$ & $4.0\!\times\!10^{-21}$ \\
+VGoT & $d{=}0.60$ & $d{=}0.32$ & --- & $2.9\!\times\!10^{-3}$ \\
+VIC & $d{=}0.72$ & $d{=}0.44$ & $d{=}0.13$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Metric Sensitivity Across Patterns}
 \label{sec:pattern_analysis}
@@ -542,10 +578,64 @@ StoryDiffusion records the highest rate of spurious transitions (51.4%). We attr
 \paragraph{Reversal (Type IV) as a Universal Blind Spot.}
 Although relatively rare (7.6--13.9%), Reversals—where the observed transition is diametrically opposite to the prescribed one—occur across all models. As a compounded failure (where $|E_{t,e}| = 2$), its persistence proves a profound shared blind spot: current architectures lack a fundamental understanding of the directional causality (entrance vs. exit) that drives storytelling.
 
-% [Table 5, Figure 4, Figure 5는 기존 코드 그대로 유지]
+\begin{table}[t]
+\caption{Failure distribution (\% of videos with $\geq$1 failure). Worst per type in \textbf{bold}.}
+\label{tab:failures}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Failure Type & SD & Echo & VGoT & VIC \\
+\midrule
+I: Context Bleeding  & 64.1 & 66.9 & 73.0 & \textbf{75.6} \\
+II: Amnesia           & 69.1 & 73.1 & \textbf{82.1} & 80.6 \\
+III: Spurious Trans.  & \textbf{51.4} & 42.2 & 25.2 & 20.2 \\
+IV: Reversal          & 13.0 & \textbf{13.9} & 7.6 & 11.5 \\
+\midrule
+No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/qualitative_failures.png}
+\caption{Qualitative examples of the four failure types on real generated frames. Each row shows the prescribed narrative, the GT presence matrix $S^*$, and the generated frames with detected failures highlighted. \textbf{Type~I}: entity persists past its prescribed exit. \textbf{Type~II}: entity fails to appear at its prescribed entry. \textbf{Type~III}: unprescribed entity appears in a hold cell. \textbf{Type~IV}: observed transition is opposite to prescribed ($|E|=2$).}
+\label{fig:qualitative}
+\end{figure}
 
 \subsection{The Coherence--Compliance Trade-off}
 \label{sec:pareto}
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}
+\begin{scope}
+\draw[-{Stealth}, thick] (0,0) -- (5.5,0) node[right, font=\small] {PTM $\rightarrow$};
+\draw[-{Stealth}, thick] (0,0) -- (0,4.5) node[above, font=\small] {IC $\rightarrow$};
+\draw[gray!20, thin] (0,0) grid[step=1] (5,4);
+\foreach \x/\v in {1/0.10, 2/0.15, 3/0.20, 4/0.25, 5/0.30} {
+  \node[font=\tiny, below] at (\x, 0) {\v};
+}
+\foreach \y/\v in {1/0.82, 2/0.86, 3/0.90, 4/0.94} {
+  \node[font=\tiny, left] at (0, \y) {\v};
+}
+\node[circle, fill=cred, minimum size=8pt, inner sep=0pt] (vic) at (0.70, 4.00) {};
+\node[font=\scriptsize, cred, right=2pt] at (vic) {VIC};
+\node[circle, fill=cblue, minimum size=8pt, inner sep=0pt] (sd) at (3.43, 0.75) {};
+\node[font=\scriptsize, cblue, above right=1pt] at (sd) {SD};
+\node[circle, fill=cgreen, minimum size=8pt, inner sep=0pt] (echo) at (1.67, 1.75) {};
+\node[font=\scriptsize, cgreen!70!black, below right=1pt] at (echo) {Echo};
+\node[circle, fill=cyellow!80!black, minimum size=8pt, inner sep=0pt] (vgot) at (0.94, 2.50) {};
+\node[font=\scriptsize, cyellow!60!black, right=2pt] at (vgot) {VGoT};
+\draw[gray, thick, dashed, -{Stealth}] (0.8, 3.8) -- (3.2, 1.0) node[midway, above, font=\tiny, gray, sloped] {$\rho_s = -1.0$};
+\end{scope}
+\end{tikzpicture}
+}
+\caption{Coherence--Compliance trade-off. All four models exhibit a consistent rank reversal between IC and PTM ($\rho_s = -1.0$, $n\!=\!4$): VIC maximizes IC but scores lowest on PTM, while StoryDiffusion leads on PTM with the lowest IC.}
+\label{fig:pareto}
+\end{figure}
 
 Figure~\ref{fig:pareto} visualizes the \textbf{coherence--compliance trade-off} between Identity Consistency (IC) and narrative fidelity (PTM). The four models lie on a strict negative slope ($\rho_s = -1.0$), with VIC occupying the high-IC/low-PTM corner and StoryDiffusion at the opposite extreme. 
 
@@ -562,7 +652,7 @@ The automated PTM rankings strongly correlate with human narrative judgments ($\
 \label{sec:discussion}
 
 \paragraph{Discriminative Validity over Absolute Accuracy.}
-While VLM detection is inherently noisy (achieving 52\% TPR and 67\% TNR), this noise is distributed \emph{systematically} across all evaluated methods. For a benchmark, the critical requirement is \emph{discriminative validity}, not absolute accuracy. \stem{} achieves this resoundingly: the Kruskal-Wallis test ($H = 302.7$), non-overlapping CIs, and massive effect sizes (up to Cohen's $d = 0.72$) prove its robustness. We also evaluated Grounding DINO~\cite{groundingdino} (TNR $= 4\%$) and smaller 2B VLMs (TPR $= 40\%$), confirming that the 7B Instruct VLM provides the optimal balance of detection capability (see Appendix).
+While VLM detection is inherently noisy (achieving 52\% TPR and 67\% TNR), this noise is distributed \emph{systematically} across all evaluated methods. For a benchmark, the critical requirement is \emph{discriminative validity}, not absolute accuracy. \stem{} achieves this resoundingly: the Kruskal-Wallis test ($H = 302.7$), non-overlapping CIs, and massive effect sizes (up to Cohen's $d = 0.72$) prove its robustness. We also evaluated Grounding DINO~\cite{groundingdino} (TNR $= 4\%$) and smaller 2B VLMs (TPR $= 40\%$), confirming that the 7B Instruct VLM provides the optimal balance of detection capability (see Supplementary, Evaluation Details).
 
 \paragraph{Empirical Validation of Metric Decomposition.}
 As theorized in Section~\ref{sec:metrics}, a naive aggregation of the error matrix via the Frobenius norm ($\|E\|_F$) fails empirically. Because static hold cells ($\Delta S^* = 0$) naturally outnumber active transitions by a factor of 2 to 4, VLM detection noise in these static regions completely drowns out the dynamic narrative signal. Indeed, $\|E\|_F$ achieves statistical significance in only 1 of 6 pairwise model comparisons (at $\alpha = 0.05$). The $\ell_0$-norm decomposition into PTM and EPA is therefore not merely a theoretical choice, but an empirical necessity to isolate true storytelling fidelity from background detector noise.
