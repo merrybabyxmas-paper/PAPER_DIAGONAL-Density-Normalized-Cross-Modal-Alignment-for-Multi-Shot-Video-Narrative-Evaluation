@@ -21,6 +21,7 @@ PROMPTS_PATH = DATA_DIR / "prompts_subset.json"
 EVAL_PATH = DATA_DIR / "vlm_fullscale_merged.json"
 KF_DIR = DATA_DIR / "keyframes"
 OUTPUT_PATH = DATA_DIR / "human_eval_results.json"
+VLM_INSPECT_PATH = DATA_DIR / "vlm_inspection_results.json"
 
 # ── 상수 ───────────────────────────────────────────────────────────────
 MODELS = ["storydiff", "echoshot", "vgot", "vic"]
@@ -1141,6 +1142,135 @@ def page_failure_browser():
 
 
 # ═══════════════════════════════════════════════════════════════════════
+#  VLM 탐지 검수 페이지
+# ═══════════════════════════════════════════════════════════════════════
+def page_vlm_inspect():
+    """VLM이 '없다'고 판정한 케이스를 사람이 직접 확인: 모델 실패 vs VLM 오탐"""
+    st.markdown("## 🔬 VLM 탐지 검수 (Human-VLM Agreement)")
+    st.caption("VLM이 '없다(S_obs=0)'고 판정했지만 프롬프트상 '있어야(S_ideal=1)' 하는 케이스 100개를 "
+               "무작위 샘플링했습니다. 직접 눈으로 확인해 주세요.")
+
+    data = load_eval()
+
+    # ── 1) FN 케이스 수집 (keyframe 있는 것만) ──
+    if "vlm_inspect_samples" not in st.session_state:
+        fn_cases = []
+        for d in data:
+            dirname = f"{d['method']}_{d['vid']}"
+            kf_path = KF_DIR / dirname
+            if not kf_path.exists():
+                continue
+            shots = sorted(kf_path.glob("shot*"))
+            for t in range(len(d["S_ideal"])):
+                for e in range(len(d["S_ideal"][t])):
+                    if d["S_ideal"][t][e] == 1 and d["S_obs"][t][e] == 0:
+                        if t < len(shots):
+                            fn_cases.append({
+                                "method": d["method"],
+                                "vid": d["vid"],
+                                "pattern": d["pattern"],
+                                "shot_idx": t,
+                                "entity_idx": e,
+                                "entity": d["entities"][e],
+                                "shot_file": str(shots[t]),
+                                "vlm_answer": d["answers"].get(f"s{t}_e{e}", "N/A"),
+                            })
+        rng = random.Random(42)
+        rng.shuffle(fn_cases)
+        st.session_state.vlm_inspect_samples = fn_cases[:100]
+
+    samples = st.session_state.vlm_inspect_samples
+
+    # ── 2) 기존 결과 로드 ──
+    if "vlm_inspect_results" not in st.session_state:
+        if VLM_INSPECT_PATH.exists():
+            with open(VLM_INSPECT_PATH) as f:
+                st.session_state.vlm_inspect_results = json.load(f)
+        else:
+            st.session_state.vlm_inspect_results = {}
+
+    results = st.session_state.vlm_inspect_results
+
+    # ── 3) 통계 표시 ──
+    n_done = len(results)
+    n_model_fail = sum(1 for v in results.values() if v == "model_fail")
+    n_vlm_fail = sum(1 for v in results.values() if v == "vlm_fail")
+    n_ambiguous = sum(1 for v in results.values() if v == "ambiguous")
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("검수 완료", f"{n_done} / 100")
+    c2.metric("모델 실패 (VLM 정답)", n_model_fail)
+    c3.metric("VLM 오탐 (VLM 오답)", n_vlm_fail)
+    c4.metric("모호함", n_ambiguous)
+
+    if n_done > 0:
+        precision = n_model_fail / n_done * 100
+        st.markdown(f"### Human-VLM Agreement: **{precision:.1f}%**")
+    st.markdown("---")
+
+    # ── 4) 페이지네이션 ──
+    per_page = 10
+    total_pages = max(1, (len(samples) + per_page - 1) // per_page)
+    if "vlm_inspect_page" not in st.session_state:
+        st.session_state.vlm_inspect_page = 0
+    pg = st.session_state.vlm_inspect_page
+    start = pg * per_page
+    end = min(start + per_page, len(samples))
+
+    nav1, nav2 = st.columns(2)
+    with nav1:
+        if st.button("← 이전", disabled=(pg == 0), key="vi_prev"):
+            st.session_state.vlm_inspect_page -= 1
+            st.rerun()
+    with nav2:
+        if st.button("다음 →", disabled=(pg >= total_pages - 1), key="vi_next"):
+            st.session_state.vlm_inspect_page += 1
+            st.rerun()
+    st.caption(f"페이지 {pg + 1} / {total_pages}")
+
+    # ── 5) 각 케이스 표시 ──
+    val_map = {
+        "모델이 안 그림 (VLM 정답)": "model_fail",
+        "그려져 있는데 VLM이 못 찾음 (VLM 오답)": "vlm_fail",
+        "모호함 / 판단 불가": "ambiguous",
+    }
+    rev_map = {v: k for k, v in val_map.items()}
+    options = list(val_map.keys())
+
+    for i in range(start, end):
+        s = samples[i]
+        case_key = f"{s['method']}_{s['vid']}_s{s['shot_idx']}_e{s['entity_idx']}"
+        ent_ko = ENT_KO.get(s["entity"], s["entity"])
+
+        st.markdown(f"### #{i+1}. `{s['entity']}` ({ent_ko})")
+        st.markdown(
+            f"**모델**: {MLABEL.get(s['method'], s['method'])} · "
+            f"**패턴**: {s['pattern']} · "
+            f"**Shot {s['shot_idx']+1}** · "
+            f"VLM 응답: `{s['vlm_answer']}`"
+        )
+
+        st.image(s["shot_file"], width=500,
+                 caption=f"이 프레임에 '{s['entity']}' ({ent_ko})이/가 보이나요?")
+
+        prev = results.get(case_key, None)
+        default_idx = options.index(rev_map[prev]) if prev in rev_map else 0
+
+        choice = st.radio("판정", options, index=default_idx,
+                          horizontal=True, key=f"vi_r_{i}")
+        results[case_key] = val_map[choice]
+        st.markdown("---")
+
+    # ── 6) 저장 ──
+    if st.button("💾 검수 결과 저장", type="primary", key="vi_save"):
+        st.session_state.vlm_inspect_results = results
+        with open(VLM_INSPECT_PATH, "w") as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        st.success(f"저장 완료! ({len(results)}건)")
+        st.rerun()
+
+
+# ═══════════════════════════════════════════════════════════════════════
 #  메인
 # ═══════════════════════════════════════════════════════════════════════
 def main():
@@ -1155,7 +1285,8 @@ def main():
     page = st.sidebar.radio(
         "메뉴",
         ["🎬 인간 평가하기", "📊 자동 평가 대시보드",
-         "📋 결과 & 분석", "🔍 Failure 브라우저"],
+         "📋 결과 & 분석", "🔍 Failure 브라우저",
+         "🔬 VLM 검수"],
     )
 
     if "🎬" in page:
@@ -1164,6 +1295,8 @@ def main():
         page_dashboard()
     elif "🔍" in page:
         page_failure_browser()
+    elif "🔬" in page:
+        page_vlm_inspect()
     else:
         page_results()
 
