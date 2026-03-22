@@ -43,49 +43,28 @@
 \renewcommand{\thelemma}{\arabic{lemma}}
 
 %% ============================================================
-\section{Completeness Theorem: Full Proof}
-\label{app:proof}
+\section{Necessity of the Split Basis ($\calB_2$)}
+\label{app:necessity_b2}
 %% ============================================================
 
-\begin{theorem}[Completeness of the Narrative Space]
-Under character role swapping $\sigma_{ij}$ and integer-coefficient linear combination, the two basis matrices $\calB_1$ (Relay) and $\calB_2$ (Split) span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
-\end{theorem}
+In Theorem~1 (main text), we established that $\{\calB_1, \calB_2\}$ spans $\mathbb{M}_{2 \times 3}(\mathbb{Z})$. To avoid redundancy with the main text's constructive proof, we provide the formal algebraic proof of why $\calB_1$ (Relay) alone is strictly insufficient to span the space, thereby necessitating the introduction of $\calB_2$ (Split).
+
+\begin{lemma}[Row-Sum Invariance of $\calB_1$]
+Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves the topological invariant:
+\begin{equation}
+R_1(M) = +1, \quad R_2(M) = -1.
+\end{equation}
+\end{lemma}
 
 \begin{proof}
-We construct all six standard basis matrices $E_{ij}$ from $\calB_1$ and $\calB_2$.
-
-\emph{Step~1: Column isolation.}\;
-Define three character role swapping variants of $\calB_1$:
-\begin{align}
-v_1 &= \calB_1 = E_{12} - E_{21}, \notag \\
-v_2 &= \sigma_{13} \circ \calB_1 = E_{12} - E_{23}, \notag \\
-v_3 &= \sigma_{23} \circ \sigma_{12} \circ \calB_1 = E_{11} - E_{23}. \notag
-\end{align}
-Computing $X = v_3 - v_2 + v_1$:
-\begin{flalign}
-& X = (E_{11} - E_{23}) - (E_{12} - E_{23}) + (E_{12} - E_{21}) = E_{11} - E_{21}. \label{eq:supp_e11_e21} &&
-\end{flalign}
-
-\emph{Step~2: Dimension breaking via $\calB_2$.}\;
-Apply character role swapping: $\sigma_{12} \circ \calB_2 = -E_{11} + E_{21} - E_{22}$.
-Adding to $X$:
-\begin{flalign}
-& (E_{11} - E_{21}) + (-E_{11} + E_{21} - E_{22}) = -E_{22}. \label{eq:supp_e22} &&
-\end{flalign}
-Thus $E_{22} = -(X + \sigma_{12} \circ \calB_2)$.
-
-\emph{Step~3: Propagation.}\;
-From the now-known $E_{22}$, the remaining five elementary matrices follow:
-\begin{equation}
-\label{eq:supp_propagation}
-\begin{cases}
-E_{22} = -1 \cdot (-E_{22}), & \{E_{21}, E_{23}\} = \{\sigma_{12}, \sigma_{23}\} \circ E_{22} \\
-E_{11} = (E_{11} - E_{21}) + E_{21}, & \{E_{12}, E_{13}\} = \{\sigma_{12}, \sigma_{13}\} \circ E_{11}
-\end{cases}
-\end{equation}
-All six standard basis matrices $\{E_{11}, E_{12}, E_{13}, E_{21}, E_{22}, E_{23}\}$ are obtained.
-Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combination of these.
+The canonical Relay matrix $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ trivially satisfies $R_1(\calB_1) = 1$ and $R_2(\calB_1) = -1$. Because the operator $\sigma$ solely permutes column indices, it strictly preserves the algebraic sum of each row.
 \end{proof}
+
+Consequently, any $\mathbb{Z}$-linear combination derived exclusively from Relay variants, $X = \sum_k \alpha_k (\sigma_k \circ \calB_1)$, will possess row sums $R_1(X) = \sum_k \alpha_k$ and $R_2(X) = -\sum_k \alpha_k$, imposing a strict global constraint:
+\begin{equation}
+R_1(X) + R_2(X) = 0.
+\end{equation}
+However, the standard elementary matrix $E_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(E_{11}) + R_2(E_{11}) = 1 \neq 0$. Thus, $\calB_1$ variants alone cannot break this symmetric invariance. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$, which yields $R_1(\calB_2) + R_2(\calB_2) = -1$, is therefore algebraically essential to span the full narrative space.
 
 
 %% ============================================================
@@ -93,96 +72,43 @@ Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combi
 \label{app:generalization}
 %% ============================================================
 
-In the main paper (\S3), Theorem~1 proved that the basis set $\calB = \{\calB_1, \calB_2\}$ spans the local narrative space $\mathbb{M}_{2\times 3}(\mathbb{Z})$ under the symmetric group of character role swappings $\Sigma_3$.
-Here, we prove that this local spanning property generalizes to the global multi-shot space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ for any $T \geq 3$ and $N \geq 3$.
-
 \subsection{Operator Definitions and Validity}
-
-To formalize the dimensional expansion, we define two linear operators.
+To formalize the dimensional expansion, we define two linear operators mapping the local $2\times 3$ space to the global arbitrary space.
 
 \paragraph{Spatial Zero-Padding Operator ($\mathcal{Z}_N$).}
-Let $\mathcal{Z}_N : \mathbb{M}_{2\times 3} \to \mathbb{M}_{2\times N}$ be defined by appending $N-3$ zero-columns:
-\begin{equation}
-\mathcal{Z}_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr].
-\end{equation}
+Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
+\begin{flalign}
+& \mathcal{Z}_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{M}_{2\times 3}. &&
+\end{flalign}
+\emph{Linearity.}\; $\mathcal{Z}_N(c_1 X + c_2 Y) = c_1\mathcal{Z}_N(X) + c_2\mathcal{Z}_N(Y)$.
 
-\emph{Linearity.} For any $c_1, c_2 \in \mathbb{Z}$ and $X, Y \in \mathbb{M}_{2\times 3}$:
-\begin{equation}
-\mathcal{Z}_N(c_1 X + c_2 Y) = \bigl[\; c_1 X + c_2 Y \;\;\; \mathbf{0} \;\bigr] = c_1\,\mathcal{Z}_N(X) + c_2\,\mathcal{Z}_N(Y).
-\end{equation}
-Thus $\mathcal{Z}_N$ is a linear homomorphism preserving spanning properties.
 We define the padded bases $\hat{\calB}_1 = \mathcal{Z}_N(\calB_1)$ and $\hat{\calB}_2 = \mathcal{Z}_N(\calB_2)$.
 
 \paragraph{Temporal Shift Operator ($\mathcal{S}_\tau$).}
-Let $\mathcal{S}_\tau : \mathbb{M}_{2\times N} \to \mathbb{M}_{(T-1)\times N}$ be a block matrix insertion operator for temporal window $\tau \in \{1, \ldots, T-2\}$:
-\begin{equation}
-\mathcal{S}_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}.
-\end{equation}
+A block matrix insertion operator placing local transitions into temporal window $\tau \in \{1, \ldots, T-2\}$:
+\begin{flalign}
+& \mathcal{S}_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{M}_{2\times N}. &&
+\end{flalign}
+\emph{Linearity.}\; $\mathcal{S}_\tau(c_1 X + c_2 Y) = c_1\mathcal{S}_\tau(X) + c_2\mathcal{S}_\tau(Y)$.
 
-\emph{Linearity.} For any $c_1, c_2 \in \mathbb{Z}$ and $X, Y \in \mathbb{M}_{2\times N}$:
-\begin{equation}
-\mathcal{S}_\tau(c_1 X + c_2 Y) = c_1\,\mathcal{S}_\tau(X) + c_2\,\mathcal{S}_\tau(Y).
-\end{equation}
 The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local transitions maps to the global space without cross-temporal interference.
 
-\subsection{Lemma 1: Spatial Extension}
-
-\begin{lemma}
-The set $\hat{\calB} = \{\hat{\calB}_1, \hat{\calB}_2\}$ spans $\mathbb{M}_{2\times N}(\mathbb{Z})$ under the character role swapping group $\Sigma_N$.
-\end{lemma}
-
-\begin{proof}
-Let $E_{i,j}^{2\times 3}$ be the elementary matrix in $\mathbb{M}_{2\times 3}(\mathbb{Z})$. By Theorem~1:
-\begin{equation}
-\forall\, i \in \{1,2\},\; j \in \{1,2,3\}: \quad E_{i,j}^{2\times 3} \in \operatorname{span}(\calB)^{\Sigma_3}.
-\label{eq:supp_thm1_span}
-\end{equation}
-Let $\hat{E}_{i,j}^{2\times N} = \mathcal{Z}_N(E_{i,j}^{2\times 3})$. Since $\mathcal{Z}_N$ is linear, $\hat{E}_{i,j}^{2\times N} \in \operatorname{span}(\hat{\calB})^{\Sigma_3}$.
-For any target column $k \in \{1, \ldots, N\}$, there exists a character role swapping $\sigma \in \Sigma_N$ such that $E_{i,k}^{2\times N} = \sigma\bigl(\hat{E}_{i,1}^{2\times N}\bigr)$.
-Since any $\Delta S^{2\times N} \in \mathbb{M}_{2\times N}(\mathbb{Z})$ is a linear combination:
-\begin{equation}
-\Delta S^{2\times N} = \sum_{i=1}^{2} \sum_{k=1}^{N} w_{i,k}\, E_{i,k}^{2\times N}, \quad w_{i,k} \in \mathbb{Z},
-\label{eq:supp_linear_comb}
-\end{equation}
-it follows that $\Delta S^{2\times N} \in \operatorname{span}(\hat{\calB})^{\Sigma_N}$.
-\end{proof}
-
-\subsection{Lemma 2: Temporal Extension}
-
-\begin{lemma}
-The local basis spans the global temporal space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$.
-\end{lemma}
-
-\begin{proof}
-Any $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be decomposed into $T-2$ overlapping local transitions.
-Let $\Delta S_{2\times N}^{(\tau)}$ denote the $2\times N$ submatrix of rows $\tau$ and $\tau+1$.
-The global matrix is the linear sum of shifted local blocks:
-\begin{equation}
-\Delta S = \sum_{\tau=1}^{T-2} \mathcal{S}_\tau\!\left(\Delta S_{2\times N}^{(\tau)}\right).
-\label{eq:supp_temporal_decomp}
-\end{equation}
-By Lemma~1, each $\Delta S_{2\times N}^{(\tau)}$ is spanned by $\hat{\calB}$.
-Since $\mathcal{S}_\tau$ is linear, the summation preserves the spanning property.
-\end{proof}
-
-\subsection{Theorem 2: General Spanning}
+\subsection{General Spanning Theorem}
 
 \setcounter{theorem}{1}
 \begin{theorem}[Topological Generalization]
-For any $T \geq 3$ and $N \geq 3$, every $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be expressed as:
+For any $T \geq 3$ and $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be algebraically expressed as:
 \begin{equation}
-\Delta S = \sum_{\tau=1}^{T-2} \sum_{m} c_{\tau,m}\;\, \mathcal{S}_\tau \circ \sigma_{\tau,m} \circ \hat{\calB}_m,
+\Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\;\, \mathcal{S}_\tau \circ \sigma_{\tau,m} \circ \hat{\calB}_m,
 \label{eq:grand_spanning}
 \end{equation}
-where $c_{\tau,m} \in \mathbb{Z}$, $\sigma_{\tau,m} \in \Sigma_N$, and $\hat{\calB}_m \in \{\hat{\calB}_1, \hat{\calB}_2\}$.
+where $c_{\tau,m} \in \mathbb{Z}$, and $\sigma_{\tau,m} \in \Sigma_N$.
 \end{theorem}
 
 \begin{proof}
-Follows directly from Lemma~1 (spatial extension) and Lemma~2 (temporal extension).
+Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~1 (Main Text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
 \end{proof}
-
-Therefore, the two topological bases (Relay and Split) completely span the global narrative space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$, proving that \diagonal{} is mathematically complete for narratives of any length and entity complexity.
-The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---linearly in both dimensions.
+The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
 
 %% ============================================================
@@ -386,26 +312,47 @@ Given $E_{t,e} = \Delta S_{\text{obs},t,e} - \Delta S^*_{t,e}$:
 
 
 %% ============================================================
-\section{State Transition Matrices}
+\section{State Transition Matrices Library}
 \label{app:delta_s}
 %% ============================================================
 
 \begin{table}[t]
-\caption{$\Delta S$ and presence matrices $S$ for all 7 patterns.}
+\caption{Prescribed transition matrices ($\Delta S^*$) and presence matrices ($S^*$) for all 7 canonical patterns in MEMS-1K.}
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lll@{}}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-Pattern & $\Delta S$ & $S$ \\
+Pattern & Transition $\Delta S^*$ & Presence $S^*$ \\
 \midrule
-Relay & $\bigl[\begin{smallmatrix} 0 & +1 \\ -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
-Split & $\bigl[\begin{smallmatrix} 0 & -1 \\ -1 & +1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
-Accumulation & $\bigl[\begin{smallmatrix} 0 & +1 & 0 \\ 0 & 0 & +1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
-Convergence & $\bigl[\begin{smallmatrix} -1 & +1 \\ +1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
-Sliding Win. & $\bigl[\begin{smallmatrix} -1 & 0 & +1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{smallmatrix}\bigr]$ \\[6pt]
-Reduction & $\bigl[\begin{smallmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 1 & 1 & 1 \\ 1 & 1 & 0 \\ 1 & 0 & 0 \end{smallmatrix}\bigr]$ \\[6pt]
-Rev.\ Relay & $\bigl[\begin{smallmatrix} +1 & 0 \\ 0 & -1 \end{smallmatrix}\bigr]$ & $\bigl[\begin{smallmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{smallmatrix}\bigr]$ \\
+Relay &
+$\begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{bmatrix}$ \\[12pt]
+
+Split &
+$\begin{bmatrix} 0 & -1 \\ -1 & 1 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{bmatrix}$ \\[12pt]
+
+Accumulation &
+$\begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{bmatrix}$ \\[12pt]
+
+Convergence &
+$\begin{bmatrix} -1 & 1 \\ 1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}$ \\[12pt]
+
+Sliding Window &
+$\begin{bmatrix} -1 & 0 & 1 \\ 0 & -1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{bmatrix}$ \\[12pt]
+
+Reduction &
+$\begin{bmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 0 \\ 1 & 0 & 0 \end{bmatrix}$ \\[12pt]
+
+Reverse Relay &
+$\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$ &
+$\begin{bmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{bmatrix}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
