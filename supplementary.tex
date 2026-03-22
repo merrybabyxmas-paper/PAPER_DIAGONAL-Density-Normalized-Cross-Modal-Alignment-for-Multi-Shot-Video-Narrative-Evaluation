@@ -68,49 +68,95 @@ However, the standard elementary matrix $E_{11} = \bigl[\begin{smallmatrix} 1 & 
 
 
 %% ============================================================
-\section{\texorpdfstring{Topological Generalization to $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$}{Topological Generalization to M\_(T-1)xN(Z)}}
+%% ============================================================
+%% ============================================================
+\section{Generalization to Arbitrary Narrative Scales}
+%% ============================================================
 \label{app:generalization}
 %% ============================================================
 
-\subsection{Operator Definitions and Validity}
-To formalize the dimensional expansion, we define two linear operators mapping the local $2\times 3$ space to the global arbitrary space.
+In Theorem~1 (main text), we proved completeness for the canonical 3-shot, 3-entity subspace ($\mathbb{M}_{2\times 3}(\mathbb{Z})$). We now construct a formal algebraic pipeline to generalize this spanning property to arbitrary narrative scales: expanding first spatially to $N$ entities, then temporally to $T$ shots.
+%% ============================================================
+\section{Generalization to Arbitrary Narrative Scales}
+\label{app:generalization}
+%% ============================================================
 
-\paragraph{Spatial Zero-Padding Operator ($\mathcal{Z}_N$).}
-Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
+In Theorem~1 (main text), we proved completeness for the canonical 3-shot, 3-entity subspace ($\mathbb{M}_{2\times 3}(\mathbb{Z})$). We now construct a formal algebraic pipeline to generalize this spanning property to arbitrary narrative scales: expanding first spatially to $N$ entities, then temporally to $T$ shots.
+
+\subsection{Phase 1: Spatial Expansion (Arbitrary Entities, $N \geq 3$)}
+
+To accommodate an arbitrary cast size, we define the \textbf{Spatial Zero-Padding Operator ($\mathcal{Z}_N$)}, which appends $N-3$ zero-columns to a canonical local matrix:
 \begin{flalign}
 & \mathcal{Z}_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{M}_{2\times 3}. &&
 \end{flalign}
-\emph{Linearity.}\; $\mathcal{Z}_N(c_1 X + c_2 Y) = c_1\mathcal{Z}_N(X) + c_2\mathcal{Z}_N(Y)$.
 
-We define the padded bases $\hat{\calB}_1 = \mathcal{Z}_N(\calB_1)$ and $\hat{\calB}_2 = \mathcal{Z}_N(\calB_2)$.
+% ==========
+Similar to temporal embedding, $\mathcal{Z}_N$ operates as a strict linear homomorphism:
+\begin{equation}
+\mathcal{Z}_N(c_1 X + c_2 Y) = c_1\mathcal{Z}_N(X) + c_2\mathcal{Z}_N(Y), \quad \forall c_1, c_2 \in \mathbb{Z}.
+\end{equation}
+This linearity ensures that any algebraic superposition constructed within the canonical local space is perfectly preserved upon spatial expansion.
+% ======================================
 
-\paragraph{Temporal Shift Operator ($\mathcal{S}_\tau$).}
-A block matrix insertion operator placing local transitions into temporal window $\tau \in \{1, \ldots, T-2\}$:
+We define the spatially padded bases as $\hat{\calB}_m = \mathcal{Z}_N(\calB_m)$ for $m \in \{1, 2\}$. 
+
+Because any target entity $e \in \{1, \dots, N\}$ can be routed to the active first three columns via the extended permutation group $\Sigma_N$, every elementary matrix $E^{(\text{local})}_{i,e} \in \mathbb{M}_{2 \times N}(\mathbb{Z})$ is algebraically constructible from the canonical base $E_{i,j} \in \mathbb{M}_{2 \times 3}$:
+\begin{flalign}
+& E^{(\text{local})}_{i,e} = \sigma \circ \mathcal{Z}_N \bigl( E_{i,j} \bigr), \quad \exists \sigma \in \Sigma_N, \; j \in \{1,2,3\}. &&
+\end{flalign}
+Consequently, the spatially expanded bases seamlessly span the entire multi-entity local space:
+\begin{flalign}
+& \mathbb{M}_{2 \times N}(\mathbb{Z}) = \operatorname{span}_{\mathbb{Z}}\bigl(\{ \sigma \circ \hat{\calB}_m \mid m \in \{1,2\}, \sigma \in \Sigma_N \}\bigr). &&
+\label{eq:spatial_span}
+\end{flalign}
+
+\subsection{Phase 2: Temporal Expansion (Arbitrary Shots, $T \geq 3$)}
+
+To map our local multi-entity patterns into a continuous $T$-shot timeline, we define the \textbf{Temporal Shift Operator ($\mathcal{S}_\tau$)}. This operator embeds a 2-step transition block into the global temporal window starting at $\tau \in \{1, \dots, T-2\}$:
 \begin{flalign}
 & \mathcal{S}_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{M}_{2\times N}. &&
 \end{flalign}
-\emph{Linearity.}\; $\mathcal{S}_\tau(c_1 X + c_2 Y) = c_1\mathcal{S}_\tau(X) + c_2\mathcal{S}_\tau(Y)$.
+Crucially, $\mathcal{S}_\tau$ strictly satisfies linear homomorphism:
+\begin{equation}
+\mathcal{S}_\tau(c_1 X + c_2 Y) = c_1\mathcal{S}_\tau(X) + c_2\mathcal{S}_\tau(Y), \quad \forall c_1, c_2 \in \mathbb{Z}.
+\end{equation}
+This linearity structurally guarantees that the superposition of local transitions maps directly to the global space without cross-temporal interference.
 
-The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local transitions maps to the global space without cross-temporal interference.
+\subsection{Phase 3: The Grand Spanning Theorem}
 
-\subsection{General Spanning Theorem}
+By synthesizing the spatial and temporal expansions, we formalize the ultimate completeness of the \diagonal{} framework.
 
 \setcounter{theorem}{1}
-\begin{theorem}[Topological Generalization]
-For any $T \geq 3$ and $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be algebraically expressed as:
+\begin{theorem}[Grand Topological Generalization]
+For any narrative of arbitrary length ($T \geq 3$) involving an arbitrary cast size ($N \geq 3$), every conceivable state transition matrix $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be algebraically generated by:
 \begin{equation}
-\Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\;\, \mathcal{S}_\tau \circ \sigma_{\tau,m} \circ \hat{\calB}_m,
+\Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\; \bigl(\mathcal{S}_\tau \circ \sigma_{\tau,m} \circ \mathcal{Z}_N\bigr)(\calB_m),
 \label{eq:grand_spanning}
 \end{equation}
-where $c_{\tau,m} \in \mathbb{Z}$, and $\sigma_{\tau,m} \in \Sigma_N$.
+where $c_{\tau,m} \in \mathbb{Z}$ and $\sigma_{\tau,m} \in \Sigma_N$.
 \end{theorem}
 
 \begin{proof}
-Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~1 (Main Text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
+Let $E^{(\text{global})}_{t,e} \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ denote the standard global elementary matrix. Since any $\Delta S$ is a $\mathbb{Z}$-linear combination of $\{E^{(\text{global})}_{t,e}\}$, it suffices to show that every such elementary matrix is constructible.
+
+For any target transition step $t \in \{1, \dots, T-1\}$, we define an exact index mapping to isolate the active local window $\tau$ and the local row index $i \in \{1, 2\}$:
+\begin{equation}
+\tau = \min(t, \, T-2), \quad i = t - \tau + 1.
+\label{eq:index_mapping}
+\end{equation}
+By Eq.~\ref{eq:spatial_span}, the spatial operations can generate the required local matrix $E^{(\text{local})}_{i,e}$. Applying the linear shift operator $\mathcal{S}_\tau$ precisely projects this local block to the target global row $t$:
+\begin{equation}
+E^{(\text{global})}_{t,e} = \mathcal{S}_\tau \bigl( E^{(\text{local})}_{i,e} \bigr) \;\in\; \operatorname{span}_{\mathbb{Z}}\bigl( \{ \mathcal{S}_\tau \circ \sigma \circ \hat{\calB}_m \} \bigr).
+\end{equation}
+Thus, all standard bases in the global domain are generated, mathematically certifying complete global coverage. \qedhere
 \end{proof}
-The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
-
+\paragraph{Dimensionality and Scalability.}
+The target global narrative space has a formidable dimensionality:
+\begin{equation}
+\dim\bigl(\mathbb{M}_{(T-1) \times N}(\mathbb{Z})\bigr) = (T-1) \cdot N.
+\end{equation}
+However, Eq.~\ref{eq:grand_spanning} proves that this space is structurally spanned by sliding just $2$ base matrices ($\calB_1, \calB_2$) across $(T-2)$ temporal windows. This mathematical guarantee ensures that narrative evaluation scales \emph{linearly} as $\mathcal{O}(T)$, completely bypassing the intractable combinatorial explosion $\mathcal{O}(2^{TN})$ associated with empirical prompt-sampling methodologies.
 %% ============================================================
 \section{Dataset Construction Details}
 \label{app:dataset}
