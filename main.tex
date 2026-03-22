@@ -665,6 +665,10 @@ Since the remaining VLM noise is distributed \emph{systematically} across all ev
 
 \paragraph{Metric Decomposition.}
 A naive Frobenius norm $\|E\|_F$ achieves significance in only 1 of 6 pairwise comparisons ($\alpha = 0.05$), because static hold cells outnumber active transitions by 2--4$\times$, drowning the narrative signal in detector noise. The sparsity-aware decomposition into PTM and EPA is thus an empirical necessity, not merely a theoretical choice.
+
+\paragraph{Independent Querying Ambiguity.}
+Our \stem{} pipeline evaluates entity presence via \emph{independent} binary queries. We observed that this can occasionally induce compositional hallucinations in the VLM: when a generated frame contains visually similar entities, the model may conflate their features and incorrectly report an absent entity as present. We mitigated this in MEMS-1K by strictly filtering entity pairs for low CLIP text similarity ($\leq 0.45$, \S\ref{sec:dataset}), but resolving this natively requires future VLMs with stronger joint-reasoning capabilities. As foundational VLMs evolve, the absolute accuracy of \stem{} will improve without structural changes to our algebraic metrics.
+
 %% ============================================================
 \section{Conclusion}
 \label{sec:conclusion}
