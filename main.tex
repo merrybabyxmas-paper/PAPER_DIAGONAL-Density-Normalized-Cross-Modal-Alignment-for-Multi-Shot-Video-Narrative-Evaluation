@@ -219,6 +219,7 @@ ShotAdapter~\cite{shotadapter}  & \checkmark & $\triangle$ & \ding{55} & \ding{5
 %% ============================================================
 
 We first build the theoretical foundation: formulating narratives as state transition matrices (\S\ref{sec:formalization}), defining their linear operators and algebraic basis (\S\ref{sec:basis}), and rigorously proving the completeness of the narrative space (\S\ref{sec:completeness}). Section~\ref{sec:stem} then operationalizes this theory into a practical evaluation pipeline.
+
 \subsection{Narratives as State Transition Matrices}
 \label{sec:formalization}
 
@@ -291,6 +292,7 @@ We identify two matrices that serve as the fundamental algebraic basis of the na
   \item \emph{Split} ($\calB_2$): Co-occurring entities separate ($AB \!\to\! A \!\to\! B$).
 \end{itemize}
 \end{definition}
+
 \subsection{Completeness Theorem and Derived Patterns}
 \label{sec:completeness}
 
@@ -411,6 +413,7 @@ Based on the joint state of $(E_{t,e},\, \Delta S^*_{t,e})$, we classify narrati
 \end{definition}
 
 \noindent\emph{Note.}\; Type~IV represents the most severe compounded failure and is algebraically a strict subset of Types~I and II: a single $|E_{t,e}| = 2$ entry simultaneously satisfies the condition for its parent type and for Type~IV. The failure counts in Table~\ref{tab:failures} report each type independently.
+
 \subsection{Sparsity-Aware Metrics}
 \label{sec:metrics}
 
