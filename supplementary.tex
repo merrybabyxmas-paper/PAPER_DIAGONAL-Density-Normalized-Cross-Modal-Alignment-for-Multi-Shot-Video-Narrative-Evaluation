@@ -1,5 +1,5 @@
 %%
-%% Supplementary Material for DIAGONAL
+%% ACM Multimedia 2026 — Supplementary Material
 %%
 \documentclass[sigconf,review,anonymous]{acmart}
 
@@ -45,9 +45,10 @@
 %% ============================================================
 \section{Completeness Theorem: Full Proof}
 \label{app:proof}
+%% ============================================================
 
 \begin{theorem}[Completeness of the Narrative Space]
-Under character role swapping $\calP_{ij}$ and integer-coefficient linear combination, the two basis matrices $\calB_1$ (Relay) and $\calB_2$ (Split) span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
+Under character role swapping $\sigma_{ij}$ and integer-coefficient linear combination, the two basis matrices $\calB_1$ (Relay) and $\calB_2$ (Split) span $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
 \end{theorem}
 
 \begin{proof}
@@ -56,25 +57,25 @@ We construct all six standard basis matrices $E_{ij}$ from $\calB_1$ and $\calB_
 \textbf{Step~1: Column isolation.}
 Define three character role swapping variants of $\calB_1$:
 $v_1 = \calB_1 = E_{12} - E_{21}$,
-$v_2 = \calP_{13}(\calB_1) = E_{12} - E_{23}$,
-$v_3 = \calP_{23}(\calP_{12}(\calB_1)) = E_{11} - E_{23}$.
+$v_2 = \sigma_{13} \circ \calB_1 = E_{12} - E_{23}$,
+$v_3 = \sigma_{23} \circ \sigma_{12} \circ \calB_1 = E_{11} - E_{23}$.
 Computing $X = v_3 - v_2 + v_1$:
 \begin{equation}
 X = (E_{11} - E_{23}) - (E_{12} - E_{23}) + (E_{12} - E_{21}) = E_{11} - E_{21}.
 \end{equation}
 
 \textbf{Step~2: Dimension breaking via $\calB_2$.}
-Apply character role swapping: $\calP_{12}(\calB_2) = -E_{11} + E_{21} - E_{22}$.
+Apply character role swapping: $\sigma_{12} \circ \calB_2 = -E_{11} + E_{21} - E_{22}$.
 Adding to $X$:
 \begin{equation}
-X + \calP_{12}(\calB_2) = (E_{11} - E_{21}) + (-E_{11} + E_{21} - E_{22}) = -E_{22}.
+X + \sigma_{12} \circ \calB_2 = (E_{11} - E_{21}) + (-E_{11} + E_{21} - E_{22}) = -E_{22}.
 \end{equation}
-Thus $E_{22} = -(X + \calP_{12}(\calB_2))$.
+Thus $E_{22} = -(X + \sigma_{12} \circ \calB_2)$.
 
 \textbf{Step~3: Propagation.}
-From $E_{22}$, character role swapping yields $E_{21} = \calP_{12}(E_{22})$ and $E_{23} = \calP_{23}(E_{22})$.
+From $E_{22}$, character role swapping yields $E_{21} = \sigma_{12} \circ E_{22}$ and $E_{23} = \sigma_{23} \circ E_{22}$.
 From $X = E_{11} - E_{21}$ and the now-known $E_{21}$: $E_{11} = X + E_{21}$.
-Similarly, $E_{12} = \calP_{12}(E_{11})$ and $E_{13} = \calP_{13}(E_{11})$.
+Similarly, $E_{12} = \sigma_{12} \circ E_{11}$ and $E_{13} = \sigma_{13} \circ E_{11}$.
 
 All six standard basis matrices $\{E_{11}, E_{12}, E_{13}, E_{21}, E_{22}, E_{23}\}$ are obtained.
 Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combination of these.
@@ -84,6 +85,7 @@ Any $\Delta S \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ is a unique integer combi
 %% ============================================================
 \section{\texorpdfstring{Topological Generalization to $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$}{Topological Generalization to M\_(T-1)xN(Z)}}
 \label{app:generalization}
+%% ============================================================
 
 In the main paper (\S3), Theorem~1 proved that the basis set $\calB = \{\calB_1, \calB_2\}$ spans the local narrative space $\mathbb{M}_{2\times 3}(\mathbb{Z})$ under the symmetric group of character role swappings $\Sigma_3$.
 Here, we prove that this local spanning property generalizes to the global multi-shot space $\mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ for any $T \geq 3$ and $N \geq 3$.
@@ -181,8 +183,9 @@ The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---line
 %% ============================================================
 \section{Dataset Construction Details}
 \label{app:dataset}
+%% ============================================================
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Complete benchmark composition (1,000 scenarios, 3,000 shots).}
 \label{tab:full_composition}
 \centering
@@ -217,7 +220,7 @@ Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descripti
 \paragraph{Entity type distribution.}
 Three categories: Human (H), Professional (P), Animal (A).
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Entity type combination distribution.}
 \centering
 \small
@@ -244,6 +247,7 @@ Entity Types & Count & \% \\
 %% ============================================================
 \section{Prompt Quality Control}
 \label{app:quality_control}
+%% ============================================================
 
 All prompts undergo automated validation ensuring entity--pattern topology consistency: the set of entities mentioned in each shot description must exactly match the presence matrix $S$ for the target pattern.
 Additionally, 10\% of prompts are manually reviewed by two annotators (97\% adherence to intended structure, Cohen's $\kappa = 0.91$).
@@ -253,10 +257,11 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 %% ============================================================
 \section{Sample Prompts}
 \label{app:prompts}
+%% ============================================================
 
 Each prompt has two variants: \texttt{gen\_prompt} (+ quality tags for generation) and \texttt{eval\_prompt} (clean scene descriptions for evaluation). Entity names are extracted directly from the eval prompts for VLM entity queries.
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Relay pattern sample ($A \to AB \to B$).}
 \centering
 \small
@@ -280,7 +285,7 @@ Shot & Field & Prompt \\
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Accumulation sample ($A \to AB \to ABC$).}
 \centering
 \small
@@ -301,7 +306,7 @@ Shot & Field & Prompt \\
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Sliding Window sample ($AB \to BC \to C$).}
 \centering
 \small
@@ -326,8 +331,9 @@ Shot & Field & Prompt \\
 %% ============================================================
 \section{Model Implementation Details}
 \label{app:models}
+%% ============================================================
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Inference specifications. $^\dagger$T2I: 30 steps; I2V: 50 steps.}
 \centering
 \small
@@ -351,6 +357,7 @@ All four models successfully generated 1000 videos each (4,000 total).
 %% ============================================================
 \section{Evaluation Details}
 \label{app:eval_details}
+%% ============================================================
 
 \paragraph{VLM entity detector.}
 Qwen2-VL-7B-Instruct~\cite{qwen2vl} (\texttt{Qwen/Qwen2-VL-7B-Instruct}), fp16 precision, greedy decoding (\texttt{do\_sample=False, max\_new\_tokens=5}).
@@ -361,7 +368,7 @@ Binary yes/no: ``Is there a \{entity\} visible in this image? Answer only Yes or
 
 \paragraph{Detection quality.}
 Across 4,000 videos (28,800 cells): TPR $= 52.1\%$, TNR $= 66.7\%$.
-The low TPR reflects entity ambiguity in generated images rather than VLM failure---the same VLM achieves $>$95\% on our GT cat videos (Appendix~\ref{app:gt_failures}).
+The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection of 100 randomly sampled false-negative cells confirmed that 65\% were genuine generation failures, 19\% were ambiguous, and only 16\% were VLM detection errors, yielding 80.2\% VLM precision (see main paper, \S5.6). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 \paragraph{Failure classification.}
 Given $E_{t,e} = \Delta S_{\text{obs},t,e} - \Delta S^*_{t,e}$:
@@ -376,8 +383,9 @@ Given $E_{t,e} = \Delta S_{\text{obs},t,e} - \Delta S^*_{t,e}$:
 %% ============================================================
 \section{State Transition Matrices}
 \label{app:delta_s}
+%% ============================================================
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{$\Delta S$ and presence matrices $S$ for all 7 patterns.}
 \centering
 \small
@@ -401,8 +409,9 @@ Rev.\ Relay & $\bigl[\begin{smallmatrix} +1 & 0 \\ 0 & -1 \end{smallmatrix}\bigr
 %% ============================================================
 \section{Full Per-Pattern Results}
 \label{app:per_pattern}
+%% ============================================================
 
-\begin{table*}[h]
+\begin{table*}[t]
 \caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.}
 \label{tab:full_pattern}
 \centering
@@ -431,6 +440,7 @@ VIC's PTM range is only 0.032 (0.048--0.080), confirming a fixed coherence ceili
 %% ============================================================
 \section{Human Evaluation Protocol}
 \label{app:human_eval}
+%% ============================================================
 
 \paragraph{Platform.}
 Custom Streamlit web application showing two anonymized model outputs side by side (3 keyframes each). Entity presence/absence annotations shown below. Left/right randomized.
@@ -446,7 +456,7 @@ Two dimensions: Narrative Compliance and Visual Quality, assessed independently.
 \paragraph{Design.}
 120 pairwise comparisons (40 scenarios $\times$ 6 model pairs). Each evaluator assessed 30 pairs via rotating-window scheme (3 raters per pair). 15 graduate student participants (CS and media studies). Median time: $\sim$25 min. Two attention-check trials (100\% pass rate).
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Score distributions by dimension.}
 \centering
 \small
@@ -461,7 +471,7 @@ Visual & 16.7 & 18.2 & 26.0 & 22.4 & 16.7 & 3.04 & 1.34 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Head-to-head preferences (\%). M1 win / Tie / M2 win.}
 \centering
 \small
@@ -484,10 +494,11 @@ VIC vs.\ VGoT & 25 / 45 / 30 & 43 / 25 / 32 \\
 %% ============================================================
 \section{VLM Detection Quality by Pattern}
 \label{app:vlm_quality}
+%% ============================================================
 
 The VLM detector's TPR and TNR vary across patterns, reflecting differences in entity count and scene complexity.
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{VLM detection quality (TPR/TNR) by narrative pattern.}
 \centering
 \small
@@ -514,10 +525,11 @@ The VLM-based binary detection avoids the threshold tuning required by continuou
 %% ============================================================
 \section{Entry vs.\ Exit Operation Accuracy}
 \label{app:entry_exit}
+%% ============================================================
 
 We decompose PTM into entry (prescribed $\Delta S^* = +1$) and exit (prescribed $\Delta S^* = -1$) operations.
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{PTM decomposed by operation type. $\Delta$ = entry $-$ exit accuracy.}
 \centering
 \small
@@ -541,10 +553,11 @@ VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accu
 %% ============================================================
 \section{2-Entity vs.\ 3-Entity Stratified Analysis}
 \label{app:entity_count}
+%% ============================================================
 
 Patterns use either 2 entities (Relay, Split, Convergence, Reverse Relay; $n = 600$ per model) or 3 entities (Accumulation, Sliding Window, Reduction; $n = 400$ per model).
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Metrics stratified by entity count.}
 \centering
 \small
@@ -571,8 +584,9 @@ StoryDiffusion benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), su
 %% ============================================================
 \section{EPA-PTM Correlation Analysis}
 \label{app:correlation}
+%% ============================================================
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{EPA-PTM correlation. Per-video Pearson $r$.}
 \centering
 \small
@@ -598,10 +612,11 @@ This validates the VLM-based binary detection as producing more reliable metrics
 %% ============================================================
 \section{Bootstrap Confidence Intervals}
 \label{app:bootstrap}
+%% ============================================================
 
 95\% bootstrap CIs ($B = 10{,}000$, percentile method):
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Main results with 95\% CIs.}
 \centering
 \small
@@ -623,8 +638,9 @@ EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming st
 %% ============================================================
 \section{Statistical Significance and Effect Sizes}
 \label{app:significance}
+%% ============================================================
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Pairwise Mann-Whitney $U$ tests for PTM. Cohen's $d$ reports effect size.}
 \centering
 \small
@@ -649,8 +665,9 @@ The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.1
 %% ============================================================
 \section{PTM Score Distribution}
 \label{app:distributions}
+%% ============================================================
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{PTM score distributions. PTM takes discrete values $\{0, 0.5, 1.0\}$ for 2-transition patterns.}
 \centering
 \small
@@ -674,10 +691,11 @@ StoryDiffusion achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable.
 %% ============================================================
 \section{Frobenius Distance Analysis}
 \label{app:frobenius}
+%% ============================================================
 
 The raw Frobenius distance $\|E\|_F$ is weakly discriminative:
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Pairwise Mann-Whitney $U$ tests for $\|E\|_F$.}
 \centering
 \small
@@ -702,10 +720,11 @@ This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribe
 %% ============================================================
 \section{Per-Pattern Failure Analysis}
 \label{app:failure_pattern}
+%% ============================================================
 
 Failure rates are computed from the VLM-based $E$ matrix, with Type~IV (reversal, $|E|=2$) separated from Types~I/II.
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Failure rates (\% of videos with $\geq$1 failure) per pattern, aggregated across all 4 models.}
 \centering
 \small
@@ -732,6 +751,7 @@ Amnesia (Type~II) dominates across all patterns, consistent with the entry--exit
 %% ============================================================
 \section{GT Failure Validation}
 \label{app:gt_failures}
+%% ============================================================
 
 To validate that our VLM detector and STEM pipeline correctly diagnose each failure type, we construct controlled GT videos from real cat footage.
 We use two source clips---a black-and-white cat (entity~A) and an orange cat (entity~B)---plus a joint clip (A+B) to assemble five 3-shot videos following the Relay pattern ($S^* = [[1,0],[1,1],[0,1]]$, $\Delta S^* = [[0,{+}1],[{-}1,0]]$).
@@ -759,10 +779,11 @@ Source videos and analysis scripts: \texttt{gt/two\_cats/} and \texttt{eval\_gt\
 %% ============================================================
 \section{Metric Discriminability Comparison}
 \label{app:metric_discriminability}
+%% ============================================================
 
 We compare the discriminative power of three candidate metrics: PTM ($\ell_0$-norm on prescribed cells), EPA (entity presence accuracy), and raw Frobenius distance $\|E\|_F$.
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Discriminability of candidate metrics. $H$: Kruskal--Wallis statistic across 4 models. Sig.\ pairs: number of pairwise Mann--Whitney $U$ tests significant at $\alpha = 0.005$ (out of 6).}
 \centering
 \small
@@ -785,11 +806,12 @@ The Frobenius norm resolves only the Echo--VGoT pair, and its ranking ($\text{VG
 %% ============================================================
 \section{Sample Size Sensitivity}
 \label{app:sample_size}
+%% ============================================================
 
 A key reviewer concern is whether 1,000 scenarios per model are necessary.
 We subsample $N \in \{50, 100, 200, 300, 500, 750, 1000\}$ scenarios (with replacement, $B = 1{,}000$ bootstrap iterations) and measure two stability criteria: (1)~\emph{rank preservation}: the fraction of bootstrap samples in which the 4-model PTM ranking matches the full-dataset ranking; (2)~\emph{full significance}: the fraction in which all 6 pairwise Mann--Whitney $U$ tests are significant at $p < 0.05$.
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Rank stability as a function of dataset size.}
 \centering
 \small
@@ -815,10 +837,11 @@ The 1,000-scenario design provides $>$99.8\% stability across both criteria, ens
 %% ============================================================
 \section{Cross-Pattern Rank Consistency}
 \label{app:rank_consistency}
+%% ============================================================
 
 To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and measure concordance via Kendall's coefficient of concordance $W$.
 
-\begin{table}[h]
+\begin{table}[t]
 \caption{Per-pattern PTM rankings (1 = best). Bold: deviation from overall ranking.}
 \centering
 \small
@@ -846,6 +869,7 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's spec
 %% ============================================================
 \section{Reproducibility Checklist}
 \label{app:reproducibility}
+%% ============================================================
 
 \begin{itemize}[leftmargin=*,nosep]
 \item All evaluation code, prompts, and 4,000 generated videos are released.
