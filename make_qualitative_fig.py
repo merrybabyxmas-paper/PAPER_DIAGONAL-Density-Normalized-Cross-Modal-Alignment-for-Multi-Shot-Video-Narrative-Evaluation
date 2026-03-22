@@ -50,13 +50,10 @@ EXAMPLES = [
     },
 ]
 
-def presence_str(row, ents):
-    p = [ents[j] for j in range(len(row)) if row[j]]
-    return ", ".join(p) if p else "∅"
 
-fig = plt.figure(figsize=(8.5, 10.5))
-gs = gridspec.GridSpec(4, 3, figure=fig, wspace=0.04, hspace=0.55,
-                       left=0.01, right=0.99, top=0.97, bottom=0.02)
+fig = plt.figure(figsize=(8.5, 7))
+gs = gridspec.GridSpec(4, 3, figure=fig, wspace=0.04, hspace=0.32,
+                       left=0.01, right=0.99, top=0.96, bottom=0.03)
 
 fig.patch.set_facecolor("white")
 
@@ -80,18 +77,8 @@ for ri, ex in enumerate(EXAMPLES):
         if ri == 0:
             ax.set_title(f"Shot {ci+1}", fontsize=10, fontweight="bold", pad=4)
 
-        # S* / Ŝ below image
-        ideal = presence_str(ex["S_ideal"][ci], ex["entities"])
-        obs = presence_str(ex["S_obs"][ci], ex["entities"])
-        match = (ex["S_ideal"][ci] == ex["S_obs"][ci])
-        obs_color = "#C0392B" if not match else "#333"
-        ax.text(0.5, -0.04, f"S*: {ideal}", transform=ax.transAxes,
-                fontsize=6.5, ha="center", va="top", color="#333")
-        ax.text(0.5, -0.15, f"Ŝ:  {obs}", transform=ax.transAxes,
-                fontsize=6.5, ha="center", va="top", color=obs_color)
-
     # Row label above first image (reuse existing axis, don't create new one)
-    first_ax.text(-0.02, 1.12, f"{ex['type']}  ({ex['model']}, {ex['pattern']})",
+    first_ax.text(-0.02, 1.08, f"{ex['type']}  ({ex['model']}, {ex['pattern']})",
                   transform=first_ax.transAxes, fontsize=8, fontweight="bold",
                   va="bottom", ha="left", color="#2C3E50")
 
