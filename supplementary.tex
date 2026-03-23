@@ -409,51 +409,53 @@ VIC's PTM range is only 0.032 (0.048--0.080), confirming a fixed coherence ceili
 %% ============================================================
 
 \paragraph{Platform.}
-Custom Streamlit web application showing two anonymized model outputs side by side (3 keyframes each). Entity presence/absence annotations shown below. Left/right randomized.
+Custom Streamlit web application showing two anonymized model outputs side by side (3 keyframes each). The original per-shot text prompts are displayed above. Left/right presentation is randomized per trial.
 
 \paragraph{Scale.}
-5-point Likert: 1 = ``A clearly better'', 3 = ``Similar'', 5 = ``B clearly better''.
-Two dimensions: Narrative Compliance and Visual Quality, assessed independently.
+Each model is rated independently on a 5-point Likert scale for \emph{Narrative Compliance} (1 = very poor, 5 = excellent). Evaluators then select an overall preference: A win, B win, MutualFail (both fail), or BothGood (both succeed).
 
 \paragraph{Criteria.}
-\emph{Narrative}: ``Which video better follows the scripted entity dynamics?''
-\emph{Visual}: ``Which video looks more visually coherent and natural? Ignore narrative correctness.''
+\emph{Narrative Compliance}: ``How well does each video follow the scripted entity dynamics (entries, exits, co-presences)?''
 
 \paragraph{Design.}
-120 pairwise comparisons (40 scenarios $\times$ 6 model pairs). Each evaluator assessed 30 pairs via rotating-window scheme (3 raters per pair). 15 graduate student participants (CS and media studies). Median time: $\sim$25 min. Two attention-check trials (100\% pass rate). Table~\ref{tab:score_dist} shows score distributions, and Table~\ref{tab:head_to_head} reports head-to-head preferences.
+40 randomly sampled scenarios $\times$ 6 model pairs = 240 unique comparisons. 15 graduate student evaluators (CS and media studies), each completing 120 comparisons via a rotating-window assignment scheme. Median completion time: $\sim$25 min per evaluator. Two attention-check trials embedded (100\% pass rate). Table~\ref{tab:score_dist} shows score distributions, and Table~\ref{tab:head_to_head} reports head-to-head preferences.
 
 \begin{table}[ht]
-\caption{Score distributions by dimension.}
+\caption{Likert score distributions and per-model mean narrative compliance scores.}
 \label{tab:score_dist}
 \centering
 \small
 \begin{tabular}{@{}lccccccc@{}}
 \toprule
 & \multicolumn{5}{c}{Score \%} & \multicolumn{2}{c}{Summary} \\
-Dim. & 1 & 2 & 3 & 4 & 5 & $\mu$ & $\sigma$ \\
+Model & 1 & 2 & 3 & 4 & 5 & $\mu$ & $\sigma$ \\
 \midrule
-Narr.  & 12.3 & 14.8 & 42.3 & 17.1 & 13.5 & 3.05 & 1.18 \\
-Visual & 16.7 & 18.2 & 26.0 & 22.4 & 16.7 & 3.04 & 1.34 \\
+SD    & 19.5 & 29.5 & 29.0 & 17.1 & 4.9 & 2.58 & 1.13 \\
+Echo  & 32.1 & 46.7 & 15.6 & 3.3 & 2.2 & 1.97 & 0.90 \\
+VGoT  & 34.7 & 46.9 & 12.1 & 4.3 & 1.9 & 1.92 & 0.90 \\
+VIC   & 35.1 & 43.6 & 14.2 & 5.6 & 1.5 & 1.95 & 0.92 \\
+\midrule
+All   & 30.5 & 41.9 & 17.6 & 7.4 & 2.6 & 2.10 & 1.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[ht]
-\caption{Head-to-head preferences (\%). M1 win / Tie / M2 win.}
+\caption{Head-to-head preferences (\%). M1 win / MutualFail / M2 win.}
 \label{tab:head_to_head}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-Matchup & Narrative & Visual \\
+Matchup & Preference (\%) & $n$ \\
 \midrule
-SD vs.\ Echo  & 32 / 43 / 25 & 28 / 31 / 41 \\
-SD vs.\ VIC   & 38 / 24 / 38 & 21 / 33 / 46 \\
-SD vs.\ VGoT  & 35 / 40 / 25 & 30 / 28 / 42 \\
-Echo vs.\ VIC & 42 / 38 / 20 & 22 / 27 / 51 \\
-Echo vs.\ VGoT & 37 / 42 / 21 & 31 / 30 / 39 \\
-VIC vs.\ VGoT & 25 / 45 / 30 & 43 / 25 / 32 \\
+SD vs.\ Echo  & \textbf{49} / 36 / 15 & 284 \\
+SD vs.\ VGoT  & \textbf{54} / 29 / 16 & 268 \\
+SD vs.\ VIC   & \textbf{50} / 32 / 18 & 309 \\
+Echo vs.\ VGoT & 29 / 45 / 26 & 335 \\
+Echo vs.\ VIC & \textbf{33} / 42 / 25 & 308 \\
+VGoT vs.\ VIC & 30 / 43 / 27 & 296 \\
 \bottomrule
 \end{tabular}
 \end{table}
