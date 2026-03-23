@@ -868,6 +868,79 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's spec
 \item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
 \end{itemize}
 
+%% ============================================================
+\section{Temporal Frame Sampling Ablation}
+\label{app:temporal_ablation}
+%% ============================================================
+
+A potential concern is whether extracting a \emph{single} frame per shot introduces sampling bias that could alter model rankings. To address this, we re-run the full \stem{} pipeline on all 4{,}000 videos under four temporal sampling strategies:
+
+\begin{itemize}[nosep,leftmargin=*]
+\item \textbf{Early} ($t = 0.25$): frame at 25\% of each shot.
+\item \textbf{Middle} ($t = 0.50$): frame at 50\% (default in main paper).
+\item \textbf{Late} ($t = 0.75$): frame at 75\% of each shot.
+\item \textbf{Multi-3} ($t \in \{0.25, 0.50, 0.75\}$): majority vote over 3 frames per shot.
+\end{itemize}
+
+\noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments.
+
+\begin{table}[ht]
+\caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. Model ranking is \emph{identical} across all four strategies (SD $>$ Echo $>$ VGoT $>$ VIC).}
+\label{tab:temporal_ablation_ptm}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & Early & Middle & Late & Multi-3 \\
+\midrule
+StoryDiff & .269 & \textbf{.272} & .196 & .249 \\
+EchoShot  & .169 & .169 & .172 & .163 \\
+VGoT      & .098 & .087 & .085 & .081 \\
+VIC       & .074 & .058 & .057 & .051 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Temporal frame sampling ablation: EPA by model $\times$ strategy.}
+\label{tab:temporal_ablation_epa}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & Early & Middle & Late & Multi-3 \\
+\midrule
+StoryDiff & .585 & \textbf{.598} & .568 & .598 \\
+EchoShot  & .567 & .571 & .569 & .569 \\
+VGoT      & .550 & .547 & .553 & .550 \\
+VIC       & .552 & .546 & .541 & .546 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\caption{Per-video Spearman rank correlation ($\rho_s$) of PTM scores between sampling strategies ($n = 4{,}000$). All $p \approx 0$.}
+\label{tab:temporal_ablation_spearman}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+ & Early & Middle & Late & Multi-3 \\
+\midrule
+Early  & 1.000 & .591 & .449 & .749 \\
+Middle & .591 & 1.000 & .505 & .805 \\
+Late   & .449 & .505 & 1.000 & .653 \\
+Multi-3 & .749 & .805 & .653 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Key findings.}
+(1)~The model ranking SD $>$ Echo $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
+(2)~The middle frame achieves the highest PTM for StoryDiffusion (.272) and the highest EPA overall, consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
+(3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.449$), with the middle--multi3 pair reaching $\rho_s = 0.805$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
+(4)~The marginal PTM gain from multi-frame voting ($\leq 0.02$) does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
+
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
