@@ -498,21 +498,7 @@ VIC & In-context & CogVideoX-5B & 50 \\
 \paragraph{Evaluation Protocol.}
 For each generated 3-shot video, we extract the middle frame of each shot and query Qwen2-VL-7B-Instruct~\cite{qwen2vl} using binary entity presence questions (Eq.~\ref{eq:vlm_probe}). All 4{,}000 generated videos (1{,}000 per model) are processed across 4$\times$RTX~4090 GPUs.
 
-\subsection{Main Results}
-\label{sec:main_results}
-
-Table~\ref{tab:main} demonstrates the diagnostic power of the \stem{} evaluation pipeline.
-
-\paragraph{Finding 1: Rigorous Method Discrimination.}
-All pairwise PTM comparisons between models are statistically significant (Mann--Whitney $U$, $p < 0.005$, Table~\ref{tab:significance}), with 95\% bootstrap confidence intervals that do \emph{not overlap} (Table~\ref{tab:main}, CI columns). Furthermore, the Kruskal--Wallis test yields $H = 302.7$ ($p < 10^{-65}$), definitively confirming that the performance gaps between these paradigms are not due to chance.
-
-\paragraph{Finding 2: Consistent Rank Reversal Against IC.}
-PTM and EPA produce \emph{identical rankings} (SD $>$ Echo $>$ VGoT $>$ VIC), which are \emph{perfectly reversed} compared to traditional Identity Consistency (IC) metrics~\cite{shotadapter}. VIC achieves the highest IC (0.94) but the absolute lowest PTM (0.070), whereas StoryDiffusion leads in PTM but trails in IC (0.81). This perfect rank reversal ($\rho_s = -1.0$) empirically exposes the \emph{coherence--compliance trade-off} (\S\ref{sec:pareto}).
-
-\paragraph{Finding 3: StoryDiffusion Leads Across Topologies.}
-SD achieves the highest PTM in 6 of the 7 narrative patterns. Its advantage is particularly pronounced on \emph{Sliding Window} (0.357 vs. 0.270 for EchoShot), which is the most complex pattern involving all 3 entities across both state transitions.
-
-\begin{table*}[t]
+\begin{table*}[!t]
 \caption{Main results. Best in \textbf{bold}. IC = Identity Consistency~\cite{shotadapter}. PTM = Prescribed Transition Match (primary). EPA = Entity Presence Accuracy (secondary). PTM 95\% CIs from $B = 10{,}000$ bootstrap. Per-pattern PTM shown for all 7 patterns (B = basis, D = derived).}
 \label{tab:main}
 \centering
@@ -531,6 +517,20 @@ VIC        & .070 & .546 & .060 & .082 & .080 & .048 & .072 & .067 & .077 & .080
 \bottomrule
 \end{tabular}
 \end{table*}
+
+\subsection{Main Results}
+\label{sec:main_results}
+
+Table~\ref{tab:main} demonstrates the diagnostic power of the \stem{} evaluation pipeline.
+
+\paragraph{Finding 1: Rigorous Method Discrimination.}
+All pairwise PTM comparisons between models are statistically significant (Mann--Whitney $U$, $p < 0.005$, Table~\ref{tab:significance}), with 95\% bootstrap confidence intervals that do \emph{not overlap} (Table~\ref{tab:main}, CI columns). Furthermore, the Kruskal--Wallis test yields $H = 302.7$ ($p < 10^{-65}$), definitively confirming that the performance gaps between these paradigms are not due to chance.
+
+\paragraph{Finding 2: Consistent Rank Reversal Against IC.}
+PTM and EPA produce \emph{identical rankings} (SD $>$ Echo $>$ VGoT $>$ VIC), which are \emph{perfectly reversed} compared to traditional Identity Consistency (IC) metrics~\cite{shotadapter}. VIC achieves the highest IC (0.94) but the absolute lowest PTM (0.070), whereas StoryDiffusion leads in PTM but trails in IC (0.81). This perfect rank reversal ($\rho_s = -1.0$) empirically exposes the \emph{coherence--compliance trade-off} (\S\ref{sec:pareto}).
+
+\paragraph{Finding 3: StoryDiffusion Leads Across Topologies.}
+SD achieves the highest PTM in 6 of the 7 narrative patterns. Its advantage is particularly pronounced on \emph{Sliding Window} (0.357 vs. 0.270 for EchoShot), which is the most complex pattern involving all 3 entities across both state transitions.
 
 \begin{table}[t]
 \caption{Pairwise significance (PTM). $p$-values (Mann--Whitney $U$), Cohen's $d$.}
