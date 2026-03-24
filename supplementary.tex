@@ -110,7 +110,7 @@ where $c_{\tau,m} \in \mathbb{Z}$, and $\sigma_{\tau,m} \in \Sigma_N$.
 \end{theorem}
 
 \begin{proof}
-Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~1 (Main Text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
+Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
 \end{proof}
 The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
@@ -310,7 +310,7 @@ Binary yes/no: ``Is there a \{entity\} visible in this image? Answer only Yes or
 
 \paragraph{Detection quality.}
 Across 4,000 videos (28,800 cells): TPR $= 52.1\%$, TNR $= 66.7\%$.
-The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection of 100 randomly sampled false-negative cells confirmed that 65\% were genuine generation failures, 19\% were ambiguous, and only 16\% were VLM detection errors, yielding 80.2\% VLM precision (see main paper, \S5.6). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
+The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection of 100 randomly sampled false-negative cells confirmed that 65\% were genuine generation failures, 19\% were ambiguous, and only 16\% were VLM detection errors, yielding 80.2\% VLM precision (see main text, \S5.6). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 \paragraph{Failure classification.}
 Given $E_{t,e} = \Delta S_{\text{obs},t,e} - \Delta S^*_{t,e}$:
@@ -877,7 +877,7 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 
 \begin{itemize}[nosep,leftmargin=*]
 \item \textbf{Early} ($t = 0.25$): frame at 25\% of each shot.
-\item \textbf{Middle} ($t = 0.50$): frame at 50\% (default in main paper).
+\item \textbf{Middle} ($t = 0.50$): frame at 50\% (default in main text).
 \item \textbf{Late} ($t = 0.75$): frame at 75\% of each shot.
 \item \textbf{Multi-3} ($t \in \{0.25, 0.50, 0.75\}$): majority vote over 3 frames per shot.
 \end{itemize}
