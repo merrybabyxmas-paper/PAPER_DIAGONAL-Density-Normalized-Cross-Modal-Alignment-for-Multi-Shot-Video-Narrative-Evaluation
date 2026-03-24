@@ -3,11 +3,7 @@
 %%
 \documentclass[sigconf,review,anonymous]{acmart}
 
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{booktabs}
 \usepackage{multirow}
-\usepackage{graphicx}
-\usepackage{xcolor}
 \usepackage{subcaption}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -16,7 +12,6 @@
 \usepackage{pifont}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
-\renewcommand{\thetheorem}{\arabic{theorem}}
 \usepackage{colortbl}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,decorations.pathreplacing,matrix}
@@ -167,6 +162,7 @@ We reformulate this problem through the lens of linear algebra. By abstracting a
 \textbf{(a)}~The \stem{} pipeline: a VLM projects each shot into a binary presence vector, forming $S_\text{obs}$. Temporal differencing yields $\Delta S_\text{obs}$, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ diagnoses failures and feeds PTM/EPA metrics.
 \textbf{(b)}~Completeness theorem: two basis matrices ($\calB_1$: Relay, $\calB_2$: Split) generate all elementary matrices $E_{ij}$, spanning any $\Delta S \in \mathbb{M}_{2\times3}(\mathbb{Z})$.
 \textbf{(c)}~Four failure types: Type~I Context Bleeding, Type~II Amnesia, Type~III Spurious, and Type~IV Reversal.}
+\Description{Overview of the SPAN framework showing the STEM evaluation pipeline, basis matrix completeness, and four failure types.}
 \label{fig:overview}
 \end{figure*}
 
@@ -604,6 +600,7 @@ No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_failures.png}
 \caption{Qualitative examples of the four failure types on real generated frames. Each row corresponds to a specific failure type and generative model. \textbf{Type~I} (VGoT, Reduction): \emph{dog} persists in Shot~3 where only \emph{cat} should remain. \textbf{Type~II} (StoryDiffusion, Convergence): \emph{swimmer} fails to re-enter in Shot~3. \textbf{Type~III} (StoryDiffusion, Accumulation): \emph{waiter} vanishes in Shot~2 despite being prescribed in all shots. \textbf{Type~IV} (VIC, Split): entity transitions are reversed---\emph{dishwasher} enters where it should exit and vice versa ($|E|{=}2$).}
+\Description{Qualitative examples of four failure types in generated video frames.}
 \label{fig:qualitative}
 \end{figure}
 
@@ -637,6 +634,7 @@ No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
 \end{tikzpicture}
 }
 \caption{Coherence--Compliance trade-off. All four models exhibit a consistent rank reversal between IC and PTM ($\rho_s = -1.0$, $n\!=\!4$): VIC maximizes IC but scores lowest on PTM, while StoryDiffusion leads on PTM with the lowest IC.}
+\Description{Scatter plot showing the coherence-compliance trade-off between IC and PTM scores for four models.}
 \label{fig:pareto}
 \end{figure}
 
