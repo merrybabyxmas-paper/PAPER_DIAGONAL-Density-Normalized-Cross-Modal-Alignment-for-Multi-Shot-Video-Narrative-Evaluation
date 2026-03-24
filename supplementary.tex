@@ -70,16 +70,16 @@ However, the standard elementary matrix $E_{11} = \bigl[\begin{smallmatrix} 1 & 
 \subsection{Operator Definitions and Validity}
 To formalize the dimensional expansion, we define two linear operators mapping the local $2\times 3$ space to the global arbitrary space.
 
-\paragraph{Spatial Zero-Padding Operator ($\mathcal{Z}_N$).}
+\paragraph{Spatial Zero-Padding Operator ($\mathbb{Z}_N$).}
 Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
 \begin{align}
-\mathcal{Z}_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{M}_{2\times 3}.
+\mathbb{Z}_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{M}_{2\times 3}.
 \end{align}
-\emph{Linearity.}\; $\mathcal{Z}_N(c_1 X + c_2 Y) = c_1\mathcal{Z}_N(X) + c_2\mathcal{Z}_N(Y)$.
+\emph{Linearity.}\; $\mathbb{Z}_N(c_1 X + c_2 Y) = c_1\mathbb{Z}_N(X) + c_2\mathbb{Z}_N(Y)$.
 
-\noindent\emph{Video interpretation.}\; In a generated video, the basis patterns $\calB_1$ and $\calB_2$ are defined over 3 entity slots. When a narrative involves $N > 3$ entities (e.g., 5 characters), $\mathcal{Z}_N$ embeds the 3-entity transition into the wider $N$-entity space by filling the additional entity columns with zeros---meaning those extra characters are unaffected by this particular local transition.
+\noindent\emph{Video interpretation.}\; In a generated video, the basis patterns $\calB_1$ and $\calB_2$ are defined over 3 entity slots. When a narrative involves $N > 3$ entities (e.g., 5 characters), $\mathbb{Z}_N$ embeds the 3-entity transition into the wider $N$-entity space by filling the additional entity columns with zeros---meaning those extra characters are unaffected by this particular local transition.
 
-We define the padded bases $\hat{\calB}_1 = \mathcal{Z}_N(\calB_1)$ and $\hat{\calB}_2 = \mathcal{Z}_N(\calB_2)$.
+We define the padded bases $\hat{\calB}_1 = \mathbb{Z}_N(\calB_1)$ and $\hat{\calB}_2 = \mathbb{Z}_N(\calB_2)$.
 
 \paragraph{Temporal Shift Operator ($\mathcal{S}_\tau$).}
 A block matrix insertion operator placing local transitions into temporal window $\tau \in \{1, \ldots, T-2\}$:
@@ -88,7 +88,7 @@ A block matrix insertion operator placing local transitions into temporal window
 \end{align}
 \emph{Linearity.}\; $\mathcal{S}_\tau(c_1 X + c_2 Y) = c_1\mathcal{S}_\tau(X) + c_2\mathcal{S}_\tau(Y)$.
 
-\noindent\emph{Video interpretation.}\; A long video with $T$ shots contains $T-1$ consecutive shot-to-shot transitions. Each basis pattern covers only a 2-row (i.e., 2-transition) local window. $\mathcal{S}_\tau$ places this local transition at temporal position $\tau$ within the full $(T{-}1)$-row timeline, padding the remaining rows with zeros---meaning shots outside this window are unaffected. Together, $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
+\noindent\emph{Video interpretation.}\; A long video with $T$ shots contains $T-1$ consecutive shot-to-shot transitions. Each basis pattern covers only a 2-row (i.e., 2-transition) local window. $\mathcal{S}_\tau$ places this local transition at temporal position $\tau$ within the full $(T{-}1)$-row timeline, padding the remaining rows with zeros---meaning shots outside this window are unaffected. Together, $\mathbb{Z}_N$ and $\mathcal{S}_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
 
 The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local transitions maps to the global space without cross-temporal interference.
 
@@ -105,7 +105,7 @@ where $c_{\tau,m} \in \mathbb{Z}$, and $\sigma_{\tau,m} \in \Sigma_N$.
 \end{theorem}
 
 \begin{proof}
-Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~3.1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
+Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~3.1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathbb{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
 \end{proof}
 The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
