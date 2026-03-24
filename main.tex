@@ -106,7 +106,7 @@ Furthermore, the algebraic structure of the error matrix naturally induces a com
 
 Consider a simple three-shot scene: a chef enters a kitchen, a waiter joins in the second shot, and the chef departs in the third. This elementary narrative requires precise \emph{entity-level state control}---determining exactly who appears and disappears at each shot boundary. Yet state-of-the-art multi-shot video generators~\cite{sora,storydiff,moviegen,ho2022video,svd,imagenvideo} routinely fail at this task, exposing a fundamental \emph{coherence--compliance trade-off}: the very mechanisms that maintain cross-shot visual consistency---shared attention, in-context conditioning---actively resist the localized changes needed for dynamic character entrances and exits.
 
-Current evaluation paradigms systematically overlook this architectural tension. The majority of prominent video generation benchmarks~\cite{vbench,evalcrafter,t2vcompbench} are heavily optimized for measuring single-shot visual quality and cross-frame visual consistency. By relying on global embedding distances or static frame-level similarities, these metrics reduce complex narrative dynamics to simple frame-by-frame image comparisons. Under this paradigm, a dynamic narrative where two characters meet and then part ways receives the same consistency rating as a stagnant video where they remain together throughout. 
+Current evaluation paradigms systematically overlook this architectural tension. The majority of prominent video generation benchmarks~\cite{vbench,evalcrafter,t2vcompbench} are heavily optimized for measuring single-shot visual quality and cross-shot visual consistency. By relying on global embedding distances or static frame-level similarities, these metrics reduce complex narrative dynamics to simple frame-by-frame image comparisons. Consequently, such metrics fail to account for dynamic narratives involving characters meeting and parting ways.
 
 The root problem of evaluating narrative dynamics is combinatorial. As the number of shots and characters increases, the possible configurations of character presence and absence grow exponentially. While recent multi-shot benchmarks~\cite{moviebench,locot2v,shotadapter} attempt to evaluate extended horizons, they rely entirely on empirically curated prompt sets. To the best of our knowledge, no existing benchmark provides mathematical assurance that their evaluated scenarios adequately cover this vast combinatorial narrative space. 
 
@@ -181,11 +181,11 @@ We reformulate this problem through the lens of linear algebra. By abstracting a
 Modern video synthesis rests on diffusion models~\cite{ddpm,ldm,scoreflow}, extended temporally via UNet attention~\cite{svd,imagenvideo,ho2022video}, DiT architectures~\cite{dit,wan,sora}, flow-matching~\cite{flowmatching}, and classifier-free guidance~\cite{cfg}. Open-source systems~\cite{opensora,animatediff} and space-time models~\cite{lumiere,emuvideo} have advanced visual fidelity, yet fine-grained multi-entity narrative control remains open.
 
 \paragraph{Multi-Shot Video Generation.}
-Multi-shot extensions address cross-shot coherence through a variety of structural paradigms. Current approaches utilize Consistent Self-Attention (CSA)~\cite{storydiff,consistory}, cross-attention~\cite{videostudio}, latent initialization~\cite{mevg}, LLM-guided layouts~\cite{vgot,videodirectorgpt,storygen}, keyframe transitions~\cite{seine,dynamicrafter}, flow-matching portraits~\cite{echoshot}, IP-Adapter~\cite{ip_adapter}, and in-context LoRA~\cite{vic,lora}. Longer-horizon generation has also been explored through autoregressive token models~\cite{videopoet,phenaki}. While these methods succeed in maintaining subject identity, their varying approaches to temporal conditioning inherently affect how they handle character appearances and disappearances. We evaluate representatives from four distinct paradigms---CSA (StoryDiffusion), flow-matching (EchoShot), in-context DiT (VIC), and cascaded T2I+I2V (VGoT)---providing the first cross-paradigm comparison focused explicitly on narrative dynamics.
+Multi-shot extensions address cross-shot coherence through a variety of structural paradigms. Current approaches utilize Consistent Self-Attention (CSA)~\cite{storydiff,consistory}, cross-attention~\cite{videostudio}, latent initialization~\cite{mevg}, LLM-guided layouts~\cite{vgot,videodirectorgpt,storygen}, keyframe transitions~\cite{seine,dynamicrafter}, flow-matching portraits~\cite{echoshot}, IP-Adapter~\cite{ip_adapter}, and in-context LoRA~\cite{vic,lora}. Longer-horizon generation has also been explored through autoregressive token models~\cite{videopoet,phenaki}. While these methods succeed in maintaining subject identity, their diverse temporal conditioning mechanisms result in varying capacities to handle character transitions, such as appearances and disappearances. In this work, we evaluate representatives from four distinct paradigms---CSA (StoryDiffusion), flow-matching (EchoShot), in-context DiT (VIC), and cascaded T2I+I2V (VGoT)---providing a pioneering cross-paradigm analysis focused explicitly on narrative dynamics.
 
 \paragraph{Video Generation Benchmarks.}
 Existing benchmarks quantify generation quality via embedding similarities (Table~\ref{tab:benchmark}). FID~\cite{fid} and FVD~\cite{fvd} measure distributional fidelity but are agnostic to narrative structure; CLIPScore~\cite{clipscore} captures text--image alignment at the single-frame level; VBench~\cite{vbench,vbench2} and EvalCrafter~\cite{evalcrafter} compute frame-level CLIP~\cite{clip}/DINO~\cite{dinov2} similarities that conflate subjects with backgrounds; T2V-CompBench~\cite{t2vcompbench} targets compositional ability but is restricted to single clips.
-Recent multi-shot benchmarks---ShotAdapter~\cite{shotadapter}, MovieBench~\cite{moviebench}, LoCoT2V~\cite{locot2v}---begin to address cross-shot coherence but lack entity-level transition metrics and rely on empirically curated prompt sets without formal coverage guarantees. \diagonal{} shifts from heuristic sampling to formal verification over a mathematically complete narrative space.
+Recent multi-shot benchmarks---ShotAdapter~\cite{shotadapter}, MovieBench~\cite{moviebench}, LoCoT2V~\cite{locot2v}---begin to address cross-shot coherence but lack explicit metrics for multi-entity narrative dynamics and rely on empirically curated prompt sets without formal coverage guarantees. \diagonal{} shifts from heuristic sampling to formal verification over a mathematically complete narrative space.
 
 
 \begin{table}[t]
@@ -239,7 +239,7 @@ For standard 3-shot narratives ($T\!=\!3$), $\Delta S$ inherently has 2 rows rep
 \underbrace{\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\text{Canonical}~(2\!\times\!3)}.
 \label{eq:canonical}
 \end{equation}
-This canonical projection enables a unified completeness proof over a single matrix space. The theoretical extension to arbitrary $T$ and $N$ is provided in Appendix~B (Theorem~2).
+This canonical projection enables a unified completeness proof over a single matrix space. The theoretical extension to arbitrary $T$ and $N$ is provided in Appendix.
 
 \subsection{Linear Operators and the Narrative Basis}
 \label{sec:basis}
@@ -266,12 +266,11 @@ The time reversal operator $\calT$ rewinds the narrative by inverting the tempor
 (\calT \circ \Delta S)_{t,e} = -\Delta S_{(T\!-\!1)-t,\,e}.
 \label{eq:time_rev}
 \end{equation}
-Algebraically, this flips the matrix vertically and inverts all signs. Applying $\calT$ to the identical Split matrix ($\calB_2$) yields a structurally distinct result (a Convergence pattern), explicitly demonstrating its orthogonal nature to role swapping:
+Algebraically, this flips the matrix vertically and inverts all signs. This operator fundamentally transforms the causal topology by reversing the directional flow of the story. For instance, applying $\calT$ to the Split matrix ($\calB_2$) transforms a narrative where entities separate into one where they join together, yielding a Convergence pattern:
 \begin{equation*}
 \calT \circ \underbrace{\begin{bmatrix} 0 & -1 & 0 \\ -1 & +1 & 0 \end{bmatrix}}_{\text{Split } (\calB_2)} = \begin{bmatrix} +1 & -1 & 0 \\ 0 & +1 & 0 \end{bmatrix}.
 \end{equation*}
 \end{definition}
-
 \begin{definition}[Topological Basis Matrices]
 \label{def:basis}
 We identify two matrices that serve as the fundamental algebraic basis of the narrative space (represented in canonical $2 \times 3$ form):
