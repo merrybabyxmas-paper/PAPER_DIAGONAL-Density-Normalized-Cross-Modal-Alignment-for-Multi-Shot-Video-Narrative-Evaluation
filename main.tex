@@ -67,12 +67,12 @@
 %%
 \begin{abstract}
 Multi-shot video generation models can now produce visually coherent sequences, yet they face a fundamental \emph{coherence--compliance trade-off}: the mechanisms that maintain visual consistency across shots---shared attention, in-context conditioning---prevent models from executing the dynamic entity entrances and exits that define storytelling.
-Current evaluation paradigms, heavily optimized for visual quality and visual consistency, systematically overlook this trade-off by reducing complex narrative dynamics to simple frame-by-frame image comparisons.
-We present the \diagonal{} framework, which formalizes multi-entity, multi-shot narratives into state transition matrices that algebraically encode character entrances and exits. 
-Crucially, we prove that \textbf{every conceivable narrative topology} can be generated from just two fundamental basis patterns (Relay and Split) by applying intuitive narrative operations---such as time reversal and character role swapping---along with pattern combinations (\textbf{Theorem~\ref{thm:completeness}}).
+Current evaluation paradigms are heavily optimized for visual quality and visual consistency, systematically overlooking this trade-off by reducing complex narrative dynamics to simple frame-by-frame image comparisons.
+We present the \diagonal{} framework, which formalizes multi-entity, multi-shot narratives into state transition matrix that algebraically encode character entrances and exits. 
+Crucially, we prove that \textbf{every conceivable narrative topology} can be generated from just two fundamental basis patterns (Relay and Split) by applying intuitive narrative operations---such as time reversal and character role swapping.
 This elevates video evaluation from heuristic prompting to \emph{mathematically complete formal verification}.
 To evaluate generated videos, we introduce \stem{} (State Transition Error Matching). Instead of relying on scalar similarities, \stem{} constructs an error matrix that isolates all narrative deviations by comparing the observed transitions against the prescribed script. This matrix is then decomposed in a sparsity-aware manner to decouple detector noise from true narrative signals, yielding two complementary metrics: \emph{Prescribed Transition Match} (PTM) for microscopic transition fidelity and \emph{Entity Presence Accuracy} (EPA) for macroscopic cast compliance.
-On the MEMS-1K benchmark across four major video generation architectures, PTM clearly discriminates model performances, revealing a vast capability gap and a consistent rank reversal against Identity Consistency---empirically exposing the previously invisible architectural tension.
+On the MEMS-1K(Multi-Entity  Multi-Shot) benchmark across four major video generation architectures, PTM clearly discriminates model performances, revealing a vast capability gap and a consistent rank reversal against Identity Consistency---empirically exposing the previously invisible architectural tension.
 Furthermore, the algebraic structure of the error matrix naturally induces a comprehensive taxonomy of narrative failures (e.g., characters failing to exit or missing their entrances), providing structured, actionable diagnostics beyond simple scalar scores.
 \end{abstract}
 
