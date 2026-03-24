@@ -557,7 +557,7 @@ The per-pattern breakdown (Table~\ref{tab:main}) reveals how \stem{} exposes arc
 The PTM spread (best minus worst model) varies significantly, from a narrow 0.11 on simple patterns (Relay, Reverse Relay) to a wide 0.28 on complex ones (Sliding Window). This confirms that 3-transition patterns (Split, Convergence, Sliding Window) provide much stronger metric discrimination than simpler 2-transition structures.
 
 \paragraph{Exposing Architectural Bottlenecks.}
-StoryDiffusion's Consistent Self-Attention (CSA) excels at complex multi-entity transitions (e.g., Convergence: 0.277). Conversely, VGoT's cascaded pipeline entirely collapses on Convergence (PTM = 0.053), explicitly revealing that its rendering backbone (DynamiCrafter) struggles to introduce new entities on demand if they were absent from the initial layout. Meanwhile, VIC shows a near-uniform failure across all patterns (PTM range $\approx$ 0.032), confirming that heavy in-context conditioning creates a fixed "coherence ceiling" that severely stifles narrative flexibility.
+StoryDiffusion's Consistent Self-Attention (CSA) excels at complex multi-entity transitions (e.g., Convergence: 0.277). Conversely, VGoT's cascaded pipeline entirely collapses on Convergence (PTM = 0.053), explicitly revealing that its rendering backbone (DynamiCrafter~\cite{dynamicrafter}) struggles to introduce new entities on demand if they were absent from the initial layout. Meanwhile, VIC shows a near-uniform failure across all patterns (PTM range $\approx$ 0.032), confirming that heavy in-context conditioning creates a fixed ``coherence ceiling'' that severely stifles narrative flexibility.
 
 \subsection{Error Taxonomy Analysis}
 \label{sec:failure_analysis}
@@ -565,7 +565,7 @@ StoryDiffusion's Consistent Self-Attention (CSA) excels at complex multi-entity 
 Fewer than 1.5\% of videos are entirely failure-free, even for the best-performing model (Table~\ref{tab:failures}). This stark statistic underscores that multi-entity narrative execution remains an unsolved challenge. \stem{}'s error taxonomy moves beyond this aggregate failure rate to provide actionable architectural diagnostics (Fig.~\ref{fig:qualitative}).
 
 \paragraph{Context Bleeding (Type I) in In-Context Models.}
-VIC suffers the highest rate of Context Bleeding (75.6\%). Because its in-context conditioning heavily anchors the generation on prior frames, the model actively resists removing previously established entities, causing their visual context to inappropriately "bleed" into subsequent shots.
+VIC suffers the highest rate of Context Bleeding (75.6\%). Because its in-context conditioning heavily anchors the generation on prior frames, the model actively resists removing previously established entities, causing their visual context to inappropriately ``bleed'' into subsequent shots.
 
 
 \paragraph{Amnesia (Type II) in Cascaded Pipelines.}
@@ -663,7 +663,7 @@ A naive Frobenius norm $\|E\|_F$ achieves significance in only 1 of 6 pairwise c
 The algebraic formalization is not merely theoretical elegance but a \emph{computational necessity}. PTM and EPA require only $O(TN)$ integer comparisons---no gradient computation, no learned thresholds, no calibration datasets---making \stem{} orders of magnitude cheaper than learned evaluation metrics while achieving 6/6 pairwise significance ($H = 302.7$). As foundational VLMs improve, the absolute accuracy of \stem{} will increase without any structural change to our algebraic metrics.
 
 \paragraph{Independent Querying Ambiguity.}
-Our \stem{} pipeline evaluates entity presence via \emph{independent} binary queries. We observed that this can occasionally induce compositional hallucinations in the VLM: when a generated frame contains visually similar entities, the model may conflate their features and incorrectly report an absent entity as present. We mitigated this in MEMS-1K by strictly filtering entity pairs for low CLIP text similarity ($\leq 0.45$, \S\ref{sec:dataset}), but resolving this natively requires future VLMs with stronger joint-reasoning capabilities. As foundational VLMs evolve, the absolute accuracy of \stem{} will improve without structural changes to our algebraic metrics.
+Our \stem{} pipeline evaluates entity presence via \emph{independent} binary queries. We observed that this can occasionally induce compositional hallucinations in the VLM: when a generated frame contains visually similar entities, the model may conflate their features and incorrectly report an absent entity as present. We mitigated this in MEMS-1K by strictly filtering entity pairs for low CLIP text similarity ($\leq 0.45$, \S\ref{sec:dataset}), but resolving this natively requires future VLMs with stronger joint-reasoning capabilities.
 
 %% ============================================================
 \section{Conclusion}

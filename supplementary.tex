@@ -143,7 +143,7 @@ Type & Pattern & Formula & Scenarios & Shots \\
 Table~\ref{tab:full_composition} summarizes the benchmark composition.
 
 \paragraph{Prompt generation.}
-All prompts are generated via Google Gemini~1.5 (temperature 0.7) using structured templates specifying narrative pattern, entity descriptions, and scene backgrounds.
+All prompts are generated via Google Gemini~1.5~\cite{gemini} (temperature 0.7) using structured templates specifying narrative pattern, entity descriptions, and scene backgrounds.
 Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descriptions, visually indistinguishable entity pairs, or degenerate backgrounds.
 
 \paragraph{Scene themes.}
@@ -305,7 +305,7 @@ Binary yes/no: ``Is there a \{entity\} visible in this image? Answer only Yes or
 
 \paragraph{Detection quality.}
 Across 4,000 videos (28,800 cells): TPR $= 52.1\%$, TNR $= 66.7\%$.
-The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection of 100 randomly sampled false-negative cells confirmed that 65\% were genuine generation failures, 19\% were ambiguous, and only 16\% were VLM detection errors, yielding 80.2\% VLM precision (see main text, \S5.6). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
+The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection of 100 randomly sampled false-negative cells confirmed that 65\% were genuine generation failures, 19\% were ambiguous, and only 16\% were VLM detection errors, yielding 80.2\% VLM precision (see main text, \S6.7). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 \paragraph{Failure classification.}
 Given $E_{t,e} = \Delta S_{\text{obs},t,e} - \Delta S^*_{t,e}$:
@@ -710,15 +710,15 @@ Pattern & $|\Delta S^* \neq 0|$ & I & II & III & IV \\
 Relay         & 2 & 63.4 & 68.6 & 34.9 & 11.5 \\
 Split         & 3 & 73.1 & 70.8 & 37.3 & 13.4 \\
 Accumulation  & 2 & 63.9 & 80.8 & 33.9 & 8.4 \\
-Convergence   & 4 & 78.8 & 81.0 & 47.5 & 14.3 \\
-Sliding Win.  & 4 & 77.3 & 77.5 & 37.3 & 12.5 \\
+Convergence   & 3 & 78.8 & 81.0 & 47.5 & 14.3 \\
+Sliding Win.  & 3 & 77.3 & 77.5 & 37.3 & 12.5 \\
 Reduction     & 2 & 63.3 & 68.8 & 28.5 & 8.0 \\
 Rev.\ Relay   & 2 & 68.3 & 70.3 & 33.3 & 11.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Patterns with more prescribed transitions (Convergence, Sliding Window: 4 each) show the highest failure rates across all types.
+Patterns with more prescribed transitions (Split, Convergence, Sliding Window: 3 each) show the highest failure rates across all types.
 Amnesia (Type~II) dominates across all patterns, consistent with the entry--exit asymmetry (\S\ref{app:entry_exit}).
 
 
@@ -727,7 +727,7 @@ Amnesia (Type~II) dominates across all patterns, consistent with the entry--exit
 \label{app:gt_failures}
 %% ============================================================
 
-To validate that our VLM detector and STEM pipeline correctly diagnose each failure type, we construct controlled GT videos from real cat footage.
+To validate that our VLM detector and \stem{} pipeline correctly diagnose each failure type, we construct controlled GT videos from real cat footage.
 We use two source clips---a black-and-white cat (entity~A) and an orange cat (entity~B)---plus a joint clip (A+B) to assemble five 3-shot videos following the Relay pattern ($S^* = [[1,0],[1,1],[0,1]]$, $\Delta S^* = [[0,{+}1],[{-}1,0]]$).
 
 \paragraph{Setup.}
@@ -744,7 +744,7 @@ Each case substitutes specific source shots to produce a known $S_\text{obs}$:
 Running Qwen2-VL-7B-Instruct on the middle frame of each shot, all five cases produce $S_\text{obs}$ matrices that \emph{exactly} match the expected values.
 The VLM achieves 100\% detection accuracy on these unambiguous, real-world images, confirming that:
 (1)~the binary query protocol reliably detects clearly visible entities,
-(2)~STEM correctly assigns the right failure type label in all cases, and
+(2)~\stem{} correctly assigns the right failure type label in all cases, and
 (3)~the lower TPR/TNR observed on generated images (\S\ref{app:vlm_quality}) reflects entity ambiguity in generation outputs, not a limitation of the detection pipeline.
 
 Source videos and analysis scripts: \texttt{gt/two\_cats/} and \texttt{eval\_gt\_failures.py}.
