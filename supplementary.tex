@@ -39,15 +39,17 @@
 \maketitle
 
 \appendix
-\renewcommand{\thetheorem}{\arabic{theorem}}
-\renewcommand{\thelemma}{\arabic{lemma}}
+\renewcommand{\thetheorem}{\Alph{section}.\arabic{theorem}}
+\renewcommand{\thelemma}{\Alph{section}.\arabic{lemma}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
 
 %% ============================================================
 \section{Necessity of the Split Basis ($\calB_2$)}
 \label{app:necessity_b2}
 %% ============================================================
 
-In Theorem~1 (main text), we established that $\{\calB_1, \calB_2\}$ spans $\mathbb{M}_{2 \times 3}(\mathbb{Z})$. To avoid redundancy with the main text's constructive proof, we provide the formal algebraic proof of why $\calB_1$ (Relay) alone is strictly insufficient to span the space, thereby necessitating the introduction of $\calB_2$ (Split).
+In Theorem~3.1 (main text), we established that $\{\calB_1, \calB_2\}$ spans $\mathbb{M}_{2 \times 3}(\mathbb{Z})$. To avoid redundancy with the main text's constructive proof, we provide the formal algebraic proof of why $\calB_1$ (Relay) alone is strictly insufficient to span the space, thereby necessitating the introduction of $\calB_2$ (Split).
 
 \begin{lemma}[Row-Sum Invariance of $\calB_1$]
 Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves the topological invariant:
@@ -99,7 +101,7 @@ The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local trans
 
 \subsection{General Spanning Theorem}
 
-\setcounter{theorem}{1}
+\setcounter{theorem}{0}
 \begin{theorem}[Topological Generalization]
 For any $T \geq 3$ and $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{M}_{(T-1)\times N}(\mathbb{Z})$ can be algebraically expressed as:
 \begin{equation}
@@ -110,7 +112,7 @@ where $c_{\tau,m} \in \mathbb{Z}$, and $\sigma_{\tau,m} \in \Sigma_N$.
 \end{theorem}
 
 \begin{proof}
-Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
+Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~3.1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathcal{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
 \end{proof}
 The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
