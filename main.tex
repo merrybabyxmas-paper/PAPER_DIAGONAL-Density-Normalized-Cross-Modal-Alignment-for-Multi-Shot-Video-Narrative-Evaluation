@@ -437,6 +437,26 @@ EPA assesses \emph{macroscopic cast compliance} by computing the element-wise ac
 \end{definition}
 
 \noindent Together, PTM (``Did the right \emph{transitions} happen?'') and EPA (``Are the right \emph{entities} present?'') provide a mathematically decoupled, sparsity-aware evaluation of multi-shot video generation---counting discrete mismatches via $\ell_0$ norms in complementary matrix subspaces.
+\begin{table*}[!t]
+\caption{Main results. Best in \textbf{bold}. PTM = Prescribed Transition Match (primary). EPA = Entity Presence Accuracy (secondary). PTM 95\% CIs from $B = 10{,}000$ bootstrap. Per-pattern PTM shown for all 7 patterns (B = basis, D = derived). Detailed per-pattern EPA scores, which produce \emph{identical} model rankings, are provided in Appendix~\ref{app:per_pattern}.}
+\label{tab:main}
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}l cc cc ccccccc@{}}
+\toprule
+& \multicolumn{2}{c}{\textit{Overall}} & \multicolumn{2}{c}{\textit{95\% CI}} & \multicolumn{7}{c}{\textit{PTM by Pattern}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-12}
+Model & PTM$\uparrow$ & EPA$\uparrow$ & PTM low & PTM high & \rotatebox{65}{Relay\textsuperscript{B}} & \rotatebox{65}{Split\textsuperscript{B}} & \rotatebox{65}{Accum.\textsuperscript{D}} & \rotatebox{65}{Conv.\textsuperscript{D}} & \rotatebox{65}{Sl.~Win.\textsuperscript{D}} & \rotatebox{65}{Red.\textsuperscript{D}} & \rotatebox{65}{Rev.~Rel.\textsuperscript{D}} \\
+\midrule
+SD         & \textbf{.243} & \textbf{.593} & .226 & .262 & \textbf{.190} & \textbf{.233} & \textbf{.253} & \textbf{.277} & \textbf{.357} & \textbf{.250} & .200 \\
+Echo       & .167 & .563 & .151 & .183 & .138 & .165 & .095 & .187 & .270 & .195 & \textbf{.225} \\
+VGoT       & .094 & .554 & .082 & .115 & .085 & .108 & .070 & .053 & .103 & .110 & .150 \\
+VIC        & .070 & .546 & .060 & .082 & .080 & .048 & .072 & .067 & .077 & .080 & .080 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 %% ============================================================
 \section{The MEMS-1K Benchmark}
 \label{sec:dataset}
@@ -474,26 +494,6 @@ The selected entities span humans, animals, vehicles, food items, and everyday o
 \section{Experiments}
 \label{sec:experiments}
 %% ============================================================
-
-\begin{table*}[!t]
-\caption{Main results. Best in \textbf{bold}. PTM = Prescribed Transition Match (primary). EPA = Entity Presence Accuracy (secondary). PTM 95\% CIs from $B = 10{,}000$ bootstrap. Per-pattern PTM shown for all 7 patterns (B = basis, D = derived). Detailed per-pattern EPA scores, which produce \emph{identical} model rankings, are provided in Appendix~\ref{app:per_pattern}.}
-\label{tab:main}
-\centering
-\small
-\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{@{}l cc cc ccccccc@{}}
-\toprule
-& \multicolumn{2}{c}{\textit{Overall}} & \multicolumn{2}{c}{\textit{95\% CI}} & \multicolumn{7}{c}{\textit{PTM by Pattern}} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-12}
-Model & PTM$\uparrow$ & EPA$\uparrow$ & PTM low & PTM high & \rotatebox{65}{Relay\textsuperscript{B}} & \rotatebox{65}{Split\textsuperscript{B}} & \rotatebox{65}{Accum.\textsuperscript{D}} & \rotatebox{65}{Conv.\textsuperscript{D}} & \rotatebox{65}{Sl.~Win.\textsuperscript{D}} & \rotatebox{65}{Red.\textsuperscript{D}} & \rotatebox{65}{Rev.~Rel.\textsuperscript{D}} \\
-\midrule
-SD         & \textbf{.243} & \textbf{.593} & .226 & .262 & \textbf{.190} & \textbf{.233} & \textbf{.253} & \textbf{.277} & \textbf{.357} & \textbf{.250} & .200 \\
-Echo       & .167 & .563 & .151 & .183 & .138 & .165 & .095 & .187 & .270 & .195 & \textbf{.225} \\
-VGoT       & .094 & .554 & .082 & .115 & .085 & .108 & .070 & .053 & .103 & .110 & .150 \\
-VIC        & .070 & .546 & .060 & .082 & .080 & .048 & .072 & .067 & .077 & .080 & .080 \\
-\bottomrule
-\end{tabular}
-\end{table*}
 
 \subsection{Experimental Setup}
 \label{sec:setup}
