@@ -622,17 +622,17 @@ No failure$\uparrow$            & 1.5 & 0.4 & 0.3 & 0.2 \\
 \footnotesize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}c l l l l l@{}}
+\begin{tabular}{@{}c l l l l@{}}
 \toprule
-Row & Failure Type & Entities & Prompt & Observed & Description \\
+Row & Failure Type & Entities & Prompt & Observed \\
 \midrule
-1 & Context Bleeding (I) & \shortstack[l]{A: cat\\B: dog\\C: parrot} & $ABC{\to}AB{\to}A$ & $\mathbf{AB}{\to}\mathbf{AB}{\to}\mathbf{AB}$ & \shortstack[l]{Dog persists\\in Shot~3} \\
+1 & Context Bleeding (I) & \shortstack[l]{A: cat, B: dog,\\C: parrot} & $ABC{\to}AB{\to}A$ & $\mathbf{AB}{\to}\mathbf{AB}{\to}\mathbf{AB}$ \\
 \midrule
-2 & Amnesia (II) & \shortstack[l]{A: swimmer\\B: crab} & $A{\to}B{\to}AB$ & $A{\to}B{\to}\mathbf{B}$ & \shortstack[l]{Swimmer fails\\to re-enter} \\
+2 & Amnesia (II) & A: swimmer, B: crab & $A{\to}B{\to}AB$ & $A{\to}B{\to}\mathbf{B}$ \\
 \midrule
-3 & Spurious (III) & \shortstack[l]{A: waiter\\B: manager\\C: child} & $A{\to}AB{\to}ABC$ & $A{\to}\mathbf{BC}{\to}ABC$ & \shortstack[l]{Waiter vanishes\\in Shot~2} \\
+3 & Spurious (III) & \shortstack[l]{A: waiter, B: manager,\\C: child} & $A{\to}AB{\to}ABC$ & $A{\to}\mathbf{BC}{\to}ABC$ \\
 \midrule
-4 & Reversal (IV) & \shortstack[l]{A: cook\\B: dishwasher} & $AB{\to}A{\to}B$ & $\mathbf{A}{\to}AB{\to}\mathbf{A}$ & \shortstack[l]{Transitions\\reversed ($|E|{=}2$)} \\
+4 & Reversal (IV) & A: cook, B: dishwasher & $AB{\to}A{\to}B$ & $\mathbf{A}{\to}AB{\to}\mathbf{A}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
