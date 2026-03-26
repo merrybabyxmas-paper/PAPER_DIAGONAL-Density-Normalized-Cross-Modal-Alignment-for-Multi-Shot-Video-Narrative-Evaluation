@@ -610,26 +610,31 @@ No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_failures.png}
-\caption{Qualitative examples of the four failure types on real generated frames. See Table~\ref{tab:qual_detail} for entity mappings and failure descriptions.}
+\caption{Qualitative examples of the four failure types on real generated frames. Each row corresponds to one failure type; see Table~\ref{tab:qual_detail} for full descriptions.}
 \Description{Qualitative examples of four failure types in generated video frames.}
 \label{fig:qualitative}
-\vspace{4pt}
+\end{figure}
+
+\begin{table}[t]
+\caption{Failure type details for Fig.~\ref{fig:qualitative}. \emph{Prescribed} shows the intended pattern; \emph{Observed} shows the actual generation outcome, with deviations in \textbf{bold}.}
+\label{tab:qual_detail}
 \centering
 \small
-\setlength{\tabcolsep}{2pt}
-\begin{tabular}{@{}llllp{3.8cm}@{}}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}clll@{}}
 \toprule
-Row & Type & Model & Entities & Failure \\
+Row & Failure Type / Model & Entities \& Pattern & Failure Description \\
 \midrule
-1 & Context Bleeding (I) & VGoT & A: cat, B: dog & Dog persists in Shot~3 (only cat should remain) \\
-2 & Amnesia (II) & SD & A: swimmer & Swimmer fails to re-enter in Shot~3 \\
-3 & Spurious (III) & SD & A: waiter & Waiter vanishes in Shot~2 despite being prescribed \\
-4 & Reversal (IV) & VIC & A: dishwasher & Transitions reversed ($|E|{=}2$): enters where it should exit \\
+1 & \makecell[l]{Context Bleeding (I)\\VGoT} & \makecell[l]{A: cat, B: dog, C: parrot\\Reduction: $ABC{\to}AB{\to}A$} & \makecell[l]{Prescribed: $ABC{\to}AB{\to}A$\\Observed:\;\; $ABC{\to}AB{\to}\mathbf{AB}$\\Dog persists in Shot~3} \\
+\midrule
+2 & \makecell[l]{Amnesia (II)\\SD} & \makecell[l]{A: swimmer, B: crab\\Convergence: $A{\to}B{\to}AB$} & \makecell[l]{Prescribed: $A{\to}B{\to}AB$\\Observed:\;\; $A{\to}B{\to}\mathbf{B}$\\Swimmer fails to re-enter} \\
+\midrule
+3 & \makecell[l]{Spurious (III)\\SD} & \makecell[l]{A: waiter, B: manager, C: child\\Accumulation: $A{\to}AB{\to}ABC$} & \makecell[l]{Prescribed: $A{\to}AB{\to}ABC$\\Observed:\;\; $A{\to}\mathbf{B}{\to}ABC$\\Waiter vanishes in Shot~2} \\
+\midrule
+4 & \makecell[l]{Reversal (IV)\\VIC} & \makecell[l]{A: cook, B: dishwasher\\Split: $AB{\to}A{\to}B$} & \makecell[l]{Prescribed: $AB{\to}A{\to}B$\\Observed:\;\; $\mathbf{A}{\to}AB{\to}\mathbf{A}$\\Transitions reversed ($|E|{=}2$)} \\
 \bottomrule
 \end{tabular}
-\captionof{table}{Failure type details for Fig.~\ref{fig:qualitative}.}
-\label{tab:qual_detail}
-\end{figure}
+\end{table}
 
 \subsection{The Consistency--Dynamics Trade-off}
 \label{sec:pareto}
