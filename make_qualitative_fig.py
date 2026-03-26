@@ -32,12 +32,12 @@ EXAMPLES = [
     },
     {
         "type": "Type III: Spurious",
-        "model": "StoryDiffusion",
-        "pattern": "Accumulation: A→AB→ABC",
-        "entities": ["waiter", "manager", "child"],
-        "S_ideal": [[1,0,0],[1,1,0],[1,1,1]],
-        "S_obs":   [[1,0,0],[0,1,0],[1,1,1]],
-        "shots": [KF/"storydiff_DM1K_422_Accumulation_124"/f"shot0{i}.png" for i in [1,2,3]],
+        "model": "EchoShot",
+        "pattern": "Convergence: A→B→AB",
+        "entities": ["frisbee player", "spectator"],
+        "S_ideal": [[1,0],[0,1],[1,1]],
+        "S_obs":   [[1,0],[1,1],[1,0]],
+        "shots": [KF/"echoshot_DM1K_989_Convergence_056"/f"shot{i}.jpg" for i in [1,2,3]],
     },
     {
         "type": "Type IV: Reversal",
