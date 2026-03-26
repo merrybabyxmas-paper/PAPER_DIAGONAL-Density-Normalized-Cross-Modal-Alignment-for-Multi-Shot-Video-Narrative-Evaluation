@@ -161,7 +161,7 @@ We reformulate this problem through the lens of linear algebra. By abstracting a
 \vspace{12pt} 
 \caption{\textbf{\diagonal{} framework overview.}
 \textbf{(a)}~The \stem{} pipeline: a VLM projects each shot into a binary presence vector, forming $S_\text{obs}$. Temporal differencing yields $\Delta S_\text{obs}$, and the error matrix $E = \Delta S_\text{obs} - \Delta S^*$ diagnoses failures and feeds PTM/EPA metrics.
-\textbf{(b)}~Completeness theorem: two basis matrices ($\calB_1$: Relay, $\calB_2$: Split) generate all single-entry matrices $J_{ij}$, spanning any $\Delta S \in \mathbb{M}_{2\times3}(\mathbb{Z})$.
+\textbf{(b)}~Completeness theorem: two basis matrices ($\calB_1$: Relay, $\calB_2$: Split) generate all single-entry matrices $J_{ij}$, spanning any $\Delta S \in \mathbb{Z}^{2\times3}$.
 \textbf{(c)}~Four failure types: Context Bleeding (Type~I), Amnesia (Type~II), Spurious (Type~III), and Reversal (Type~IV).}
 \Description{Overview of the SPAN framework showing the STEM evaluation pipeline, basis matrix completeness, and four failure types.}
 \label{fig:overview}
@@ -240,7 +240,7 @@ S =
 In these matrices, rows correspond to temporal transitions ($t\!=\!1$: shot $1{\to}2$; $t\!=\!2$: shot $2{\to}3$) and columns correspond to distinct entities (e.g., $A, B$).
 
 \paragraph{Canonical Embedding.}
-For standard 3-shot narratives ($T\!=\!3$), $\Delta S$ inherently has 2 rows representing transitions. To unify the algebraic treatment across varying entity counts (up to $N=3$), we embed all matrices into a canonical form via spatial zero-padding. For instance, the $2\!\times\!2$ Relay matrix extends naturally into the target space $\mathbb{M}_{2 \times 3}(\mathbb{Z})$:
+For standard 3-shot narratives ($T\!=\!3$), $\Delta S$ inherently has 2 rows representing transitions. To unify the algebraic treatment across varying entity counts (up to $N=3$), we embed all matrices into a canonical form via spatial zero-padding. For instance, the $2\!\times\!2$ Relay matrix extends naturally into $\mathbb{Z}^{2 \times 3}$ (the space of all $2\!\times\!3$ integer matrices):
 \begin{equation}
 \underbrace{\begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}}_{\text{Relay}~(2\!\times\!2)}
 \;\;\longrightarrow\;\;
@@ -299,11 +299,11 @@ We identify two matrices that serve as the fundamental algebraic basis of the na
 \subsection{Completeness Theorem and Derived Patterns}
 \label{sec:completeness}
 
-We now prove that these minimal building blocks are strictly sufficient to generate \emph{any} conceivable multi-shot narrative. To formalize this, let $J_{ij} \in \mathbb{M}_{2 \times 3}(\mathbb{Z})$ denote the single-entry matrix with $+1$ at position $(i,j)$ and $0$ elsewhere (e.g., $J_{12} = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$).
+We now prove that these minimal building blocks are strictly sufficient to generate \emph{any} conceivable multi-shot narrative. To formalize this, let $J_{ij} \in \mathbb{Z}^{2 \times 3}$ denote the single-entry matrix with $+1$ at position $(i,j)$ and $0$ elsewhere (e.g., $J_{12} = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$).
 
 \begin{theorem}[Completeness of the Narrative Space]
 \label{thm:completeness}
-Under character role swapping ($\sigma \in \Sigma_3$) and integer-coefficient linear combination, the two basis patterns $\calB_1$ (Relay) and $\calB_2$ (Split) span the entire state transition matrix space $\mathbb{M}_{2 \times 3}(\mathbb{Z})$.
+Under character role swapping ($\sigma \in \Sigma_3$) and integer-coefficient linear combination, the two basis patterns $\calB_1$ (Relay) and $\calB_2$ (Split) span the entire state transition matrix space $\mathbb{Z}^{2 \times 3}$.
 \end{theorem}
 
 \begin{proof}
@@ -356,10 +356,10 @@ With the Completeness Theorem formally guaranteeing that any narrative can be al
 \label{sec:implications}
 
 \paragraph{Mathematically Complete Verification.}
-Because the 7 benchmark patterns are derived from foundational bases, \diagonal{} forms a \emph{mathematically complete} evaluation suite. While the single-entry basis $\{J_{ij}\}$ algebraically spans $\mathbb{M}_{2 \times 3}(\mathbb{Z})$, the physically valid state transitions are restricted to $\Delta S_{t,e} \in \{-1, 0, +1\}$. Any such narrative $\Delta S$ can be expressed as $\Delta S = \sum \alpha_{ij} J_{ij}$ for $\alpha_{ij} \in \{-1, 0, +1\}$. Rigorous testing on these foundational patterns structurally certifies a model's capability to execute \emph{any} conceivable narrative topology.
+Because the 7 benchmark patterns are derived from foundational bases, \diagonal{} forms a \emph{mathematically complete} evaluation suite. While the single-entry basis $\{J_{ij}\}$ algebraically spans $\mathbb{Z}^{2 \times 3}$, the physically valid state transitions are restricted to $\Delta S_{t,e} \in \{-1, 0, +1\}$. Any such narrative $\Delta S$ can be expressed as $\Delta S = \sum \alpha_{ij} J_{ij}$ for $\alpha_{ij} \in \{-1, 0, +1\}$. Rigorous testing on these foundational patterns structurally certifies a model's capability to execute \emph{any} conceivable narrative topology.
 
 \paragraph{Scalability.}
-For $T$-shot, $N$-entity videos, the space $\mathbb{M}_{(T-1) \times N}(\mathbb{Z})$ can be spanned by zero-padding and temporally shifting $2(T\!-\!1)$ basis matrices, ensuring linear scaling (Theorem~\ref{app:generalization}.1, Appendix~\ref{app:generalization}).
+For $T$-shot, $N$-entity videos, the space $\mathbb{Z}^{(T-1) \times N}$ can be spanned by zero-padding and temporally shifting $2(T\!-\!1)$ basis matrices, ensuring linear scaling (Theorem~\ref{app:generalization}.1, Appendix~\ref{app:generalization}).
 
 %% ============================================================
 \section{The \stem{} Evaluation Methodology}
