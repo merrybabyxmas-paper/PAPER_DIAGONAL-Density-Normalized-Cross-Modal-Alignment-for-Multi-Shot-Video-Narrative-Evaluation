@@ -589,7 +589,7 @@ SD records the highest rate of spurious transitions (51.4\%). We attribute this 
 Although relatively rare (7.6--13.9\%), Reversals---where the observed transition is diametrically opposite to the prescribed one---occur across all models. As a compounded failure (where $|E_{t,e}| = 2$), its persistence proves a profound shared blind spot: current architectures lack a fundamental understanding of the directional causality (entrance vs. exit) that drives storytelling.
 
 \begin{table}[t]
-\caption{Failure distribution (\% of videos with $\geq$1 failure). Worst per type in \textbf{bold}.}
+\caption{Failure distribution (\% of videos with $\geq$1 failure).}
 \label{tab:failures}
 \centering
 \small
@@ -597,12 +597,12 @@ Although relatively rare (7.6--13.9\%), Reversals---where the observed transitio
 \toprule
 Failure Type & SD & Echo & VGoT & VIC \\
 \midrule
-I: Context Bleeding  & 64.1 & 66.9 & 73.0 & \textbf{75.6} \\
-II: Amnesia           & 69.1 & 73.1 & \textbf{82.1} & 80.6 \\
-III: Spurious Trans.  & \textbf{51.4} & 42.2 & 25.2 & 20.2 \\
-IV: Reversal          & 13.0 & \textbf{13.9} & 7.6 & 11.5 \\
+I: Context Bleeding$\downarrow$  & 64.1 & 66.9 & 73.0 & 75.6 \\
+II: Amnesia$\downarrow$           & 69.1 & 73.1 & 82.1 & 80.6 \\
+III: Spurious Trans.$\downarrow$  & 51.4 & 42.2 & 25.2 & 20.2 \\
+IV: Reversal$\downarrow$          & 13.0 & 13.9 & 7.6 & 11.5 \\
 \midrule
-No failure            & \textbf{1.5} & 0.4 & 0.3 & 0.2 \\
+No failure$\uparrow$            & 1.5 & 0.4 & 0.3 & 0.2 \\
 \bottomrule
 \end{tabular}
 \end{table}
