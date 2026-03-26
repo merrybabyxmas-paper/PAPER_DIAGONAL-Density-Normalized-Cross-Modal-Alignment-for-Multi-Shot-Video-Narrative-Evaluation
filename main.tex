@@ -102,7 +102,7 @@ Furthermore, the algebraic structure of the error matrix naturally induces a com
 
 Consider a simple three-shot scene: a chef enters a kitchen, a waiter joins in the second shot, and the chef departs in the third. This elementary narrative requires precise \emph{entity-level state control}---determining exactly who appears and disappears at each shot boundary. Yet state-of-the-art multi-shot video generators~\cite{sora,storydiff,moviegen,ho2022video,svd,imagenvideo} routinely fail at this task. The mechanisms designed to maintain cross-shot visual consistency---shared attention, in-context conditioning---actively resist the localized changes needed for dynamic character entrances and exits, exposing a fundamental \emph{consistency--dynamics trade-off}. We use this term throughout to denote the inverse relationship between a model's ability to preserve visual coherence and its capacity to execute the entity-level state changes that storytelling demands.
 
-Current evaluation paradigms systematically overlook this consistency--dynamics trade-off. The majority of prominent video generation benchmarks~\cite{vbench,evalcrafter,t2vcompbench} are heavily optimized for measuring single-shot visual quality and cross-shot visual consistency. By relying on global embedding distances or static frame-level similarities, these metrics reduce complex narrative dynamics to simple frame-by-frame image comparisons. Consequently, such metrics fail to account for dynamic narratives involving characters meeting and parting ways.
+Current evaluation paradigms systematically overlook this consistency dynamics trade-off. The majority of prominent video generation benchmarks~\cite{vbench,evalcrafter,t2vcompbench} are heavily optimized for measuring single-shot visual quality and cross-shot visual consistency. By relying on global embedding distances or static frame-level similarities, these metrics reduce complex narrative dynamics to simple frame-by-frame image comparisons. Consequently, such metrics fail to account for dynamic narratives involving characters meeting and parting ways.
 
 The root problem of evaluating narrative dynamics is combinatorial. As the number of shots and characters increases, the possible configurations of character presence and absence grow exponentially. While recent multi-shot benchmarks~\cite{moviebench,locot2v,shotadapter} attempt to evaluate extended horizons, they rely entirely on empirically curated prompt sets. To the best of our knowledge, no existing benchmark provides mathematical assurance that their evaluated scenarios adequately cover this vast combinatorial narrative space. 
 
@@ -181,7 +181,7 @@ Modern video synthesis rests on diffusion models~\cite{ddpm,ldm,scoreflow}, exte
 Multi-shot extensions address cross-shot coherence through a variety of structural paradigms. Current approaches utilize Consistent Self-Attention (CSA)~\cite{storydiff,consistory}, cross-attention~\cite{videostudio}, latent initialization~\cite{mevg}, LLM-guided layouts~\cite{vgot,videodirectorgpt,storygen}, keyframe transitions~\cite{seine,dynamicrafter}, flow-matching portraits~\cite{echoshot}, IP-Adapter~\cite{ip_adapter}, and in-context LoRA~\cite{vic,lora}. Longer-horizon generation has also been explored through autoregressive token models~\cite{videopoet,phenaki}. While these methods succeed in maintaining subject identity, their diverse temporal conditioning mechanisms result in varying capacities to handle character transitions, such as appearances and disappearances. In this work, we evaluate representatives from four distinct paradigms---CSA (StoryDiffusion), flow-matching (EchoShot), in-context DiT (VIC), and cascaded T2I+I2V (VGoT)---providing a pioneering cross-paradigm analysis focused explicitly on narrative dynamics.
 
 \paragraph{Video Generation Benchmarks.}
-Existing benchmarks quantify generation quality via embedding similarities (Table~\ref{tab:benchmark}). FID~\cite{fid} and FVD~\cite{fvd} measure distributional fidelity but are agnostic to narrative structure; CLIPScore~\cite{clipscore} captures text--image alignment at the single-frame level; VBench~\cite{vbench,vbench2} and EvalCrafter~\cite{evalcrafter} compute frame-level CLIP~\cite{clip}- and DINO~\cite{dinov2}-based similarities that conflate subjects with backgrounds; T2V-CompBench~\cite{t2vcompbench} targets compositional ability but is restricted to single clips.
+Existing benchmarks quantify generation quality via embedding similarities (Table~\ref{tab:benchmark}). FID~\cite{fid} and FVD~\cite{fvd} measure distributional fidelity but are agnostic to narrative structure; CLIPScore~\cite{clipscore} captures text--image alignment at the single-frame level; VBench~\cite{vbench,vbench2} and EvalCrafter~\cite{evalcrafter} compute frame-level CLIP~\cite{clip} and DINO~\cite{dinov2} based similarities that conflate subjects with backgrounds; T2V-CompBench~\cite{t2vcompbench} targets compositional ability but is restricted to single clips.
 Recent multi-shot benchmarks---ShotAdapter~\cite{shotadapter}, MovieBench~\cite{moviebench}, LoCoT2V~\cite{locot2v}---begin to address cross-shot coherence but lack explicit metrics for multi-entity narrative dynamics and rely on empirically curated prompt sets without formal coverage guarantees. \diagonal{} shifts from heuristic sampling to formal verification over a mathematically complete narrative space.
 
 
@@ -222,10 +222,20 @@ To evaluate the dynamic storytelling (entrances and exits), we extract the narra
 \end{equation}
 where the subtraction is performed element-wise across all $N$ entity columns, and the values algebraically encode the narrative operations: $+1$ (\emph{enter}), $-1$ (\emph{exit}), and $0$ (\emph{hold}). For example, consider a ``Relay'' narrative ($A \!\to\! AB \!\to\! B$), where entity $B$ enters at transition 1, and entity $A$ exits at transition 2:
 \begin{equation}
-S = \begin{bmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{bmatrix}
-\quad \implies \quad
-\Delta S = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}.
-\label{eq:relay_example}
+\label{eq:relay_example_annotated}
+S = 
+\begin{array}{cc}
+  & \begin{matrix} \text{\scriptsize Entity } A & \hspace{1.5em} \text{\scriptsize Entity } B \end{matrix} \\
+  \begin{matrix} \text{\scriptsize Shot 1} \\ \text{\scriptsize Shot 2} \\ \text{\scriptsize Shot 3} \end{matrix} \hspace{-12pt} & 
+  \left[ \begin{array}{c@{\hspace{2.2em}}c} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{array} \right]
+\end{array}
+\quad
+\Delta S = 
+\begin{array}{cc}
+  & \begin{matrix} \text{\scriptsize Entity A} & \hspace{0.5em} \text{\scriptsize Entity B} \end{matrix} \\
+  \begin{matrix} \text{\scriptsize Shot 1$\to$2} \\ \text{\scriptsize Shot 2$\to$3} \end{matrix} \hspace{-12pt} & 
+  \left[ \begin{array}{c@{\hspace{1.2em}}c} 0 & +1 \\ -1 & 0 \end{array} \right]
+\end{array}
 \end{equation}
 In these matrices, rows correspond to temporal transitions ($t\!=\!1$: shot $1{\to}2$; $t\!=\!2$: shot $2{\to}3$) and columns correspond to distinct entities (e.g., $A, B$).
 
@@ -526,7 +536,7 @@ Table~\ref{tab:main} demonstrates the diagnostic power of the \stem{} evaluation
 All pairwise PTM comparisons between models are statistically significant (Mann--Whitney $U$, $p < 0.005$, Table~\ref{tab:significance}), with 95\% bootstrap confidence intervals that do \emph{not overlap} (Table~\ref{tab:main}, CI columns). Furthermore, the Kruskal--Wallis test yields $H = 302.7$ ($p < 10^{-65}$), definitively confirming that the performance gaps between these paradigms are not due to chance.
 
 \paragraph{Finding 2: Consistent Rank Reversal Against IC.}
-PTM and EPA produce \emph{identical rankings} (SD $>$ Echo $>$ VGoT $>$ VIC), which are \emph{perfectly reversed} compared to traditional Identity Consistency (IC) metrics~\cite{shotadapter} (IC scores: VIC 0.94, VGoT 0.88, Echo 0.84, SD 0.81). VIC achieves the highest IC but the absolute lowest PTM (0.070), whereas SD leads in PTM but trails in IC. This perfect rank reversal---as measured by Spearman's rank correlation ($\rho_s = -1.0$), indicating that higher IC systematically corresponds to lower PTM---empirically exposes the \emph{consistency--dynamics trade-off} (\S\ref{sec:pareto}).
+PTM and EPA produce \emph{identical rankings} (SD $>$ Echo $>$ VGoT $>$ VIC), which are \emph{perfectly reversed} compared to traditional Identity Consistency (IC) metrics~\cite{shotadapter} (IC scores: VIC 0.94, VGoT 0.88, Echo 0.84, SD 0.81). VIC achieves the highest IC but the absolute lowest PTM (0.070), whereas SD leads in PTM but trails in IC. This perfect rank reversal---as measured by Spearman's rank correlation ($\rho_s = -1.0$), indicating that higher IC systematically corresponds to lower PTM---empirically exposes the \emph{consistency-dynamics trade-off} (\S\ref{sec:pareto}).
 
 \paragraph{Finding 3: SD Leads Across Topologies.}
 SD achieves the highest PTM in 6 of the 7 narrative patterns. Its advantage is particularly pronounced on \emph{Sliding Window} (0.357 vs. 0.270 for Echo), which is the most complex pattern involving all 3 entities across both state transitions.
