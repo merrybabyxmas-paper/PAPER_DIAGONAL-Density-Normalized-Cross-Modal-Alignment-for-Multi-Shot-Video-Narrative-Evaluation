@@ -21,7 +21,7 @@
 \newcommand{\calT}{\mathcal{T}}
 \newcommand{\calP}{\mathcal{P}}
 \newcommand{\calH}{\mathcal{H}}
-\newcommand{\Eij}{E_{ij}}
+\newcommand{\Eij}{J_{ij}}
 
 \begin{document}
 
@@ -59,7 +59,7 @@ Consequently, any $\mathbb{Z}$-linear combination derived exclusively from Relay
 \begin{equation}
 R_1(X) + R_2(X) = 0.
 \end{equation}
-However, the standard elementary matrix $E_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(E_{11}) + R_2(E_{11}) = 1 \neq 0$. Thus, $\calB_1$ variants alone cannot break this symmetric invariance. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$, which yields $R_1(\calB_2) + R_2(\calB_2) = -1$, is therefore algebraically essential to span the full narrative space.
+However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus, $\calB_1$ variants alone cannot break this symmetric invariance. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$, which yields $R_1(\calB_2) + R_2(\calB_2) = -1$, is therefore algebraically essential to span the full narrative space.
 
 
 %% ============================================================
@@ -124,12 +124,11 @@ The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scal
 \toprule
 Type & Pattern & Formula & Scenarios & Shots \\
 \midrule
-\multirow{3}{*}{Basis}
+\multirow{2}{*}{Basis}
   & Relay         & $A \to AB \to B$     & 200 & 600 \\
   & Split         & $AB \to A \to B$     & 200 & 600 \\
+\multirow{5}{*}{Derived}
   & Accumulation  & $A \to AB \to ABC$   & 200 & 600 \\
-\midrule
-\multirow{4}{*}{Derived}
   & Convergence      & $A \to B \to AB$     & 100 & 300 \\
   & Sliding Window   & $AB \to BC \to C$    & 100 & 300 \\
   & Reduction        & $ABC \to AB \to A$   & 100 & 300 \\
@@ -279,8 +278,8 @@ Shot & Field & Prompt \\
 \toprule
 Model & Backbone & Paradigm & Steps & Resolution & Frames \\
 \midrule
-StoryDiff & SDXL+SEINE & T2I$\to$I2V$^\dagger$ & 30+50 & 512$\times$512 & 16 \\
-EchoShot  & Wan2.1-1.3B & T2V (FM) & 50 & 832$\times$480 & 93 \\
+SD & SDXL+SEINE & T2I$\to$I2V$^\dagger$ & 30+50 & 512$\times$512 & 16 \\
+Echo  & Wan2.1-1.3B & T2V (FM) & 50 & 832$\times$480 & 93 \\
 VIC       & CogVideoX-5B & In-context & 50 & 720$\times$480 & 49 \\
 VGoT      & Kolors+DC & T2I$\to$I2V & 25+50 & 512$\times$512 & 16 \\
 \bottomrule
@@ -380,7 +379,7 @@ $\begin{bmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{bmatrix}$ \\
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}l|cc|cc|cc|cc@{}}
 \toprule
-& \multicolumn{2}{c|}{StoryDiffusion} & \multicolumn{2}{c|}{EchoShot} & \multicolumn{2}{c|}{VGoT} & \multicolumn{2}{c}{VIC} \\
+& \multicolumn{2}{c|}{SD} & \multicolumn{2}{c|}{Echo} & \multicolumn{2}{c|}{VGoT} & \multicolumn{2}{c}{VIC} \\
 Pattern & PTM & EPA & PTM & EPA & PTM & EPA & PTM & EPA \\
 \midrule
 Relay (B, 2-ent)       & \textbf{.190} & .536 & .138 & .506 & .085 & \textbf{.531} & .080 & .522 \\
@@ -395,7 +394,7 @@ Rev.\ Relay (D, 2-ent) & .200 & \textbf{.562} & \textbf{.225} & .555 & .150 & .5
 \end{table*}
 
 Table~\ref{tab:full_pattern} reports the complete per-pattern results. Sliding Window produces the widest PTM spread (0.077--0.357), making it the most discriminative test.
-VIC's PTM range is only 0.032 (0.048--0.080), confirming a fixed coherence ceiling invariant to pattern complexity.
+VIC's PTM range is only 0.032 (0.048--0.080), confirming a fixed consistency ceiling invariant to pattern complexity.
 
 
 %% ============================================================
@@ -513,7 +512,7 @@ VIC   & .068 & .069 & $-$.001 & 2,400 \\
 \end{table}
 
 \textbf{VGoT has an entry-exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming the planning-rendering bottleneck where DynamiCrafter cannot introduce new entities absent from the keyframe.
-StoryDiffusion is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
+SD is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
 VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accuracy are near-chance (0.068--0.069).
 
 
@@ -546,7 +545,7 @@ VIC   & .067 & .522 & .075 & .582 \\
 
 3-entity patterns achieve higher EPA across all models (0.582--0.649 vs.\ 0.522--0.556) due to the larger denominator reducing per-cell noise impact.
 PTM rankings are preserved in both strata: SD $>$ Echo $>$ VGoT $>$ VIC for 2-entity, and SD $>$ Echo $>$ VGoT $\approx$ VIC for 3-entity.
-StoryDiffusion benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), suggesting CSA excels when more entities provide stronger discriminative anchors.
+SD benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), suggesting CSA excels when more entities provide stronger discriminative anchors.
 
 
 %% ============================================================
@@ -573,7 +572,7 @@ All pooled  & .542 & $<10^{-300}$ \\
 \end{table}
 
 As shown in Table~\ref{tab:correlation}, EPA and PTM show strong positive correlation at the per-video level ($r = 0.542$ pooled), confirming they measure related but distinct aspects of narrative fidelity.
-The correlation is strongest for StoryDiffusion ($r = 0.661$) because it has the widest PTM range, providing more variance for correlation.
+The correlation is strongest for SD ($r = 0.661$) because it has the widest PTM range, providing more variance for correlation.
 All per-method correlations are highly significant ($p < 10^{-51}$), in contrast to the CLIP-based analysis where VGoT and VIC showed no significant correlation due to weak probe signals.
 This validates the VLM-based binary detection as producing more reliable metrics than continuous CLIP probes.
 
@@ -593,7 +592,7 @@ This validates the VLM-based binary detection as producing more reliable metrics
 \setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Metric & StoryDiff & EchoShot & VGoT & VIC \\
+Metric & SD & Echo & VGoT & VIC \\
 \midrule
 PTM & \textbf{.243}{\tiny [.226,.262]} & .167{\tiny [.151,.184]} & .094{\tiny [.083,.107]} & .070{\tiny [.060,.082]} \\
 EPA & \textbf{.593}{\tiny [.583,.604]} & .563{\tiny [.553,.574]} & .554{\tiny [.545,.564]} & .546{\tiny [.536,.557]} \\
@@ -657,7 +656,7 @@ VIC   & .070$\pm$.173 & 84.8 & 8.7  & 0.3 \\
 
 Table~\ref{tab:ptm_dist} shows that PTM concentrates at discrete values because most patterns have 2 prescribed transitions, yielding PTM $\in \{0, 0.5, 1.0\}$.
 VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct).
-StoryDiffusion achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable.
+SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable.
 
 
 %% ============================================================
@@ -839,7 +838,7 @@ Reverse Relay  & 2 & \textbf{1} & 3 & 4 \\
 \end{table}
 
 Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
-StoryDiffusion ranks 1st in 6/7 patterns; EchoShot claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
+SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
 The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's specific DynamiCrafter bottleneck on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 
 
@@ -888,8 +887,8 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 \toprule
 Model & Early & Middle & Late & Multi-3 \\
 \midrule
-StoryDiff & .269 & \textbf{.272} & .196 & .249 \\
-EchoShot  & .169 & .169 & .172 & .163 \\
+SD & .269 & \textbf{.272} & .196 & .249 \\
+Echo  & .169 & .169 & .172 & .163 \\
 VGoT      & .098 & .087 & .085 & .081 \\
 VIC       & .074 & .058 & .057 & .051 \\
 \bottomrule
@@ -905,8 +904,8 @@ VIC       & .074 & .058 & .057 & .051 \\
 \toprule
 Model & Early & Middle & Late & Multi-3 \\
 \midrule
-StoryDiff & .585 & \textbf{.598} & .568 & .598 \\
-EchoShot  & .567 & .571 & .569 & .569 \\
+SD & .585 & \textbf{.598} & .568 & .598 \\
+Echo  & .567 & .571 & .569 & .569 \\
 VGoT      & .550 & .547 & .553 & .550 \\
 VIC       & .552 & .546 & .541 & .546 \\
 \bottomrule
@@ -932,7 +931,7 @@ Multi-3 & .749 & .805 & .653 & 1.000 \\
 
 \paragraph{Key findings.}
 (1)~The model ranking SD $>$ Echo $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
-(2)~The middle frame achieves the highest PTM for StoryDiffusion (.272) and the highest EPA overall, consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
+(2)~The middle frame achieves the highest PTM for SD (.272) and the highest EPA overall, consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
 (3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.449$), with the middle--multi3 pair reaching $\rho_s = 0.805$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
 (4)~The marginal PTM gain from multi-frame voting ($\leq 0.02$) does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
