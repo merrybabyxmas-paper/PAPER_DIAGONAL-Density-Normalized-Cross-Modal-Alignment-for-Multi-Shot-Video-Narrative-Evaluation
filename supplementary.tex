@@ -42,150 +42,151 @@
 \renewcommand{\thetheorem}{\Alph{section}.\arabic{theorem}}
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
-
 %% ============================================================
 \section{Necessity of the Split Basis ($\calB_2$)}
 \label{app:necessity_b2}
 %% ============================================================
 
-In Theorem~3.1 (main text), we established that $\{\calB_1, \calB_2\}$ spans $\mathbb{Z}^{2 \times 3}$. Here we prove that $\calB_1$ (Relay) alone is strictly insufficient, thereby necessitating $\calB_2$ (Split).
+In Theorem~3.1 (main text), we established that the set $\{\calB_1, \calB_2\}$ spans the canonical local space $\mathbb{Z}^{2 \times 3}$. Here, we prove that $\calB_1$ (Relay) alone is strictly insufficient, thereby necessitating the introduction of $\calB_2$ (Split).
 
 \begin{lemma}[Row-Sum Invariance of $\calB_1$]
-Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves:
+Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping operator $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves the following topological invariant:
 \begin{equation}
 R_1(M) = +1, \quad R_2(M) = -1.
 \end{equation}
 \end{lemma}
 
 \begin{proof}
-The canonical Relay matrix $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ trivially satisfies $R_1(\calB_1) = 1$ and $R_2(\calB_1) = -1$. Because $\sigma$ solely permutes column indices, it preserves each row's algebraic sum. Concretely, consider $\sigma_{12} \circ \calB_1$:
+The canonical Relay matrix $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ trivially satisfies $R_1(\calB_1) = 1$ and $R_2(\calB_1) = -1$. Because $\sigma$ solely permutes column indices, it strictly preserves the algebraic sum of each row. Concretely, consider the transposition $\sigma_{12} \circ \calB_1$:
 \begin{equation}
 \sigma_{12} \circ \underbrace{\begin{bmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} = \underbrace{\begin{bmatrix} 1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}}_{\sigma_{12} \circ \calB_1}, \quad R_1 = 1, \; R_2 = -1. \qedhere
 \end{equation}
 \end{proof}
 
-Consequently, any $\mathbb{Z}$-linear combination derived exclusively from Relay variants, $X = \sum_k \alpha_k (\sigma_k \circ \calB_1)$, imposes a strict global constraint:
+Consequently, any $\mathbb{Z}$-linear combination derived exclusively from Relay variants, $X = \sum_k \alpha_k (\sigma_k \circ \calB_1)$, imposes a strict global constraint on the row sums:
 \begin{equation}
-R_1(X) + R_2(X) = \sum_k \alpha_k + \bigl(-\sum_k \alpha_k\bigr) = 0.
+R_1(X) + R_2(X) = \sum_k \alpha_k + \Bigl(-\sum_k \alpha_k\Bigr) = 0.
 \end{equation}
-However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus $\calB_1$ variants alone cannot break this symmetric invariant. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$ satisfies $R_1(\calB_2) + R_2(\calB_2) = -1$, which is algebraically essential to span the full narrative space.
+However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus, $\calB_1$ variants alone cannot break this symmetric invariant. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$ satisfies $R_1(\calB_2) + R_2(\calB_2) = -1$, which is algebraically essential to span the full narrative space.
 
-
+\label{app:generalization}
 %% ============================================================
-\section{\texorpdfstring{Topological Generalization to $\mathbb{Z}^{(T-1)\times N}$}{Topological Generalization to Z\^{}(T-1)xN}}
+%% ============================================================
+\section{Generalization to Arbitrary Narrative Scales ($T$ Shots, $N$ Entities)}
 \label{app:generalization}
 %% ============================================================
 
-\subsection{Operator Definitions and Validity}
-To formalize the dimensional expansion from the canonical $2\times 3$ space to arbitrary $(T{-}1)\times N$, we define two linear operators.
+\subsection{Linear Mapping Operators}
+To formalize the dimensional expansion from the canonical local space ($\mathbb{Z}^{2\times 3}$) to the global narrative space ($\mathbb{Z}^{(T-1) \times N}$), we define two structure-preserving linear operators.
 
-\paragraph{Spatial Zero-Padding Operator ($\Pi_N$).}
-Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
-\begin{align}
-\Pi_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{Z}^{2\times 3}.
-\end{align}
-\emph{Linearity.}
+\subsubsection{\textbf{Spatial Expansion Operator ($\Pi_N$)}}
+Appends $N-3$ zero-columns to accommodate arbitrary cast sizes:
 \begin{equation}
-\Pi_N(c_1 X + c_2 Y) = c_1\,\Pi_N(X) + c_2\,\Pi_N(Y), \quad \forall\; c_1, c_2 \in \mathbb{Z},\; X, Y \in \mathbb{Z}^{2\times 3}.
+    \Pi_N(X) = \begin{bmatrix} X & \mathbf{0}_{2\times(N-3)} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times 3}.
 \end{equation}
 
-\noindent\emph{Example.}\; For $N=5$, the Relay basis $\calB_1$ is embedded as:
+\noindent\textbf{Property 1 (Linearity):} For all scalars $c_1, c_2 \in \mathbb{Z}$ and local matrices $X, Y \in \mathbb{Z}^{2\times 3}$, the operator satisfies:
 \begin{equation}
-\Pi_5(\calB_1) = \Pi_5\!\!\begin{pmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix}.
-\end{equation}
-The additional entity columns are zero---meaning those characters are unaffected by this local transition.
-
-\noindent\emph{Linearity example.}\; Let $X = \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ and $Y = J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$. Then:
-\begin{equation}
-\Pi_5(X + Y) = \Pi_5\!\begin{pmatrix} 1 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix},
-\end{equation}
-which equals $\Pi_5(X) + \Pi_5(Y) = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr] + \bigl[\begin{smallmatrix} 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr]$, confirming linearity. Scalar multiplication follows identically: $\Pi_5(2X) = 2\,\Pi_5(X)$.
-
-We define the padded bases $\hat{\calB}_1 = \Pi_N(\calB_1)$ and $\hat{\calB}_2 = \Pi_N(\calB_2)$.
-
-\paragraph{Temporal Shift Operator ($\Phi_\tau$).}
-A block matrix insertion operator placing local transitions into temporal window $\tau \in \{1, \ldots, T-2\}$:
-\begin{align}
-\Phi_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
-\end{align}
-\emph{Linearity.}
-\begin{equation}
-\Phi_\tau(c_1 X + c_2 Y) = c_1\,\Phi_\tau(X) + c_2\,\Phi_\tau(Y), \quad \forall\; c_1, c_2 \in \mathbb{Z},\; X, Y \in \mathbb{Z}^{2\times N}.
+    \Pi_N(c_1 X + c_2 Y) = c_1\Pi_N(X) + c_2\Pi_N(Y).
 \end{equation}
 
-\noindent\emph{Example.}\; For a 5-shot video ($T\!=\!5$, yielding 4 transition rows), placing the padded Relay $\hat{\calB}_1$ at temporal window $\tau = 2$ (transitions 2--3):
+\noindent\textbf{Example 1.1 (Basis Embedding):} We define the spatially padded bases uniformly as $\hat{\calB}_m = \Pi_N(\calB_m)$ for $m \in \{1,2\}$. For $N=5$, the Relay basis $\calB_1$ is embedded seamlessly. The additional entity columns remain zero, mathematically reflecting that those characters are unaffected by this localized transition:
 \begin{equation}
-\Phi_2\bigl(\hat{\calB}_1\bigr) = \begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 \\
--1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix} \in \mathbb{Z}^{4 \times 5}.
+    \hat{\calB}_1 = \Pi_5(\calB_1) = \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix}.
 \end{equation}
-Shots outside this window are unaffected.
 
-\noindent\emph{Linearity example.}\; Let $X = \hat{\calB}_1$ and $Y = \sigma_{13} \circ \hat{\calB}_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & -1 & 0 & 0 \end{smallmatrix}\bigr]$ (for $N\!=\!5$). With $T\!=\!5$ and $\tau = 2$:
+\noindent\textbf{Example 1.2 (Spatial Linearity):} Let $X = \calB_1$ and $Y = J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$. We verify that the spatial padding of their superposition linearly decomposes:
 \begin{equation}
-\Phi_2(X + Y) = \begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 2 & 0 & 0 & 0 \\
--1 & 0 & -1 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix} = \underbrace{\begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 \\
--1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix}}_{\Phi_2(X)} + \underbrace{\begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 \\
-0 & 0 & -1 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix}}_{\Phi_2(Y)},
+    \Pi_5(X + Y) = \Pi_5\left( \left[\begin{smallmatrix} 1 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\right] \right) = \left[\begin{smallmatrix} 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix}\right] = \Pi_5(X) + \Pi_5(Y).
 \end{equation}
-confirming $\Phi_\tau(X + Y) = \Phi_\tau(X) + \Phi_\tau(Y)$. Together, $\Pi_N$ and $\Phi_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
 
-\subsection{General Spanning Theorem}
+\vspace{2.5em}
+
+\subsubsection{\textbf{Temporal Shift Operator ($\Phi_\tau$)}}
+A block matrix insertion operator that embeds local transitions into the temporal window starting at transition index $\tau \in \{1, \ldots, T-2\}$:
+\begin{equation}
+    \Phi_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
+\end{equation}
+
+\noindent\textbf{Property 2 (Linearity):} For all scalars $c_1, c_2 \in \mathbb{Z}$ and expanded matrices $X, Y \in \mathbb{Z}^{2\times N}$, the temporal shift satisfies:
+\begin{equation}
+    \Phi_\tau(c_1 X + c_2 Y) = c_1\Phi_\tau(X) + c_2\Phi_\tau(Y).
+\end{equation}
+
+\noindent\textbf{Example 2.1 (Temporal Insertion):} For $T=5$ (yielding 4 transitions), placing $\hat{\calB}_1$ at $\tau = 2$ projects the local transition precisely into the second and third temporal steps:
+\begin{equation}
+    \Phi_2\bigl(\hat{\calB}_1\bigr) = 
+    \left[\begin{smallmatrix}
+         0 & 0 & 0 & 0 & 0 \\
+         0 & 1 & 0 & 0 & 0 \\
+        -1 & 0 & 0 & 0 & 0 \\
+         0 & 0 & 0 & 0 & 0
+    \end{smallmatrix}\right] \in \mathbb{Z}^{4 \times 5}.
+\end{equation}
+
+\noindent\textbf{Example 2.2 (Temporal Linearity):} Using $N=5, T=5$, and $\tau=2$, let $X = \hat{\calB}_1$ and $Y = \hat{\calB}_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 & 0 & 0 \\ -1 & 1 & 0 & 0 & 0 \end{smallmatrix}\bigr]$. Applying the shift operator to their algebraic sum elegantly preserves their individual structural placements on a single line:
+\begin{equation}
+    \Phi_2(X + Y) = 
+    \left[\begin{smallmatrix}
+         0 &  0 & 0 & 0 & 0 \\
+         0 &  0 & 0 & 0 & 0 \\
+        -2 &  1 & 0 & 0 & 0 \\
+         0 &  0 & 0 & 0 & 0
+    \end{smallmatrix}\right] = 
+    \underbrace{\left[\begin{smallmatrix}
+         0 &  0 & 0 & 0 & 0 \\
+         0 &  1 & 0 & 0 & 0 \\
+        -1 &  0 & 0 & 0 & 0 \\
+         0 &  0 & 0 & 0 & 0
+    \end{smallmatrix}\right]}_{\Phi_2(X)}
+    +
+    \underbrace{\left[\begin{smallmatrix}
+         0 &  0 & 0 & 0 & 0 \\
+         0 & -1 & 0 & 0 & 0 \\
+        -1 &  1 & 0 & 0 & 0 \\
+         0 &  0 & 0 & 0 & 0
+    \end{smallmatrix}\right]}_{\Phi_2(Y)}.
+\end{equation}
+
+\vspace{1em}
+\noindent \textbf{Summary.} By functioning as strict linear operators, $\Pi_N$ and $\Phi_\tau$ ensure that long and multi-character narratives do not become mathematically tangled. Any global storyline can be cleanly decomposed into a sequence of isolated, localized basis operations that are simply added together.
+
+\subsection{Grand Spanning Theorem}
 
 \setcounter{theorem}{0}
 \begin{theorem}[Topological Generalization]
-For any $T \geq 3$ and $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{Z}^{(T-1)\times N}$ can be algebraically expressed as:
+For any sequence length $T \geq 3$ and entity count $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{Z}^{(T-1)\times N}$ can be algebraically expressed as:
 \begin{equation}
-\Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\;\, \Phi_\tau \circ \sigma_{\tau,m} \circ \hat{\calB}_m,
+\Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\; \bigl(\Phi_\tau \circ \sigma_{\tau,m} \circ \Pi_N\bigr)(\calB_m),
 \label{eq:grand_spanning}
 \end{equation}
 where $c_{\tau,m} \in \mathbb{Z}$, and $\sigma_{\tau,m} \in \Sigma_N$.
 \end{theorem}
 
 \begin{proof}
-Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)} \in \mathbb{Z}^{2 \times N}$. By Theorem~3.1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\Pi_N$ and $\Phi_\tau$ are linear homomorphisms, their composition preserves the spanning property across the globally expanded dimensions.
+Any global transition matrix $\Delta S \in \mathbb{Z}^{(T-1)\times N}$ can be exactly decomposed into a sum of non-overlapping, row-isolated local windows:
+\begin{equation}
+    \Delta S = \sum_{\tau=1}^{T-2} \Phi_\tau\bigl( \Delta S^{(\tau)} \bigr),
+\end{equation}
+where each $\Delta S^{(\tau)} \in \mathbb{Z}^{2 \times N}$ captures the transitions for window $\tau$. By Theorem~3.1, each local window is fully spanned by the extended bases $\hat{\calB}_m$. Because the spatial expansion $\Pi_N$ and the temporal shift $\Phi_\tau$ are strictly linear operators, their composition preserves this spanning property across the entirely expanded global dimensions.
 \end{proof}
-The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
-\paragraph{Worked example.}
+
+\subsection{Worked Example: Matrix Decomposition}
 Consider a 4-shot, 3-entity narrative: $A \!\to\! AB \!\to\! BC \!\to\! C$ (a character relay chain). Its prescribed transition matrix is:
 \begin{equation}
 \Delta S = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix} \in \mathbb{Z}^{3 \times 3}.
 \end{equation}
-We decompose this into two overlapping $2\!\times\!3$ local windows ($\tau = 1, 2$):
+To express this using our operators, we partition the rows into distinct local windows to avoid temporal overlap conflicts. We assign the first two transitions (rows 1 and 2) to window $\tau=1$, and the remaining transition (row 3) to window $\tau=2$:
 \begin{equation}
-\Delta S^{(1)} = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \end{bmatrix}, \qquad
-\Delta S^{(2)} = \begin{bmatrix} -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix}.
+\Delta S = \underbrace{\Phi_1\!\left(\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \end{bmatrix}\right)}_{\text{covers rows 1 and 2}} \;+\; \underbrace{\Phi_2\!\left(\begin{bmatrix} 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}\right)}_{\text{covers row 3}}.
+\label{eq:worked_decomp}
 \end{equation}
-Each local block is a valid $2\!\times\!3$ matrix spanned by Theorem~3.1. Specifically, $\Delta S^{(1)}$ can be expressed using basis operations:
+Let $\Delta S^{(1)}$ and $\Delta S^{(2)}$ denote the inner $2 \times 3$ matrices above. By Theorem~3.1, $\Delta S^{(1)}$ can be synthesized precisely from our bases:
 \begin{equation}
 \Delta S^{(1)} = \underbrace{\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} + \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & +1 \end{bmatrix}}_{J_{23}} = \calB_1 + J_{23},
 \end{equation}
-where $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step~2). Similarly, $\Delta S^{(2)} = \sigma_{13} \circ \calB_1 + (-J_{22})$. Applying the temporal shift operators reconstructs the full matrix:
-\begin{equation}
-\Delta S = \Phi_1\!\bigl(\Delta S^{(1)}\bigr) + \Phi_2\!\bigl(\Delta S^{(2)}\bigr) = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & 0 & 0 \end{bmatrix} + \begin{bmatrix} 0 & 0 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix}.
-\end{equation}
-Note that the overlapping row ($\tau\!=\!2$, row~2) sums correctly: $(-1{+}(-1), 0{+}0, +1{+}(+1))$ would yield $(-2, 0, 2)$, but by Theorem~3.1 each local window is independently spanned---the decomposition assigns the \emph{full} row~2 content to whichever window claims it. In practice, the non-overlapping decomposition partitions rows:
-\begin{equation}
-\Delta S = \underbrace{\Phi_1\!\left(\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \end{bmatrix}\right)}_{\text{rows 1--2}} \;+\; \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}}_{\text{row 3 only}} ,
-\end{equation}
-where the remaining single-row contribution is a trivial $J_{ij}$ placement via $\Phi_2$. This illustrates how arbitrarily long narratives reduce to sums of localized, algebraically tractable basis operations.
-
+where the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2). Similarly, $\Delta S^{(2)}$ is simply $-J_{22}$, which is also fully constructible. By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines gracefully reduce to localized, algebraically tractable basis operations.
 
 %% ============================================================
 \section{Dataset Construction Details}
@@ -328,7 +329,7 @@ Shot & Type & Prompt \\
 All four models---StoryDiffusion (SD), EchoShot (Echo), VideoGen-of-Thought (VGoT), and VIC---use a fixed seed and the shared negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark.'' All four models successfully generated 1,000 videos each (4,000 total). Model-specific implementation notes:
 
 \begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{SD}: Two-stage pipeline. SDXL generates keyframes (30 steps), then SEINE~\cite{seine} synthesizes inter-frame motion (50 steps). Consistent Self-Attention (CSA) shares features across shots.
+  \item \textbf{Story Diffusion}: Two-stage pipeline. SDXL generates keyframes (30 steps), then SEINE~\cite{seine} synthesizes inter-frame motion (50 steps). Consistent Self-Attention (CSA) shares features across shots.
   \item \textbf{Echo}: Single-stage flow-matching via Wan2.1-1.3B (50 steps). Spatio-temporal echo guidance conditions on reference portraits.
   \item \textbf{VGoT}: Two-stage cascaded pipeline. Kolors generates initial keyframes (25 steps), then DynamiCrafter~\cite{dynamicrafter} animates them (50 steps). An LLM planner decomposes the narrative into per-shot layouts.
   \item \textbf{VIC}: In-context generation via CogVideoX-5B~\cite{cogvideox} with LoRA (50 steps). Prior shots are concatenated as in-context conditioning for subsequent generation.
@@ -348,7 +349,7 @@ One middle frame per shot is extracted ($T = 3$ shots per video, 3 frames total)
 Binary yes/no: ``Is there a \{entity\} visible in this image? Answer only Yes or No.'' The VLM response is parsed by prefix: if it starts with ``yes'' (case-insensitive), $S_\text{obs}[t,k] = 1$; otherwise 0. No thresholds are required.
 
 \paragraph{Detection quality.}
-Across 4,000 videos (28,800 cells): TPR $= 52.1\%$, TNR $= 66.7\%$.
+Across 4,000 videos (28,800 cells): TPR(True Positive Rate) $= 52.1\%$, TNR(True Negative Rate) $= 66.7\%$.
 The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection confirms that the majority of false-negative cases are genuine generation failures (see \S\ref{app:vlm_quality} for the full Human--VLM agreement analysis). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 
@@ -750,31 +751,46 @@ VIC   & .070$\pm$.173 & 84.8 & 8.7  & 0.3 \\
 Table~\ref{tab:ptm_dist} shows that PTM concentrates at discrete values because most patterns have 2 prescribed transitions, yielding PTM $\in \{0, 0.5, 1.0\}$.
 VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct).
 SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable.
-
-Figure~\ref{fig:ptm_dist} visualizes these distributions.
-
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    ybar,
-    bar width=6pt,
+    ybar=1.5pt, % 얇아진 막대에 맞춰 그룹 내 막대 간격 미세 조정
+    bar width=8pt, % 막대 두께를 슬림하게 (14pt -> 8pt)
     width=\columnwidth,
-    height=5cm,
+    height=6cm, 
     ylabel={\small \% of videos},
     xlabel={\small PTM value},
     symbolic x coords={0, 0.5, 1.0},
     xtick=data,
-    ymin=0, ymax=95,
-    legend style={at={(0.98,0.98)}, anchor=north east, font=\scriptsize, legend columns=2},
-    enlarge x limits=0.3,
-    nodes near coords={\scriptsize\pgfmathprintnumber\pgfplotspointmeta},
-    every node near coord/.append style={rotate=90, anchor=west, font=\tiny},
+    ymin=0, ymax=100, 
+    ymajorgrids=true, 
+    grid style=dashed,
+    axis x line*=bottom, 
+    axis y line*=left,
+    legend style={
+        at={(0.5,1.12)}, 
+        anchor=south, 
+        legend columns=-1, 
+        font=\small,
+        draw=none 
+    },
+    enlarge x limits=0.25,
+    nodes near coords={
+        \pgfmathprintnumber[fixed,precision=1]{\pgfplotspointmeta}
+    },
+    every node near coord/.append style={
+        font=\tiny,
+        anchor=south, 
+        yshift=1pt
+    },
 ]
-\addplot coordinates {(0, 53.5) (0.5, 21.5) (1.0, 4.5)};
-\addplot coordinates {(0, 67.1) (0.5, 15.3) (1.0, 2.6)};
-\addplot coordinates {(0, 79.5) (0.5, 10.2) (1.0, 0.8)};
-\addplot coordinates {(0, 84.8) (0.5, 8.7)  (1.0, 0.3)};
+
+\addplot[fill=blue!30, draw=blue!80, thick] coordinates {(0, 53.5) (0.5, 21.5) (1.0, 4.5)};
+\addplot[fill=red!30, draw=red!80, thick] coordinates {(0, 67.1) (0.5, 15.3) (1.0, 2.6)};
+\addplot[fill=green!30, draw=green!80, thick] coordinates {(0, 79.5) (0.5, 10.2) (1.0, 0.8)};
+\addplot[fill=orange!30, draw=orange!80, thick] coordinates {(0, 84.8) (0.5, 8.7)  (1.0, 0.3)};
+
 \legend{SD, Echo, VGoT, VIC}
 \end{axis}
 \end{tikzpicture}
@@ -795,10 +811,27 @@ Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to e
 \Delta S_\text{obs} = \begin{bmatrix} 0 & 0 \\ -1 & +1 \end{bmatrix}, \quad
 E = \begin{bmatrix} 0 & -1 \\ 0 & +1 \end{bmatrix}.
 \end{equation}
-Here, $E_{1,2} = -1$ is a prescribed failure (Type~II Amnesia on a $\Delta S^*_{1,2} = +1$ cell), while $E_{2,2} = +1$ is a spurious transition (Type~III on a $\Delta S^*_{2,2} = 0$ hold cell). The Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt{2}$ weights both errors equally, conflating the narrative-critical Amnesia with hold-cell noise. PTM, by contrast, evaluates only the prescribed mask $\mathcal{M} = \bigl[\begin{smallmatrix} 0 & 1 \\ 1 & 0 \end{smallmatrix}\bigr]$, yielding PTM $= 1 - 1/2 = 0.5$.
+
+
+%% ============================================================
+\section{Frobenius Distance Analysis}
+\label{app:frobenius}
+%% ============================================================
+
+\emph{Example: Relay scenario.}\;
+Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to enter at transition~1, and a spurious entry occurs at transition~2:
+\begin{equation}
+    \Delta S^* = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}, \quad
+    \Delta S_\text{obs} = \begin{bmatrix} 0 & 0 \\ -1 & +1 \end{bmatrix}, \quad
+    E = \begin{bmatrix} 0 & -1 \\ 0 & +1 \end{bmatrix}.
+\end{equation}
+In this error matrix, the Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt{2}$ weights both errors equally, conflating the narrative-critical missed transition (Amnesia) with spurious hold-cell noise. PTM, by contrast, evaluates only the prescribed mask $\mathcal{M} = \left[ \begin{smallmatrix} 0 & 1 \\ 1 & 0 \end{smallmatrix} \right]$, yielding $\text{PTM} = 1 - 1/2 = 0.5$.
+
+
 
 \paragraph{Discriminative analysis.}
-The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}):
+The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}). Only 1 of 6 pairs (Echo--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does \emph{not} match the PTM ranking.
+This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribed-subspace projection (PTM).
 
 \begin{table}[ht]
 \caption{Pairwise Mann-Whitney $U$ tests for $\|E\|_F$.}
@@ -819,8 +852,7 @@ VGoT--VIC   & 0.315 & 1.613 / 1.643 \\
 \end{tabular}
 \end{table}
 
-Only 1 of 6 pairs (Echo--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does \emph{not} match the PTM ranking.
-This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribed-subspace projection (PTM).
+
 
 
 %% ============================================================
@@ -828,7 +860,9 @@ This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribe
 \label{app:failure_pattern}
 %% ============================================================
 
-Failure rates are computed from the VLM-based $E$ matrix, with Type~IV (reversal, $|E|=2$) separated from Types~I/II (Table~\ref{tab:failure_rates}).
+Failure rates are computed from the VLM-based $E$ matrix, with Type~IV (reversal, $|E|=2$) separated from Types~I/II (Table~\ref{tab:failure_rates}). Patterns with more prescribed transitions (Split, Convergence, Sliding Window: 3 each) show the highest failure rates across all types.
+Amnesia (Type~II) dominates across all patterns, consistent with the entity entry vs.\ exit asymmetry (\S\ref{app:entry_exit}).
+
 
 \begin{table}[ht]
 \caption{Failure rates (\% of videos with $\geq$1 failure) per pattern, aggregated across all 4 models. Highest rate per type in \textbf{bold}.}
@@ -851,8 +885,6 @@ Rev.\ Relay   & 2 & 68.3 & 70.3 & 33.3 & 11.0 \\
 \end{tabular}
 \end{table}
 
-Patterns with more prescribed transitions (Split, Convergence, Sliding Window: 3 each) show the highest failure rates across all types.
-Amnesia (Type~II) dominates across all patterns, consistent with the entity entry vs.\ exit asymmetry (\S\ref{app:entry_exit}).
 
 
 %% ============================================================
@@ -957,7 +989,9 @@ The 1,000-scenario design provides $>$99.8\% stability across both criteria, ens
 \label{app:rank_consistency}
 %% ============================================================
 
-To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and actual PTM values (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$.
+To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and actual PTM values (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$. Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
+SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
+The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 
 \begin{table}[ht]
 \caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
@@ -982,9 +1016,7 @@ Reverse Relay  & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
 \end{tabular}
 \end{table}
 
-Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
-SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
-The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
+
 
 
 %% ============================================================
