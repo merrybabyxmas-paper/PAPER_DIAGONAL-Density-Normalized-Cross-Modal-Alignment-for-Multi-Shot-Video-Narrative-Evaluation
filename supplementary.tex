@@ -1089,6 +1089,29 @@ Multi-3 & .749 & .805 & .653 & 1.000 \\
 (4)~The marginal PTM gain from multi-frame voting ($\leq 0.02$) does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
 
+%% ============================================================
+\section{Qualitative Failure Gallery}
+\label{app:qualitative_gallery}
+%% ============================================================
+
+Figure~\ref{fig:qualitative_gallery} presents representative failure examples drawn from StoryDiffusion (SD) generations, one per failure type. Each row shows the 3-shot middle frames alongside the prescribed and observed entity configurations. These cases were selected to exhibit a single dominant failure mode for diagnostic clarity.
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Type~I (Context Bleeding).} In the Reduction pattern ($ABC \!\to\! AB \!\to\! A$), the tourist (entity $C$) should exit after shot~1 but its visual features persist into shot~2, producing $E_{1,C} = +1$.
+  \item \textbf{Type~II (Amnesia).} In the Accumulation pattern ($A \!\to\! AB \!\to\! ABC$), neither the waiter ($B$) nor the musician ($C$) ever appears despite being prescribed in shots~2 and~3, yielding $S_\text{obs} = [[1,0,0],[1,0,0],[1,0,0]]$ and PTM $= 0$.
+  \item \textbf{Type~III (Spurious).} The prescribed entries for $B$ (shot~2) succeed, but in shot~3 both the pastry chef ($A$) and the apprentice ($B$) vanish unprompted while only the child ($C$) remains---an unscripted transition on hold cells.
+  \item \textbf{Type~IV (Reversal).} All three entities appear in shot~1 when only $A$ is prescribed ($|E_{1,B}| = 2$), representing a diametrically opposite transition where the barista enters instead of being absent.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
+\caption{Qualitative failure gallery. Each row shows one failure type from SD-generated videos. \emph{Script} denotes the prescribed entity configuration; \emph{Observed} (red) shows the actual VLM-detected outcome.}
+\label{fig:qualitative_gallery}
+\Description{Four rows of generated video keyframes illustrating each failure type.}
+\end{figure}
+
+
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
 
