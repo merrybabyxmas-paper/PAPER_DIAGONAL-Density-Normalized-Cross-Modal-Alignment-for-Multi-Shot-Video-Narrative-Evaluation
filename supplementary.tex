@@ -42,7 +42,6 @@
 \renewcommand{\thetheorem}{\Alph{section}.\arabic{theorem}}
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
-
 %% ============================================================
 \section{Necessity of the Split Basis ($\calB_2$)}
 \label{app:necessity_b2}
@@ -53,26 +52,29 @@ In Theorem~3.1 (main text), we established that $\{\calB_1, \calB_2\}$ spans $\m
 \begin{lemma}[Row-Sum Invariance of $\calB_1$]
 Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves:
 \begin{equation}
-R_1(M) = +1, \quad R_2(M) = -1.
+    R_1(M) = +1, \quad R_2(M) = -1.
 \end{equation}
 \end{lemma}
 
 \begin{proof}
-The canonical Relay matrix $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ trivially satisfies $R_1(\calB_1) = 1$ and $R_2(\calB_1) = -1$. Because $\sigma$ solely permutes column indices, it preserves each row's algebraic sum. Concretely, consider $\sigma_{12} \circ \calB_1$:
+The canonical Relay matrix trivially satisfies $R_1(\calB_1) = 1$ and $R_2(\calB_1) = -1$. Because $\sigma$ solely permutes column indices, it preserves each row's algebraic sum. Concretely, consider $\sigma_{12} \circ \calB_1$:
 \begin{equation}
-\sigma_{12} \circ \underbrace{\begin{bmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} = \underbrace{\begin{bmatrix} 1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}}_{\sigma_{12} \circ \calB_1}, \quad R_1 = 1, \; R_2 = -1. \qedhere
+    \sigma_{12} \circ \underbrace{\begin{bmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} 
+    = \underbrace{\begin{bmatrix} 1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}}_{\sigma_{12} \circ \calB_1}, 
+    \quad R_1 = 1, \; R_2 = -1. \qedhere
 \end{equation}
 \end{proof}
 
 Consequently, any $\mathbb{Z}$-linear combination derived exclusively from Relay variants, $X = \sum_k \alpha_k (\sigma_k \circ \calB_1)$, imposes a strict global constraint:
 \begin{equation}
-R_1(X) + R_2(X) = \sum_k \alpha_k + \bigl(-\sum_k \alpha_k\bigr) = 0.
+    R_1(X) + R_2(X) = \sum_k \alpha_k + \left( -\sum_k \alpha_k \right) = 0.
 \end{equation}
-However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus $\calB_1$ variants alone cannot break this symmetric invariant. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$ satisfies $R_1(\calB_2) + R_2(\calB_2) = -1$, which is algebraically essential to span the full narrative space.
+
+However, the standard single-entry matrix $J_{11} = \left[ \begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix} \right]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus $\calB_1$ variants alone cannot break this symmetric invariant. The Split matrix $\calB_2 = \left[ \begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix} \right]$ satisfies $R_1(\calB_2) + R_2(\calB_2) = -1$, which is algebraically essential to span the full narrative space.
 
 
 %% ============================================================
-\section{\texorpdfstring{Topological Generalization to $\mathbb{Z}^{(T-1)\times N}$}{Topological Generalization to Z\^{}(T-1)xN}}
+\section{Generalization to $T$ Shots and $N$ Entities}
 \label{app:generalization}
 %% ============================================================
 
@@ -81,63 +83,70 @@ To formalize the dimensional expansion from the canonical $2\times 3$ space to a
 
 \paragraph{Spatial Zero-Padding Operator ($\Pi_N$).}
 Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
-\begin{align}
-\Pi_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{Z}^{2\times 3}.
-\end{align}
+\begin{equation}
+    \Pi_N(X) = \begin{bmatrix} X & \mathbf{0}_{2\times(N-3)} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times 3}.
+\end{equation}
 \emph{Linearity.}\; $\Pi_N(c_1 X + c_2 Y) = c_1\Pi_N(X) + c_2\Pi_N(Y)$.
 
 \noindent\emph{Example.}\; For $N=5$, the Relay basis $\calB_1$ is embedded as:
-\begin{equation}
-\Pi_5(\calB_1) = \Pi_5\!\!\begin{pmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix}.
-\end{equation}
+\begin{equation*}
+    \Pi_5(\calB_1) = \Pi_5 \begin{bmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{bmatrix} 
+    = \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix}.
+\end{equation*}
 The additional entity columns are zero---meaning those characters are unaffected by this local transition.
 
-\noindent\emph{Linearity example.}\; Let $X = \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ and $Y = J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$. Then:
-\begin{equation}
-\Pi_5(X + Y) = \Pi_5\!\begin{pmatrix} 1 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix},
-\end{equation}
-which equals $\Pi_5(X) + \Pi_5(Y) = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr] + \bigl[\begin{smallmatrix} 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr]$, confirming linearity. Scalar multiplication follows identically: $\Pi_5(2X) = 2\,\Pi_5(X)$.
+\noindent\emph{Linearity example.}\; Let $X = \calB_1$ and $Y = J_{11} = \left[ \begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix} \right]$. Then:
+\begin{align*}
+    \Pi_5(X + Y) &= \Pi_5 \begin{bmatrix} 1 & 1 & 0 \\ -1 & 0 & 0 \end{bmatrix} \\
+    &= \begin{bmatrix} 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix},
+\end{align*}
+which equals $\Pi_5(X) + \Pi_5(Y) = \left[ \begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix} \right] + \left[ \begin{smallmatrix} 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 \end{smallmatrix} \right]$, confirming linearity. Scalar multiplication follows identically: $\Pi_5(2X) = 2\,\Pi_5(X)$.
 
 We define the padded bases $\hat{\calB}_1 = \Pi_N(\calB_1)$ and $\hat{\calB}_2 = \Pi_N(\calB_2)$.
 
 \paragraph{Temporal Shift Operator ($\Phi_\tau$).}
 A block matrix insertion operator placing local transitions into temporal window $\tau \in \{1, \ldots, T-2\}$:
-\begin{align}
-\Phi_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
-\end{align}
+\begin{equation}
+    \Phi_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
+\end{equation}
 \emph{Linearity.}\; $\Phi_\tau(c_1 X + c_2 Y) = c_1\Phi_\tau(X) + c_2\Phi_\tau(Y)$.
 
 \noindent\emph{Example.}\; For a 5-shot video ($T\!=\!5$, yielding 4 transition rows), placing the padded Relay $\hat{\calB}_1$ at temporal window $\tau = 2$ (transitions 2--3):
-\begin{equation}
-\Phi_2\bigl(\hat{\calB}_1\bigr) = \begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 \\
--1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix} \in \mathbb{Z}^{4 \times 5}.
-\end{equation}
+\begin{equation*}
+    \Phi_2\bigl(\hat{\calB}_1\bigr) = \begin{bmatrix}
+         0 & 0 & 0 & 0 & 0 \\
+         0 & 1 & 0 & 0 & 0 \\
+        -1 & 0 & 0 & 0 & 0 \\
+         0 & 0 & 0 & 0 & 0
+    \end{bmatrix} \in \mathbb{Z}^{4 \times 5}.
+\end{equation*}
 Shots outside this window are unaffected.
 
-\noindent\emph{Linearity example.}\; Let $X = \hat{\calB}_1$ and $Y = \sigma_{13} \circ \hat{\calB}_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & -1 & 0 & 0 \end{smallmatrix}\bigr]$ (for $N\!=\!5$). With $T\!=\!5$ and $\tau = 2$:
-\begin{equation}
-\Phi_2(X + Y) = \begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 2 & 0 & 0 & 0 \\
--1 & 0 & -1 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix} = \underbrace{\begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 \\
--1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix}}_{\Phi_2(X)} + \underbrace{\begin{bmatrix}
-0 & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 \\
-0 & 0 & -1 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0
-\end{bmatrix}}_{\Phi_2(Y)},
-\end{equation}
+\noindent\emph{Linearity example.}\; Let $X = \hat{\calB}_1$ and $Y = \sigma_{13} \circ \hat{\calB}_1$. For $N=5, T=5$, and $\tau = 2$:
+\begin{align*}
+    \Phi_2(X + Y) &= \begin{bmatrix}
+         0 & 0 & 0 & 0 & 0 \\
+         0 & 2 & 0 & 0 & 0 \\
+        -1 & 0 &-1 & 0 & 0 \\
+         0 & 0 & 0 & 0 & 0
+    \end{bmatrix} \\[2ex]
+    &= \underbrace{\begin{bmatrix}
+         0 & 0 & 0 & 0 & 0 \\
+         0 & 1 & 0 & 0 & 0 \\
+        -1 & 0 & 0 & 0 & 0 \\
+         0 & 0 & 0 & 0 & 0
+    \end{bmatrix}}_{\Phi_2(X)} 
+    + \underbrace{\begin{bmatrix}
+         0 & 0 & 0 & 0 & 0 \\
+         0 & 1 & 0 & 0 & 0 \\
+         0 & 0 &-1 & 0 & 0 \\
+         0 & 0 & 0 & 0 & 0
+    \end{bmatrix}}_{\Phi_2(Y)},
+\end{align*}
+
+
 confirming $\Phi_\tau(X + Y) = \Phi_\tau(X) + \Phi_\tau(Y)$. Together, $\Pi_N$ and $\Phi_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
+
 
 \subsection{General Spanning Theorem}
 
