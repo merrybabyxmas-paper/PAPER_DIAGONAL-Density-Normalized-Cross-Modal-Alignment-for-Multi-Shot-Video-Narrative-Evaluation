@@ -1099,7 +1099,7 @@ Figure~\ref{fig:qualitative_gallery} presents a gallery of human-selected genera
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
-\caption{Qualitative gallery ordered by PTM (two examples per level). \emph{Script} denotes the prescribed entity configuration; \emph{Obs} (red) shows the VLM-detected outcome. PTM color-coded: \textcolor{green!50!black}{green} ($= 1.0$), \textcolor{orange!80!black}{orange} ($= 0.67$), \textcolor{red!70!black}{red} ($\leq 0.33$).}
+\caption{Qualitative gallery ordered by decreasing PTM (two examples per level). At \textcolor{green!50!black}{PTM$\,{=}\,$1.0}, both entities are correctly generated and each transition is faithfully executed across shots. At \textcolor{orange!80!black}{PTM$\,{=}\,$0.67}, one entity fails to appear in its prescribed shot, or the two entities are visually merged into a chimera-like composite that the VLM cannot distinguish. At \textcolor{red!70!black}{PTM$\,{=}\,$0.33}, the scene context remains static across shots (no visible transition) or the final shot collapses to an empty scene with no recognizable entity. At \textcolor{red!70!black}{PTM$\,{=}\,$0.0}, the model fails to generate any prescribed entity altogether, producing scenery-only frames throughout.}
 \label{fig:qualitative_gallery}
 \Description{Eight rows of generated video keyframes ordered by decreasing PTM score.}
 \end{figure}
