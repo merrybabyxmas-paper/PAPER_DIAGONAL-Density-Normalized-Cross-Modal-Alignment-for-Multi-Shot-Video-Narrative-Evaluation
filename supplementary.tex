@@ -92,6 +92,12 @@ Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
 \end{equation}
 The additional entity columns are zero---meaning those characters are unaffected by this local transition.
 
+\noindent\emph{Linearity example.}\; Let $X = \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ and $Y = J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$. Then:
+\begin{equation}
+\Pi_5(X + Y) = \Pi_5\!\begin{pmatrix} 1 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix},
+\end{equation}
+which equals $\Pi_5(X) + \Pi_5(Y) = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr] + \bigl[\begin{smallmatrix} 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr]$, confirming linearity. Scalar multiplication follows identically: $\Pi_5(2X) = 2\,\Pi_5(X)$.
+
 We define the padded bases $\hat{\calB}_1 = \Pi_N(\calB_1)$ and $\hat{\calB}_2 = \Pi_N(\calB_2)$.
 
 \paragraph{Temporal Shift Operator ($\Phi_\tau$).}
@@ -110,7 +116,28 @@ A block matrix insertion operator placing local transitions into temporal window
 0 & 0 & 0 & 0 & 0
 \end{bmatrix} \in \mathbb{Z}^{4 \times 5}.
 \end{equation}
-Shots outside this window are unaffected. Together, $\Pi_N$ and $\Phi_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
+Shots outside this window are unaffected.
+
+\noindent\emph{Linearity example.}\; Let $X = \hat{\calB}_1$ and $Y = \sigma_{13} \circ \hat{\calB}_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & -1 & 0 & 0 \end{smallmatrix}\bigr]$ (for $N\!=\!5$). With $T\!=\!5$ and $\tau = 2$:
+\begin{equation}
+\Phi_2(X + Y) = \begin{bmatrix}
+0 & 0 & 0 & 0 & 0 \\
+0 & 2 & 0 & 0 & 0 \\
+-1 & 0 & -1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0
+\end{bmatrix} = \underbrace{\begin{bmatrix}
+0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+-1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0
+\end{bmatrix}}_{\Phi_2(X)} + \underbrace{\begin{bmatrix}
+0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & -1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0
+\end{bmatrix}}_{\Phi_2(Y)},
+\end{equation}
+confirming $\Phi_\tau(X + Y) = \Phi_\tau(X) + \Phi_\tau(Y)$. Together, $\Pi_N$ and $\Phi_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
 
 \subsection{General Spanning Theorem}
 
