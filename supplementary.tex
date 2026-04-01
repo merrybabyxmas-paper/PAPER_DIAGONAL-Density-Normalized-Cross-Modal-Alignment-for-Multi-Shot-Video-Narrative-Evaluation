@@ -201,7 +201,7 @@ Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descripti
 10 environmental themes: Domestic\_LivingRoom, Domestic\_Kitchen, Urban\_Caf\'{e}, Urban\_Library, Urban\_Street, Nature\_Forest, Nature\_Beach, Nature\_Park, Professional\_Office, Professional\_Hospital.
 
 \paragraph{Entity type distribution.}
-Three categories: Human, Professional, Animal. Table~\ref{tab:entity_types} shows the full distribution.
+Entities belong to three categories: \emph{Human} (general people, e.g., toddler, mother, jogger), \emph{Occupation} (role-defined characters, e.g., chef, waiter, nurse), and \emph{Animal} (e.g., dog, eagle, cat). Table~\ref{tab:entity_types} shows the full distribution.
 
 \begin{table}[ht]
 \caption{Entity type combination distribution.}
@@ -212,17 +212,17 @@ Three categories: Human, Professional, Animal. Table~\ref{tab:entity_types} show
 \toprule
 Entity Types & Count & \% \\
 \midrule
-(Human, Professional)              & 268 & 26.8 \\
-(Human, Professional, Professional) & 169 & 16.9 \\
-(Professional, Professional)        & 110 & 11.0 \\
-(Human, Human)                      & 96  & 9.6 \\
-(Human, Human, Professional)        & 93  & 9.3 \\
-(Animal, Human)                     & 72  & 7.2 \\
-(Animal, Animal)                    & 54  & 5.4 \\
-(Professional, Professional, Professional) & 45  & 4.5 \\
-(Animal, Animal, Animal)            & 38  & 3.8 \\
-(Animal, Animal, Human)             & 35  & 3.5 \\
-(Human, Human, Human)               & 20  & 2.0 \\
+(Human, Occupation)                    & 268 & 26.8 \\
+(Human, Occupation, Occupation)        & 169 & 16.9 \\
+(Occupation, Occupation)               & 110 & 11.0 \\
+(Human, Human)                         & 96  & 9.6 \\
+(Human, Human, Occupation)             & 93  & 9.3 \\
+(Animal, Human)                        & 72  & 7.2 \\
+(Animal, Animal)                       & 54  & 5.4 \\
+(Occupation, Occupation, Occupation)   & 45  & 4.5 \\
+(Animal, Animal, Animal)               & 38  & 3.8 \\
+(Animal, Animal, Human)                & 35  & 3.5 \\
+(Human, Human, Human)                  & 20  & 2.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -246,52 +246,52 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 Each scenario stores an \texttt{eval\_prompt} (concise scene description used for generation) and a set of \texttt{core\_entities} (e.g., $A$: ``toddler'', $B$: ``mother'') that define the named entity roles. For VLM evaluation, entity names are extracted directly from \texttt{core\_entities}---not from the scene descriptions---ensuring unambiguous binary presence queries (Eq.~5, main text). Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
 
 \begin{table}[ht]
-\caption{Relay pattern sample ($A \to AB \to B$). Entities: $A$=toddler, $B$=mother.}
+\caption{Relay pattern sample ($A \to AB \to B$).}
 \label{tab:sample_relay}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}cp{6.5cm}@{}}
+\begin{tabular}{@{}clp{5.2cm}@{}}
 \toprule
-Shot & eval\_prompt \\
+Shot & Entities & eval\_prompt \\
 \midrule
-1 & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
-2 & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
-3 & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
+1 & $A$: toddler & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
+2 & $A$: toddler, $B$: mother & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
+3 & $B$: mother & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[ht]
-\caption{Accumulation sample ($A \to AB \to ABC$). Entities: $A$=eagle, $B$=fox, $C$=rabbit.}
+\caption{Accumulation sample ($A \to AB \to ABC$).}
 \label{tab:sample_accum}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}cp{6.5cm}@{}}
+\begin{tabular}{@{}clp{5.2cm}@{}}
 \toprule
-Shot & eval\_prompt \\
+Shot & Entities & eval\_prompt \\
 \midrule
-1 & A lone eagle soaring above a dense forest canopy at dawn \\
-2 & An eagle and a fox standing at the edge of a forest clearing \\
-3 & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
+1 & $A$: eagle & A lone eagle soaring above a dense forest canopy at dawn \\
+2 & $A$: eagle, $B$: fox & An eagle and a fox standing at the edge of a forest clearing \\
+3 & $A$: eagle, $B$: fox, $C$: rabbit & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[ht]
-\caption{Sliding Window sample ($AB \to BC \to C$). Entities: $A$=chef, $B$=waiter, $C$=sommelier.}
+\caption{Sliding Window sample ($AB \to BC \to C$).}
 \label{tab:sample_slidwin}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}cp{6.5cm}@{}}
+\begin{tabular}{@{}clp{5.2cm}@{}}
 \toprule
-Shot & eval\_prompt \\
+Shot & Entities & eval\_prompt \\
 \midrule
-1 & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
-2 & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
-3 & A sommelier examining a wine bottle under warm chandelier light, alone \\
+1 & $A$: chef, $B$: waiter & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
+2 & $B$: waiter, $C$: sommelier & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
+3 & $C$: sommelier & A sommelier examining a wine bottle under warm chandelier light, alone \\
 \bottomrule
 \end{tabular}
 \end{table}
