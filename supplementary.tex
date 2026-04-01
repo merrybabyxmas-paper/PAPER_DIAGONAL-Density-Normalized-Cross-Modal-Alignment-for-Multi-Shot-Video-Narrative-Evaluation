@@ -1094,19 +1094,19 @@ Multi-3 & .749 & .805 & .653 & 1.000 \\
 \label{app:qualitative_gallery}
 %% ============================================================
 
-Figure~\ref{fig:qualitative_gallery} presents representative failure examples, one per failure type, drawn from human-curated selections across different generation architectures. Each row shows the 3-shot middle frames alongside the prescribed and observed entity configurations.
+Figure~\ref{fig:qualitative_gallery} presents additional failure examples complementary to the main text (Fig.~5), one per failure type, drawn from human-curated selections across different generation architectures. Each row shows the 3-shot middle frames alongside the prescribed and observed entity configurations.
 
 \begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{Type~I (Context Bleeding).} VGoT on a Reduction pattern ($ABC \!\to\! AB \!\to\! A$). The dog ($B$) should exit after shot~2 but persists into shot~3, while the cat ($A$) simultaneously fails to appear---the cascaded I2V pipeline locks onto the initially rendered entities and resists removing them.
-  \item \textbf{Type~II (Amnesia).} StoryDiffusion on a Convergence pattern ($A \!\to\! B \!\to\! AB$). The swimmer ($A$) should re-enter in shot~3 but never reappears, yielding $S_\text{obs} = [[1,0],[0,1],[0,1]]$. The model ``forgets'' the entity once it has exited.
-  \item \textbf{Type~III (Spurious).} EchoShot on a Convergence pattern ($A \!\to\! B \!\to\! AB$). The frisbee player ($A$) appears correctly in shot~1, exits for shot~2, but in shot~3 only $A$ returns without the spectator ($B$)---an unprescribed solo reappearance on what should be a joint co-presence shot.
-  \item \textbf{Type~IV (Reversal).} VIC on a Relay pattern ($A \!\to\! AB \!\to\! B$). The apprentice ($B$) appears in shot~1 instead of entering at shot~2 ($|E_{1,B}| = 2$), while both entities vanish entirely in shots~2--3. The in-context conditioning produces the diametrically opposite transition.
+  \item \textbf{Type~I (Context Bleeding).} VIC on a Reverse Relay pattern ($B \!\to\! AB \!\to\! A$). The grandchild ($B$) should exit after shot~2 but persists into shot~3 alongside the grandfather ($A$), producing $S_\text{obs} = [[AB],[AB],[AB]]$. The in-context conditioning anchors on the initially established pair and resists removing either entity.
+  \item \textbf{Type~II (Amnesia).} VGoT on an Accumulation pattern ($A \!\to\! AB \!\to\! ABC$). Neither the librarian ($B$) nor the artist ($C$) ever appears, yielding $S_\text{obs} = [[1,0,0],[1,0,0],[1,0,0]]$ and PTM $= 0$. The cascaded T2I$\to$I2V pipeline fails to introduce any new entities beyond the initial keyframe.
+  \item \textbf{Type~III (Spurious).} StoryDiffusion on an Accumulation pattern ($A \!\to\! AB \!\to\! ABC$). The waiter ($A$) unexpectedly vanishes in shot~2 and reappears in shot~3---an unscripted exit and re-entry on a hold cell ($\Delta S^*_{A} = 0$) where the entity should have remained present throughout.
+  \item \textbf{Type~IV (Reversal).} VIC on a Relay pattern ($A \!\to\! AB \!\to\! B$). The apprentice ($B$) appears in shot~1 when only the pastry chef ($A$) is prescribed, while both entities vanish in shots~2--3. This produces $|E_{1,B}| = 2$, a diametrically opposite transition.
 \end{itemize}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
-\caption{Qualitative failure gallery. Each row shows one failure type from a different generation architecture (VGoT, SD, Echo, VIC). \emph{Script} denotes the prescribed entity configuration; \emph{Observed} (red) shows the actual VLM-detected outcome.}
+\caption{Qualitative failure gallery (complementary to Fig.~5 in main text). Each row shows one failure type from a different generation architecture (VIC, VGoT, SD, VIC). \emph{Script} denotes the prescribed entity configuration; \emph{Observed} (red) shows the actual VLM-detected outcome.}
 \label{fig:qualitative_gallery}
 \Description{Four rows of generated video keyframes illustrating each failure type from different models.}
 \end{figure}
