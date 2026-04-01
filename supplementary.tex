@@ -84,22 +84,22 @@ Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
 \begin{align}
 \Pi_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{Z}^{2\times 3}.
 \end{align}
-\emph{Linearity.}
+This operator is linear, preserving both addition and scalar multiplication:
 \begin{equation}
 \Pi_N(c_1 X + c_2 Y) = c_1\,\Pi_N(X) + c_2\,\Pi_N(Y), \quad \forall\; c_1, c_2 \in \mathbb{Z},\; X, Y \in \mathbb{Z}^{2\times 3}.
 \end{equation}
 
-\noindent\emph{Example.}\; For $N=5$, the Relay basis $\calB_1$ is embedded as:
+For $N=5$, the Relay basis $\calB_1$ is embedded as follows:
 \begin{equation}
 \Pi_5(\calB_1) = \Pi_5\!\!\begin{pmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix}.
 \end{equation}
 The additional entity columns are zero---meaning those characters are unaffected by this local transition.
 
-\noindent\emph{Linearity example.}\; Let $X = \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ and $Y = J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$. Then:
+To verify linearity concretely, let $X = \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ and $Y = J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$. Then
 \begin{equation}
 \Pi_5(X + Y) = \Pi_5\!\begin{pmatrix} 1 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix},
 \end{equation}
-which equals $\Pi_5(X) + \Pi_5(Y) = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr] + \bigl[\begin{smallmatrix} 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr]$, confirming linearity. Scalar multiplication follows identically: $\Pi_5(2X) = 2\,\Pi_5(X)$.
+which equals $\Pi_5(X) + \Pi_5(Y) = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr] + \bigl[\begin{smallmatrix} 1 & 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 & 0 \end{smallmatrix}\bigr]$, confirming additivity. Scalar multiplication follows identically, e.g., $\Pi_5(2X) = 2\,\Pi_5(X)$.
 
 We define the padded bases $\hat{\calB}_1 = \Pi_N(\calB_1)$ and $\hat{\calB}_2 = \Pi_N(\calB_2)$.
 
@@ -108,12 +108,12 @@ A block matrix insertion operator placing local transitions into temporal window
 \begin{align}
 \Phi_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
 \end{align}
-\emph{Linearity.}
+This operator is likewise linear:
 \begin{equation}
 \Phi_\tau(c_1 X + c_2 Y) = c_1\,\Phi_\tau(X) + c_2\,\Phi_\tau(Y), \quad \forall\; c_1, c_2 \in \mathbb{Z},\; X, Y \in \mathbb{Z}^{2\times N}.
 \end{equation}
 
-\noindent\emph{Example.}\; For a 5-shot video ($T\!=\!5$, yielding 4 transition rows), placing the padded Relay $\hat{\calB}_1$ at temporal window $\tau = 2$ (transitions 2--3):
+For a 5-shot video ($T\!=\!5$, yielding 4 transition rows), placing the padded Relay $\hat{\calB}_1$ at temporal window $\tau = 2$ (transitions 2--3):
 \begin{equation}
 \Phi_2\bigl(\hat{\calB}_1\bigr) = \begin{bmatrix}
 0 & 0 & 0 & 0 & 0 \\
@@ -124,7 +124,7 @@ A block matrix insertion operator placing local transitions into temporal window
 \end{equation}
 Shots outside this window are unaffected.
 
-\noindent\emph{Linearity example.}\; Let $X = \hat{\calB}_1$ and $Y = \sigma_{13} \circ \hat{\calB}_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & -1 & 0 & 0 \end{smallmatrix}\bigr]$ (for $N\!=\!5$). With $T\!=\!5$ and $\tau = 2$:
+To verify, let $X = \hat{\calB}_1$ and $Y = \sigma_{13} \circ \hat{\calB}_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 & 0 & 0 \\ 0 & 0 & -1 & 0 & 0 \end{smallmatrix}\bigr]$ (for $N\!=\!5$). With $T\!=\!5$ and $\tau = 2$, we obtain
 \begin{equation}
 \Phi_2(X + Y) = \begin{bmatrix}
 0 & 0 & 0 & 0 & 0 \\
@@ -163,7 +163,7 @@ Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delt
 The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
 \paragraph{Worked example.}
-Consider a 4-shot, 3-entity narrative: $A \!\to\! AB \!\to\! BC \!\to\! C$ (a character relay chain). Its prescribed transition matrix is:
+Consider a 4-shot, 3-entity narrative $A \!\to\! AB \!\to\! BC \!\to\! C$ (a character relay chain). Its prescribed transition matrix is
 \begin{equation}
 \Delta S = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix} \in \mathbb{Z}^{3 \times 3}.
 \end{equation}
@@ -180,7 +180,7 @@ where $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step~2). Similar
 \begin{equation}
 \Delta S = \Phi_1\!\bigl(\Delta S^{(1)}\bigr) + \Phi_2\!\bigl(\Delta S^{(2)}\bigr) = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & 0 & 0 \end{bmatrix} + \begin{bmatrix} 0 & 0 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix}.
 \end{equation}
-Note that the overlapping row ($\tau\!=\!2$, row~2) sums correctly: $(-1{+}(-1), 0{+}0, +1{+}(+1))$ would yield $(-2, 0, 2)$, but by Theorem~3.1 each local window is independently spanned---the decomposition assigns the \emph{full} row~2 content to whichever window claims it. In practice, the non-overlapping decomposition partitions rows:
+Note that the overlapping row ($\tau\!=\!2$, row~2) sums to $(-1{+}(-1), 0{+}0, +1{+}(+1))$, which would yield $(-2, 0, 2)$, but by Theorem~3.1 each local window is independently spanned---the decomposition assigns the \emph{full} row~2 content to whichever window claims it. In practice, the non-overlapping decomposition partitions rows:
 \begin{equation}
 \Delta S = \underbrace{\Phi_1\!\left(\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \end{bmatrix}\right)}_{\text{rows 1--2}} \;+\; \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}}_{\text{row 3 only}} ,
 \end{equation}
@@ -197,10 +197,10 @@ All prompts are generated via Google Gemini~1.5~\cite{gemini} (temperature 0.7) 
 Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descriptions, visually indistinguishable entity pairs, or degenerate backgrounds.
 
 \paragraph{Scene themes.}
-10 environmental themes: Domestic\_LivingRoom, Domestic\_Kitchen, Urban\_Caf\'{e}, Urban\_Library, Urban\_Street, Nature\_Forest, Nature\_Beach, Nature\_Park, Professional\_Office, Professional\_Hospital.
+Scenarios are drawn from 10 environmental themes spanning domestic (LivingRoom, Kitchen), urban (Caf\'{e}, Library, Street), natural (Forest, Beach, Park), and professional (Office, Hospital) settings.
 
 \paragraph{Entity type distribution.}
-Three categories: Human, Professional, Animal. Table~\ref{tab:entity_types} shows the full distribution.
+Entities belong to three categories---Human, Professional, and Animal. Table~\ref{tab:entity_types} shows the full distribution of entity type combinations across the benchmark.
 
 \begin{table}[ht]
 \caption{Entity type combination distribution.}
@@ -232,7 +232,7 @@ Entity Types & Count & \% \\
 \label{app:quality_control}
 %% ============================================================
 
-All prompts undergo automated validation ensuring entity--pattern topology consistency: the set of entities mentioned in each shot description must exactly match the presence matrix $S$ for the target pattern.
+All prompts undergo automated validation ensuring entity--pattern topology consistency. Specifically, the set of entities mentioned in each shot description must exactly match the presence matrix $S$ for the target pattern.
 Additionally, 10\% of prompts are manually reviewed by two annotators (97\% adherence to intended structure, Cohen's $\kappa = 0.91$).
 Prompts that describe ambiguous scenarios (e.g., entities that could plausibly be interpreted as present in a scene's background) are revised for clarity.
 
@@ -242,7 +242,7 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 \label{app:prompts}
 %% ============================================================
 
-Each prompt has two variants: \texttt{gen\_prompt} (enriched with cinematic quality tags for T2V generation) and \texttt{eval\_prompt} (concise, objective description for VLM entity detection). Entity names are extracted directly from the eval prompts for VLM entity queries. Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
+Each prompt is instantiated with two variants. The \texttt{gen\_prompt} enriches the scene description with cinematic quality tags optimized for T2V generation, while the \texttt{eval\_prompt} provides a concise, objective description used exclusively for VLM entity detection. Entity names are extracted directly from the eval prompts for VLM entity queries. Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
 
 \begin{table}[ht]
 \caption{Relay pattern sample ($A \to AB \to B$).}
@@ -325,13 +325,13 @@ Shot & Type & Prompt \\
 \label{app:models}
 %% ============================================================
 
-All four models---StoryDiffusion (SD), EchoShot (Echo), VideoGen-of-Thought (VGoT), and VIC---use a fixed seed and the shared negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark.'' All four models successfully generated 1,000 videos each (4,000 total). Model-specific implementation notes:
+All four models---StoryDiffusion (SD), EchoShot (Echo), VideoGen-of-Thought (VGoT), and VIC---use a fixed seed and the shared negative prompt ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark.'' All four models successfully generated 1,000 videos each (4,000 total).
 
 \begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{SD}: Two-stage pipeline. SDXL generates keyframes (30 steps), then SEINE~\cite{seine} synthesizes inter-frame motion (50 steps). Consistent Self-Attention (CSA) shares features across shots.
-  \item \textbf{Echo}: Single-stage flow-matching via Wan2.1-1.3B (50 steps). Spatio-temporal echo guidance conditions on reference portraits.
-  \item \textbf{VGoT}: Two-stage cascaded pipeline. Kolors generates initial keyframes (25 steps), then DynamiCrafter~\cite{dynamicrafter} animates them (50 steps). An LLM planner decomposes the narrative into per-shot layouts.
-  \item \textbf{VIC}: In-context generation via CogVideoX-5B~\cite{cogvideox} with LoRA (50 steps). Prior shots are concatenated as in-context conditioning for subsequent generation.
+  \item \textbf{SD.} Two-stage pipeline. SDXL generates keyframes (30 steps), then SEINE~\cite{seine} synthesizes inter-frame motion (50 steps). Consistent Self-Attention (CSA) shares features across shots.
+  \item \textbf{Echo.} Single-stage flow-matching via Wan2.1-1.3B (50 steps). Spatio-temporal echo guidance conditions on reference portraits.
+  \item \textbf{VGoT.} Two-stage cascaded pipeline. Kolors generates initial keyframes (25 steps), then DynamiCrafter~\cite{dynamicrafter} animates them (50 steps). An LLM planner decomposes the narrative into per-shot layouts.
+  \item \textbf{VIC.} In-context generation via CogVideoX-5B~\cite{cogvideox} with LoRA (50 steps). Prior shots are concatenated as in-context conditioning for subsequent generation.
 \end{itemize}
 
 
@@ -341,14 +341,13 @@ All four models---StoryDiffusion (SD), EchoShot (Echo), VideoGen-of-Thought (VGo
 %% ============================================================
 
 \paragraph{VLM entity detector.}
-Qwen2-VL-7B-Instruct~\cite{qwen2vl}, fp16 precision, greedy decoding.
-One middle frame per shot is extracted ($T = 3$ shots per video, 3 frames total).
+We employ Qwen2-VL-7B-Instruct~\cite{qwen2vl} in fp16 precision with greedy decoding. One middle frame per shot is extracted ($T = 3$ shots per video, yielding 3 frames total).
 
 \paragraph{Entity query.}
-Binary yes/no: ``Is there a \{entity\} visible in this image? Answer only Yes or No.'' The VLM response is parsed by prefix: if it starts with ``yes'' (case-insensitive), $S_\text{obs}[t,k] = 1$; otherwise 0. No thresholds are required.
+Each entity is queried independently via binary yes/no questions of the form ``Is there a \{entity\} visible in this image? Answer only Yes or No.'' The VLM response is parsed by prefix---if it starts with ``yes'' (case-insensitive), $S_\text{obs}[t,k] = 1$; otherwise 0. No thresholds are required.
 
 \paragraph{Detection quality.}
-Across 4,000 videos (28,800 cells): TPR $= 52.1\%$, TNR $= 66.7\%$.
+Across all 4,000 videos (28,800 cells), the detector achieves TPR $= 52.1\%$ and TNR $= 66.7\%$.
 The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection confirms that the majority of false-negative cases are genuine generation failures (see \S\ref{app:vlm_quality} for the full Human--VLM agreement analysis). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 
@@ -442,10 +441,10 @@ VIC's PTM range is only 0.032 (0.048--0.080), confirming a fixed consistency cei
 Custom Streamlit web application showing two anonymized model outputs side by side (3 keyframes each). The original per-shot text prompts are displayed above. Left/right presentation is randomized per trial.
 
 \paragraph{Scale.}
-Each model is rated independently on a 5-point Likert scale for \emph{Narrative Compliance} (1 = very poor, 5 = excellent). Evaluators then select an overall preference: A win, B win, MutualFail (both fail), or BothGood (both succeed).
+Each model is rated independently on a 5-point Likert scale for \emph{Narrative Compliance} (1 = very poor, 5 = excellent). Evaluators then select an overall preference---A win, B win, MutualFail (both fail), or BothGood (both succeed).
 
 \paragraph{Criteria.}
-\emph{Narrative Compliance}: ``How well does each video follow the scripted entity dynamics (entries, exits, co-presences)?''
+Evaluators are asked to assess \emph{Narrative Compliance}, defined as ``How well does each video follow the scripted entity dynamics (entries, exits, co-presences)?''
 
 \paragraph{Design.}
 40 randomly sampled scenarios $\times$ 6 model pairs = 240 unique comparisons. 15 graduate student evaluators (CS and media studies), each completing 120 comparisons via a rotating-window assignment scheme. Table~\ref{tab:score_dist} shows score distributions, and Table~\ref{tab:head_to_head} reports head-to-head preferences.
@@ -503,9 +502,9 @@ As reported in Section~6.7 of the main text, the raw presence matching rate ($\a
 To disentangle detector error from generation failure, we manually inspected 100 randomly sampled cases where the VLM reported an entity as ``absent'' ($S_{\text{obs}} = 0$) despite being ``prescribed'' in the prompt ($S^* = 1$). Two human experts independently annotated whether the entity was (1)~clearly present, (2)~genuinely absent, or (3)~too distorted/cropped to be recognized. The results (Table~\ref{tab:human_vlm_audit}) reveal that in \textbf{84\%} of the cases, the VLM's ``absent'' label was justified:
 
 \begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{65\%} were \emph{unambiguous generation failures}: the model completely failed to synthesize the entity or produced a formless, unrecognizable blob.
-  \item \textbf{19\%} were \emph{marginal/ambiguous}: the entity was so heavily cropped or blurred into the background that it could not be reliably identified as the intended character.
-  \item \textbf{16\%} were \emph{VLM detection errors}: the entity was clearly visible but missed by the detector.
+  \item \textbf{65\%} were \emph{unambiguous generation failures}---the model completely failed to synthesize the entity or produced a formless, unrecognizable blob.
+  \item \textbf{19\%} were \emph{marginal/ambiguous}---the entity was so heavily cropped or blurred into the background that it could not be reliably identified as the intended character.
+  \item \textbf{16\%} were \emph{VLM detection errors}---the entity was clearly visible but missed by the detector.
 \end{itemize}
 
 \noindent This yields \textbf{80.2\% VLM precision} ($65/(65{+}16)$, excluding ambiguous cases), confirming that the \stem{} pipeline accurately diagnoses generative models' shortcomings.
@@ -583,7 +582,7 @@ VIC   & .068 & .069 & $-$.001 & 2,400 \\
 \end{tabular}
 \end{table}
 
-\textbf{VGoT exhibits a pronounced entity entry vs.\ exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming that DynamiCrafter's I2V rendering stage cannot introduce new entities absent from the initial keyframe layout.
+\textbf{VGoT exhibits a pronounced entity entry vs.\ exit asymmetry} ($\Delta = -0.052$). Its exit accuracy (0.120) is nearly double its entry accuracy (0.068), confirming that DynamiCrafter's I2V rendering stage cannot introduce new entities absent from the initial keyframe layout.
 SD is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
 VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accuracy are near-chance (0.068--0.069).
 
@@ -616,7 +615,7 @@ VIC   & .067 & .522 & .075 & .582 \\
 \end{table}
 
 3-entity patterns achieve higher EPA across all models (0.582--0.649 vs.\ 0.522--0.556) due to the larger denominator reducing per-cell noise impact.
-PTM rankings are preserved in both strata: SD $>$ Echo $>$ VGoT $>$ VIC for 2-entity, and SD $>$ Echo $>$ VGoT $\approx$ VIC for 3-entity.
+PTM rankings are preserved in both strata---SD $>$ Echo $>$ VGoT $>$ VIC for 2-entity, and SD $>$ Echo $>$ VGoT $\approx$ VIC for 3-entity.
 SD benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), suggesting CSA excels when more entities provide stronger discriminative anchors.
 
 
@@ -692,7 +691,7 @@ Rev.\ Relay    & 100 & .200{\tiny [.143,.257]} & \textbf{.225}{\tiny [.174,.276]
 \end{tabular}
 \end{table*}
 
-All overall PTM CIs are non-overlapping: SD [.226,.262] vs.\ Echo [.151,.184] vs.\ VGoT [.083,.107] vs.\ VIC [.060,.082].
+All overall PTM CIs are non-overlapping, with clear separation between adjacent models---SD [.226,.262] vs.\ Echo [.151,.184] vs.\ VGoT [.083,.107] vs.\ VIC [.060,.082].
 EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming statistically significant ordering.
 Per-pattern CIs (Table~\ref{tab:bootstrap_pattern}) show that SD achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where Echo's CI overlaps with SD's.
 
@@ -851,7 +850,7 @@ Rev.\ Relay   & 2 & 68.3 & 70.3 & 33.3 & 11.0 \\
 \end{tabular}
 \end{table}
 
-Patterns with more prescribed transitions (Split, Convergence, Sliding Window: 3 each) show the highest failure rates across all types.
+Patterns with more prescribed transitions---Split, Convergence, and Sliding Window (3 each)---show the highest failure rates across all types.
 Amnesia (Type~II) dominates across all patterns, consistent with the entity entry vs.\ exit asymmetry (\S\ref{app:entry_exit}).
 
 
@@ -866,11 +865,11 @@ We use two source clips---a black-and-white cat (entity~A) and an orange cat (en
 \paragraph{Setup.}
 Each case substitutes specific source shots to produce a known $S_\text{obs}$:
 \begin{itemize}[nosep,leftmargin=*]
-\item \textbf{GT Perfect}: A $\to$ AB $\to$ B \quad $\Rightarrow$ PTM=1.000, EPA=1.000, $E=\mathbf{0}$
-\item \textbf{Type~I (Context Bleeding)}: A $\to$ AB $\to$ AB \quad $\Rightarrow$ PTM=0.500, EPA=0.833
-\item \textbf{Type~II (Amnesia)}: A $\to$ A $\to$ A \quad $\Rightarrow$ PTM=0.000, EPA=0.500
-\item \textbf{Type~III (Spurious)}: B $\to$ AB $\to$ B \quad $\Rightarrow$ PTM=0.500, EPA=0.667
-\item \textbf{Type~IV (Reversal)}: AB $\to$ A $\to$ B \quad $\Rightarrow$ PTM=0.500, EPA=0.667
+\item \textbf{GT Perfect.} A $\to$ AB $\to$ B $\;\Rightarrow\;$ PTM=1.000, EPA=1.000, $E=\mathbf{0}$
+\item \textbf{Type~I (Context Bleeding).} A $\to$ AB $\to$ AB $\;\Rightarrow\;$ PTM=0.500, EPA=0.833
+\item \textbf{Type~II (Amnesia).} A $\to$ A $\to$ A $\;\Rightarrow\;$ PTM=0.000, EPA=0.500
+\item \textbf{Type~III (Spurious).} B $\to$ AB $\to$ B $\;\Rightarrow\;$ PTM=0.500, EPA=0.667
+\item \textbf{Type~IV (Reversal).} AB $\to$ A $\to$ B $\;\Rightarrow\;$ PTM=0.500, EPA=0.667
 \end{itemize}
 
 \paragraph{Shot sequences.}
@@ -878,7 +877,6 @@ Figure~\ref{fig:gt_cat} shows the actual keyframes used for each GT validation c
 
 \begin{figure}[ht]
 \centering
-%% TODO: Replace with actual GT cat keyframe images
 \includegraphics[width=\columnwidth]{figures/gt_cat_validation.png}
 \caption{GT validation shot sequences. Each row shows the 3-shot keyframes for one validation case (Perfect, Type~I--IV). Entity~A: black-and-white cat; Entity~B: orange cat.}
 \label{fig:gt_cat}
@@ -899,7 +897,7 @@ The VLM achieves 100\% detection accuracy on these unambiguous, real-world image
 \label{app:metric_discriminability}
 %% ============================================================
 
-We compare the discriminative power of three candidate metrics: PTM ($\ell_0$-norm on prescribed cells), EPA (entity presence accuracy), and raw Frobenius distance $\|E\|_F$ (Table~\ref{tab:discriminability}).
+We compare the discriminative power of three candidate metrics---PTM ($\ell_0$-norm on prescribed cells), EPA (entity presence accuracy), and raw Frobenius distance $\|E\|_F$---in Table~\ref{tab:discriminability}.
 
 \begin{table}[ht]
 \caption{Discriminability of candidate metrics. $H$: Kruskal--Wallis statistic across 4 models. Sig.\ pairs: number of pairwise Mann--Whitney $U$ tests significant at $\alpha = 0.005$ (out of 6).}
@@ -926,7 +924,7 @@ EPA is intermediate (4/6 pairs), reflecting its role as a macroscopic complement
 \label{app:sample_size}
 %% ============================================================
 
-We subsample $N \in \{50, 100, 200, 300, 500, 750, 1000\}$ scenarios (with replacement, $B = 1{,}000$ bootstrap iterations) and measure two stability criteria (Table~\ref{tab:rank_stability}): (1)~\emph{rank preservation}: the fraction of bootstrap samples in which the 4-model PTM ranking matches the full-dataset ranking; (2)~\emph{full significance}: the fraction in which all 6 pairwise Mann--Whitney $U$ tests are significant at $p < 0.05$.
+We subsample $N \in \{50, 100, 200, 300, 500, 750, 1000\}$ scenarios (with replacement, $B = 1{,}000$ bootstrap iterations) and measure two stability criteria (Table~\ref{tab:rank_stability}). \emph{Rank preservation} measures the fraction of bootstrap samples in which the 4-model PTM ranking matches the full-dataset ranking. \emph{Full significance} measures the fraction in which all 6 pairwise Mann--Whitney $U$ tests are significant at $p < 0.05$.
 
 \begin{table}[ht]
 \caption{Rank stability as a function of dataset size. \textbf{Bold}: first size achieving $\geq$95\%.}
@@ -995,16 +993,16 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's Dyna
 \begin{itemize}[leftmargin=*,nosep]
 \item All evaluation code, prompts, and 4,000 generated videos are released.
 \item Fixed random seed for generation and ablation bootstraps.
-\item VLM detector: Qwen2-VL-7B-Instruct (fp16, greedy decoding).
-\item Entity query: ``Is there a \{entity\} visible in this image? Answer only Yes or No.''
-\item 1 middle frame per shot (3 frames per video).
-\item PTM: prescribed transitions only ($\Delta S^* \neq 0$), no threshold.
-\item EPA: exact match $S_\text{obs}[t,k] = S^*[t,k]$, no threshold.
-\item Bootstrap: $B = 10{,}000$ iterations, percentile CIs.
-\item Permutation test: 1,000 character role swappings.
-\item Hardware: 4$\times$ NVIDIA RTX 4090 (24 GB each).
-\item Evaluation runtime: $\sim$20 minutes for 4,000 videos (VLM inference).
-\item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
+\item VLM detector is Qwen2-VL-7B-Instruct (fp16, greedy decoding).
+\item Entity query follows the template ``Is there a \{entity\} visible in this image? Answer only Yes or No.''
+\item One middle frame per shot is extracted (3 frames per video).
+\item PTM evaluates prescribed transitions only ($\Delta S^* \neq 0$) with no threshold.
+\item EPA computes exact match $S_\text{obs}[t,k] = S^*[t,k]$ with no threshold.
+\item Bootstrap uses $B = 10{,}000$ iterations with percentile CIs.
+\item Permutation test applies 1,000 character role swappings.
+\item Hardware consists of 4$\times$ NVIDIA RTX 4090 (24 GB each).
+\item Evaluation runtime is $\sim$20 minutes for 4,000 videos (VLM inference).
+\item \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
 \end{itemize}
 
 %% ============================================================
@@ -1015,10 +1013,10 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's Dyna
 A potential concern is whether extracting a \emph{single} frame per shot introduces sampling bias that could alter model rankings. To address this, we re-run the full \stem{} pipeline on all 4{,}000 videos under four temporal sampling strategies:
 
 \begin{itemize}[nosep,leftmargin=*]
-\item \textbf{Early} ($t = 0.25$): frame at 25\% of each shot.
-\item \textbf{Middle} ($t = 0.50$): frame at 50\% (default in main text).
-\item \textbf{Late} ($t = 0.75$): frame at 75\% of each shot.
-\item \textbf{Multi-3} ($t \in \{0.25, 0.50, 0.75\}$): majority vote over 3 frames per shot.
+\item \textbf{Early} ($t = 0.25$) extracts the frame at 25\% of each shot.
+\item \textbf{Middle} ($t = 0.50$) extracts the frame at 50\% (default in main text).
+\item \textbf{Late} ($t = 0.75$) extracts the frame at 75\% of each shot.
+\item \textbf{Multi-3} ($t \in \{0.25, 0.50, 0.75\}$) applies majority vote over 3 frames per shot.
 \end{itemize}
 
 \noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments.
