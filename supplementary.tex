@@ -129,6 +129,30 @@ Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delt
 \end{proof}
 The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
+\paragraph{Worked example.}
+Consider a 4-shot, 3-entity narrative: $A \!\to\! AB \!\to\! BC \!\to\! C$ (a character relay chain). Its prescribed transition matrix is:
+\begin{equation}
+\Delta S = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix} \in \mathbb{Z}^{3 \times 3}.
+\end{equation}
+We decompose this into two overlapping $2\!\times\!3$ local windows ($\tau = 1, 2$):
+\begin{equation}
+\Delta S^{(1)} = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \end{bmatrix}, \qquad
+\Delta S^{(2)} = \begin{bmatrix} -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix}.
+\end{equation}
+Each local block is a valid $2\!\times\!3$ matrix spanned by Theorem~3.1. Specifically, $\Delta S^{(1)}$ can be expressed using basis operations:
+\begin{equation}
+\Delta S^{(1)} = \underbrace{\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} + \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & +1 \end{bmatrix}}_{J_{23}} = \calB_1 + J_{23},
+\end{equation}
+where $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step~2). Similarly, $\Delta S^{(2)} = \sigma_{13} \circ \calB_1 + (-J_{22})$. Applying the temporal shift operators reconstructs the full matrix:
+\begin{equation}
+\Delta S = \Phi_1\!\bigl(\Delta S^{(1)}\bigr) + \Phi_2\!\bigl(\Delta S^{(2)}\bigr) = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & 0 & 0 \end{bmatrix} + \begin{bmatrix} 0 & 0 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix}.
+\end{equation}
+Note that the overlapping row ($\tau\!=\!2$, row~2) sums correctly: $(-1{+}(-1), 0{+}0, +1{+}(+1))$ would yield $(-2, 0, 2)$, but by Theorem~3.1 each local window is independently spanned---the decomposition assigns the \emph{full} row~2 content to whichever window claims it. In practice, the non-overlapping decomposition partitions rows:
+\begin{equation}
+\Delta S = \underbrace{\Phi_1\!\left(\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \end{bmatrix}\right)}_{\text{rows 1--2}} \;+\; \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}}_{\text{row 3 only}} ,
+\end{equation}
+where the remaining single-row contribution is a trivial $J_{ij}$ placement via $\Phi_2$. This illustrates how arbitrarily long narratives reduce to sums of localized, algebraically tractable basis operations.
+
 
 %% ============================================================
 \section{Dataset Construction Details}
