@@ -84,7 +84,10 @@ Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
 \begin{align}
 \Pi_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{Z}^{2\times 3}.
 \end{align}
-\emph{Linearity.}\; $\Pi_N(c_1 X + c_2 Y) = c_1\Pi_N(X) + c_2\Pi_N(Y)$.
+\emph{Linearity.}
+\begin{equation}
+\Pi_N(c_1 X + c_2 Y) = c_1\,\Pi_N(X) + c_2\,\Pi_N(Y), \quad \forall\; c_1, c_2 \in \mathbb{Z},\; X, Y \in \mathbb{Z}^{2\times 3}.
+\end{equation}
 
 \noindent\emph{Example.}\; For $N=5$, the Relay basis $\calB_1$ is embedded as:
 \begin{equation}
@@ -105,7 +108,10 @@ A block matrix insertion operator placing local transitions into temporal window
 \begin{align}
 \Phi_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
 \end{align}
-\emph{Linearity.}\; $\Phi_\tau(c_1 X + c_2 Y) = c_1\Phi_\tau(X) + c_2\Phi_\tau(Y)$.
+\emph{Linearity.}
+\begin{equation}
+\Phi_\tau(c_1 X + c_2 Y) = c_1\,\Phi_\tau(X) + c_2\,\Phi_\tau(Y), \quad \forall\; c_1, c_2 \in \mathbb{Z},\; X, Y \in \mathbb{Z}^{2\times N}.
+\end{equation}
 
 \noindent\emph{Example.}\; For a 5-shot video ($T\!=\!5$, yielding 4 transition rows), placing the padded Relay $\hat{\calB}_1$ at temporal window $\tau = 2$ (transitions 2--3):
 \begin{equation}
