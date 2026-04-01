@@ -296,7 +296,7 @@ All four models successfully generated 1000 videos each (4,000 total).
 %% ============================================================
 
 \paragraph{VLM entity detector.}
-Qwen2-VL-7B-Instruct~\cite{qwen2vl} (\texttt{Qwen/Qwen2-VL-7B-Instruct}), fp16 precision, greedy decoding (\texttt{do\_sample=False, max\_new\_tokens=5}).
+Qwen2-VL-7B-Instruct~\cite{qwen2vl}, fp16 precision, greedy decoding.
 One middle frame per shot is extracted ($T = 3$ shots per video, 3 frames total).
 
 \paragraph{Entity query.}
@@ -746,7 +746,6 @@ The VLM achieves 100\% detection accuracy on these unambiguous, real-world image
 (2)~\stem{} correctly assigns the right failure type label in all cases, and
 (3)~the lower TPR/TNR observed on generated images (\S\ref{app:vlm_quality}) reflects entity ambiguity in generation outputs, not a limitation of the detection pipeline.
 
-Source videos and analysis scripts: \texttt{gt/two\_cats/} and \texttt{eval\_gt\_failures.py}.
 
 
 %% ============================================================
