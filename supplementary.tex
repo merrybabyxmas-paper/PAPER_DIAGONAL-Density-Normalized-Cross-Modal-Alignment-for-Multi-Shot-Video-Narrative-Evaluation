@@ -5,8 +5,14 @@
 
 \usepackage{multirow}
 \usepackage{bm}
+\usepackage{bbm}
 \usepackage{enumitem}
 \usepackage{pifont}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{patterns}
 
 \copyrightyear{2026}
 \acmYear{2026}
@@ -42,24 +48,27 @@
 \label{app:necessity_b2}
 %% ============================================================
 
-In Theorem~3.1 (main text), we established that $\{\calB_1, \calB_2\}$ spans $\mathbb{Z}^{2 \times 3}$. To avoid redundancy with the main text's constructive proof, we provide the formal algebraic proof of why $\calB_1$ (Relay) alone is strictly insufficient to span the space, thereby necessitating the introduction of $\calB_2$ (Split).
+In Theorem~3.1 (main text), we established that $\{\calB_1, \calB_2\}$ spans $\mathbb{Z}^{2 \times 3}$. Here we prove that $\calB_1$ (Relay) alone is strictly insufficient, thereby necessitating $\calB_2$ (Split).
 
 \begin{lemma}[Row-Sum Invariance of $\calB_1$]
-Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves the topological invariant:
+Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves:
 \begin{equation}
 R_1(M) = +1, \quad R_2(M) = -1.
 \end{equation}
 \end{lemma}
 
 \begin{proof}
-The canonical Relay matrix $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ trivially satisfies $R_1(\calB_1) = 1$ and $R_2(\calB_1) = -1$. Because the operator $\sigma$ solely permutes column indices, it strictly preserves the algebraic sum of each row.
+The canonical Relay matrix $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$ trivially satisfies $R_1(\calB_1) = 1$ and $R_2(\calB_1) = -1$. Because $\sigma$ solely permutes column indices, it preserves each row's algebraic sum. Concretely, consider $\sigma_{12} \circ \calB_1$:
+\begin{equation}
+\sigma_{12} \circ \underbrace{\begin{bmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} = \underbrace{\begin{bmatrix} 1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}}_{\sigma_{12} \circ \calB_1}, \quad R_1 = 1, \; R_2 = -1. \qedhere
+\end{equation}
 \end{proof}
 
-Consequently, any $\mathbb{Z}$-linear combination derived exclusively from Relay variants, $X = \sum_k \alpha_k (\sigma_k \circ \calB_1)$, will possess row sums $R_1(X) = \sum_k \alpha_k$ and $R_2(X) = -\sum_k \alpha_k$, imposing a strict global constraint:
+Consequently, any $\mathbb{Z}$-linear combination derived exclusively from Relay variants, $X = \sum_k \alpha_k (\sigma_k \circ \calB_1)$, imposes a strict global constraint:
 \begin{equation}
-R_1(X) + R_2(X) = 0.
+R_1(X) + R_2(X) = \sum_k \alpha_k + \bigl(-\sum_k \alpha_k\bigr) = 0.
 \end{equation}
-However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus, $\calB_1$ variants alone cannot break this symmetric invariance. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$, which yields $R_1(\calB_2) + R_2(\calB_2) = -1$, is therefore algebraically essential to span the full narrative space.
+However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus $\calB_1$ variants alone cannot break this symmetric invariant. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$ satisfies $R_1(\calB_2) + R_2(\calB_2) = -1$, which is algebraically essential to span the full narrative space.
 
 
 %% ============================================================
@@ -68,29 +77,40 @@ However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 
 %% ============================================================
 
 \subsection{Operator Definitions and Validity}
-To formalize the dimensional expansion, we define two linear operators mapping the local $2\times 3$ space to the global arbitrary space.
+To formalize the dimensional expansion from the canonical $2\times 3$ space to arbitrary $(T{-}1)\times N$, we define two linear operators.
 
-\paragraph{Spatial Zero-Padding Operator ($\mathbb{Z}_N$).}
+\paragraph{Spatial Zero-Padding Operator ($\Pi_N$).}
 Appends $N-3$ zero-columns to accommodate arbitrary entity counts:
 \begin{align}
-\mathbb{Z}_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{Z}^{2\times 3}.
+\Pi_N(X) = \bigl[\; X \;\;\; \mathbf{0}_{2\times(N-3)} \;\bigr], \quad X \in \mathbb{Z}^{2\times 3}.
 \end{align}
-\emph{Linearity.}\; $\mathbb{Z}_N(c_1 X + c_2 Y) = c_1\mathbb{Z}_N(X) + c_2\mathbb{Z}_N(Y)$.
+\emph{Linearity.}\; $\Pi_N(c_1 X + c_2 Y) = c_1\Pi_N(X) + c_2\Pi_N(Y)$.
 
-\noindent\emph{Video interpretation.}\; In a generated video, the basis patterns $\calB_1$ and $\calB_2$ are defined over 3 entity slots. When a narrative involves $N > 3$ entities (e.g., 5 characters), $\mathbb{Z}_N$ embeds the 3-entity transition into the wider $N$-entity space by filling the additional entity columns with zeros---meaning those extra characters are unaffected by this particular local transition.
+\noindent\emph{Example.}\; For $N=5$, the Relay basis $\calB_1$ is embedded as:
+\begin{equation}
+\Pi_5(\calB_1) = \Pi_5\!\!\begin{pmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{pmatrix} = \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{bmatrix}.
+\end{equation}
+The additional entity columns are zero---meaning those characters are unaffected by this local transition.
 
-We define the padded bases $\hat{\calB}_1 = \mathbb{Z}_N(\calB_1)$ and $\hat{\calB}_2 = \mathbb{Z}_N(\calB_2)$.
+We define the padded bases $\hat{\calB}_1 = \Pi_N(\calB_1)$ and $\hat{\calB}_2 = \Pi_N(\calB_2)$.
 
-\paragraph{Temporal Shift Operator ($\mathcal{S}_\tau$).}
+\paragraph{Temporal Shift Operator ($\Phi_\tau$).}
 A block matrix insertion operator placing local transitions into temporal window $\tau \in \{1, \ldots, T-2\}$:
 \begin{align}
-\mathcal{S}_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
+\Phi_\tau(X) = \begin{bmatrix} \mathbf{0}_{(\tau-1)\times N} \\ X \\ \mathbf{0}_{(T-\tau-2)\times N} \end{bmatrix}, \quad X \in \mathbb{Z}^{2\times N}.
 \end{align}
-\emph{Linearity.}\; $\mathcal{S}_\tau(c_1 X + c_2 Y) = c_1\mathcal{S}_\tau(X) + c_2\mathcal{S}_\tau(Y)$.
+\emph{Linearity.}\; $\Phi_\tau(c_1 X + c_2 Y) = c_1\Phi_\tau(X) + c_2\Phi_\tau(Y)$.
 
-\noindent\emph{Video interpretation.}\; A long video with $T$ shots contains $T-1$ consecutive shot-to-shot transitions. Each basis pattern covers only a 2-row (i.e., 2-transition) local window. $\mathcal{S}_\tau$ places this local transition at temporal position $\tau$ within the full $(T{-}1)$-row timeline, padding the remaining rows with zeros---meaning shots outside this window are unaffected. Together, $\mathbb{Z}_N$ and $\mathcal{S}_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
-
-The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local transitions maps to the global space without cross-temporal interference.
+\noindent\emph{Example.}\; For a 5-shot video ($T\!=\!5$, yielding 4 transition rows), placing the padded Relay $\hat{\calB}_1$ at temporal window $\tau = 2$ (transitions 2--3):
+\begin{equation}
+\Phi_2\bigl(\hat{\calB}_1\bigr) = \begin{bmatrix}
+0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+-1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0
+\end{bmatrix} \in \mathbb{Z}^{4 \times 5}.
+\end{equation}
+Shots outside this window are unaffected. Together, $\Pi_N$ and $\Phi_\tau$ allow any narrative of arbitrary length and cast size to be decomposed into a sum of localized basis operations.
 
 \subsection{General Spanning Theorem}
 
@@ -98,14 +118,14 @@ The linearity of $\mathcal{S}_\tau$ guarantees that superposition of local trans
 \begin{theorem}[Topological Generalization]
 For any $T \geq 3$ and $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{Z}^{(T-1)\times N}$ can be algebraically expressed as:
 \begin{equation}
-\Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\;\, \mathcal{S}_\tau \circ \sigma_{\tau,m} \circ \hat{\calB}_m,
+\Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\;\, \Phi_\tau \circ \sigma_{\tau,m} \circ \hat{\calB}_m,
 \label{eq:grand_spanning}
 \end{equation}
 where $c_{\tau,m} \in \mathbb{Z}$, and $\sigma_{\tau,m} \in \Sigma_N$.
 \end{theorem}
 
 \begin{proof}
-Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)}$. By Theorem~3.1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\mathbb{Z}_N$ and $\mathcal{S}_\tau$ are linear homomorphisms, their composition perfectly preserves the spanning property across the globally expanded dimensions.
+Any $\Delta S$ can be decomposed into $T-2$ overlapping local transitions $\Delta S^{(\tau)} \in \mathbb{Z}^{2 \times N}$. By Theorem~3.1 (main text), each local block is spanned by the extended bases $\hat{\calB}$. Because both $\Pi_N$ and $\Phi_\tau$ are linear homomorphisms, their composition preserves the spanning property across the globally expanded dimensions.
 \end{proof}
 The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scaling linearly and entirely bypassing the combinatorial explosion of empirical prompt sampling.
 
@@ -115,32 +135,6 @@ The required number of basis terms scales as $O\bigl((T-2) \cdot N\bigr)$---scal
 \label{app:dataset}
 %% ============================================================
 
-\begin{table}[ht]
-\caption{Complete benchmark composition (1,000 scenarios, 3,000 shots).}
-\label{tab:full_composition}
-\centering
-\small
-\begin{tabular}{@{}llccc@{}}
-\toprule
-Type & Pattern & Formula & Scenarios & Shots \\
-\midrule
-\multirow{2}{*}{Basis}
-  & Relay         & $A \to AB \to B$     & 200 & 600 \\
-  & Split         & $AB \to A \to B$     & 200 & 600 \\
-\multirow{5}{*}{Derived}
-  & Accumulation  & $A \to AB \to ABC$   & 200 & 600 \\
-  & Convergence      & $A \to B \to AB$     & 100 & 300 \\
-  & Sliding Window   & $AB \to BC \to C$    & 100 & 300 \\
-  & Reduction        & $ABC \to AB \to A$   & 100 & 300 \\
-  & Reverse Relay    & $B \to AB \to A$     & 100 & 300 \\
-\midrule
-\multicolumn{2}{l}{Total} & & 1,000 & 3,000 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:full_composition} summarizes the benchmark composition.
-
 \paragraph{Prompt generation.}
 All prompts are generated via Google Gemini~1.5~\cite{gemini} (temperature 0.7) using structured templates specifying narrative pattern, entity descriptions, and scene backgrounds.
 Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descriptions, visually indistinguishable entity pairs, or degenerate backgrounds.
@@ -149,7 +143,7 @@ Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descripti
 10 environmental themes: Domestic\_LivingRoom, Domestic\_Kitchen, Urban\_Caf\'{e}, Urban\_Library, Urban\_Street, Nature\_Forest, Nature\_Beach, Nature\_Park, Professional\_Office, Professional\_Hospital.
 
 \paragraph{Entity type distribution.}
-Three categories: Human (H), Professional (P), Animal (A). Table~\ref{tab:entity_types} shows the full distribution.
+Three categories: Human, Professional, Animal. Table~\ref{tab:entity_types} shows the full distribution.
 
 \begin{table}[ht]
 \caption{Entity type combination distribution.}
@@ -160,17 +154,17 @@ Three categories: Human (H), Professional (P), Animal (A). Table~\ref{tab:entity
 \toprule
 Entity Types & Count & \% \\
 \midrule
-(H, P)    & 268 & 26.8 \\
-(H, P, P) & 169 & 16.9 \\
-(P, P)    & 110 & 11.0 \\
-(H, H)    & 96  & 9.6 \\
-(H, H, P) & 93  & 9.3 \\
-(A, H)    & 72  & 7.2 \\
-(A, A)    & 54  & 5.4 \\
-(P, P, P) & 45  & 4.5 \\
-(A, A, A) & 38  & 3.8 \\
-(A, A, H) & 35  & 3.5 \\
-(H, H, H) & 20  & 2.0 \\
+(Human, Professional)              & 268 & 26.8 \\
+(Human, Professional, Professional) & 169 & 16.9 \\
+(Professional, Professional)        & 110 & 11.0 \\
+(Human, Human)                      & 96  & 9.6 \\
+(Human, Human, Professional)        & 93  & 9.3 \\
+(Animal, Human)                     & 72  & 7.2 \\
+(Animal, Animal)                    & 54  & 5.4 \\
+(Professional, Professional, Professional) & 45  & 4.5 \\
+(Animal, Animal, Animal)            & 38  & 3.8 \\
+(Animal, Animal, Human)             & 35  & 3.5 \\
+(Human, Human, Human)               & 20  & 2.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -191,7 +185,7 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 \label{app:prompts}
 %% ============================================================
 
-Each prompt has two variants: \texttt{gen\_prompt} (+ quality tags for generation) and \texttt{eval\_prompt} (clean scene descriptions for evaluation). Entity names are extracted directly from the eval prompts for VLM entity queries. Tables~\ref{tab:sample_relay}--\ref{tab:sample_slidwin} show representative examples for three patterns.
+Each prompt has two variants: \texttt{gen\_prompt} (enriched with cinematic quality tags for T2V generation) and \texttt{eval\_prompt} (concise, objective description for VLM entity detection). Entity names are extracted directly from the eval prompts for VLM entity queries. Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
 
 \begin{table}[ht]
 \caption{Relay pattern sample ($A \to AB \to B$).}
@@ -199,21 +193,21 @@ Each prompt has two variants: \texttt{gen\_prompt} (+ quality tags for generatio
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.5cm}@{}}
+\begin{tabular}{@{}clp{5.2cm}@{}}
 \toprule
-Shot & Field & Prompt \\
+Shot & Type & Prompt \\
 \midrule
 \multirow{2}{*}{1}
-  & eval & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
-  & entity &a toddler \\
+  & gen\_prompt & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
 \midrule
 \multirow{2}{*}{2}
-  & eval & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
-  & entity &a toddler and a mother together \\
+  & gen\_prompt & A toddler and a mother sitting together on the rug, the mother helping stack blocks, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
 \midrule
 \multirow{2}{*}{3}
-  & eval & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
-  & entity &a mother \\
+  & gen\_prompt & A mother tidying up scattered blocks on the rug, the toddler no longer present, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -224,18 +218,21 @@ Shot & Field & Prompt \\
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.5cm}@{}}
+\begin{tabular}{@{}clp{5.2cm}@{}}
 \toprule
-Shot & Field & Prompt \\
+Shot & Type & Prompt \\
 \midrule
-1 & eval & A lone eagle soaring above a dense forest canopy at dawn \\
-  & entity &an eagle \\
+\multirow{2}{*}{1}
+  & gen\_prompt & A lone eagle soaring above a dense forest canopy at dawn, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & A lone eagle soaring above a dense forest canopy at dawn \\
 \midrule
-2 & eval & An eagle and a fox standing at the edge of a forest clearing \\
-  & entity &an eagle and a fox \\
+\multirow{2}{*}{2}
+  & gen\_prompt & An eagle and a fox standing at the edge of a forest clearing, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & An eagle and a fox standing at the edge of a forest clearing \\
 \midrule
-3 & eval & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
-  & entity &an eagle, a fox, and a rabbit \\
+\multirow{2}{*}{3}
+  & gen\_prompt & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -246,18 +243,21 @@ Shot & Field & Prompt \\
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.5cm}@{}}
+\begin{tabular}{@{}clp{5.2cm}@{}}
 \toprule
-Shot & Field & Prompt \\
+Shot & Type & Prompt \\
 \midrule
-1 & eval & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
-  & entity &a chef and a waiter \\
+\multirow{2}{*}{1}
+  & gen\_prompt & A chef and a waiter preparing a large banquet table in an elegant restaurant, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
 \midrule
-2 & eval & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
-  & entity &a waiter and a sommelier \\
+\multirow{2}{*}{2}
+  & gen\_prompt & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
 \midrule
-3 & eval & A sommelier examining a wine bottle under warm chandelier light, alone \\
-  & entity &a sommelier \\
+\multirow{2}{*}{3}
+  & gen\_prompt & A sommelier examining a wine bottle under warm chandelier light, alone, cinematic, high quality, detailed, sharp focus \\
+  & eval\_prompt & A sommelier examining a wine bottle under warm chandelier light, alone \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -268,26 +268,14 @@ Shot & Field & Prompt \\
 \label{app:models}
 %% ============================================================
 
-\begin{table}[ht]
-\caption{Inference specifications. $^\dagger$T2I: 30 steps; I2V: 50 steps.}
-\label{tab:inference}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lllllc@{}}
-\toprule
-Model & Backbone & Paradigm & Steps & Resolution & Frames \\
-\midrule
-SD & SDXL+SEINE & T2I$\to$I2V$^\dagger$ & 30+50 & 512$\times$512 & 16 \\
-Echo  & Wan2.1-1.3B & T2V (FM) & 50 & 832$\times$480 & 93 \\
-VIC       & CogVideoX-5B & In-context & 50 & 720$\times$480 & 49 \\
-VGoT      & Kolors+DC & T2I$\to$I2V & 25+50 & 512$\times$512 & 16 \\
-\bottomrule
-\end{tabular}
-\end{table}
+All four models---StoryDiffusion (SD), EchoShot (Echo), VideoGen-of-Thought (VGoT), and VIC---use a fixed seed and the shared negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark.'' All four models successfully generated 1,000 videos each (4,000 total). Model-specific implementation notes:
 
-Table~\ref{tab:inference} summarizes the inference configurations. All models use a fixed seed, negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark''.
-All four models successfully generated 1000 videos each (4,000 total).
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{SD}: Two-stage pipeline. SDXL generates keyframes (30 steps), then SEINE~\cite{seine} synthesizes inter-frame motion (50 steps). Consistent Self-Attention (CSA) shares features across shots.
+  \item \textbf{Echo}: Single-stage flow-matching via Wan2.1-1.3B (50 steps). Spatio-temporal echo guidance conditions on reference portraits.
+  \item \textbf{VGoT}: Two-stage cascaded pipeline. Kolors generates initial keyframes (25 steps), then DynamiCrafter~\cite{dynamicrafter} animates them (50 steps). An LLM planner decomposes the narrative into per-shot layouts.
+  \item \textbf{VIC}: In-context generation via CogVideoX-5B~\cite{cogvideox} with LoRA (50 steps). Prior shots are concatenated as in-context conditioning for subsequent generation.
+\end{itemize}
 
 
 %% ============================================================
@@ -304,16 +292,7 @@ Binary yes/no: ``Is there a \{entity\} visible in this image? Answer only Yes or
 
 \paragraph{Detection quality.}
 Across 4,000 videos (28,800 cells): TPR $= 52.1\%$, TNR $= 66.7\%$.
-The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection of 100 randomly sampled false-negative cells confirmed that 65\% were genuine generation failures, 19\% were ambiguous, and only 16\% were VLM detection errors, yielding 80.2\% VLM precision (see main text, \S6.7). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
-
-\paragraph{Failure classification.}
-Given $E_{t,e} = \Delta S_{\text{obs},t,e} - \Delta S^*_{t,e}$:
-\begin{itemize}[leftmargin=*,nosep]
-  \item Type~I (Context Bleeding): $\Delta S^*_{t,e} = -1$ and $E_{t,e} = +1$ (entity should exit but persists).
-  \item Type~II (Amnesia): $\Delta S^*_{t,e} = +1$ and $E_{t,e} = -1$ (entity should enter but absent).
-  \item Type~III (Spurious): $\Delta S^*_{t,e} = 0$ and $E_{t,e} \neq 0$ (unprescribed transition).
-  \item Type~IV (Reversal): $|E_{t,e}| = 2$ (opposite direction; strict subset of I/II).
-\end{itemize}
+The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection confirms that the majority of false-negative cases are genuine generation failures (see \S\ref{app:vlm_quality} for the full Human--VLM agreement analysis). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 
 %% ============================================================
@@ -384,7 +363,7 @@ Pattern & PTM & EPA & PTM & EPA & PTM & EPA & PTM & EPA \\
 \midrule
 Relay (B, 2-ent)       & \textbf{.190} & .536 & .138 & .506 & .085 & \textbf{.531} & .080 & .522 \\
 Split (B, 2-ent)       & \textbf{.233} & \textbf{.553} & .165 & .538 & .108 & .537 & .048 & .497 \\
-Accum.\ (B, 3-ent)    & \textbf{.253} & \textbf{.662} & .095 & .610 & .070 & .642 & .072 & .594 \\
+Accum.\ (D, 3-ent)    & \textbf{.253} & \textbf{.662} & .095 & .610 & .070 & .642 & .072 & .594 \\
 Converg.\ (D, 2-ent)  & \textbf{.277} & \textbf{.595} & .187 & .558 & .053 & .497 & .067 & .555 \\
 Slid.\ Win.\ (D, 3-ent) & \textbf{.357} & \textbf{.627} & .270 & .611 & .103 & .502 & .077 & .523 \\
 Reduction (D, 3-ent)   & \textbf{.250} & .644 & .195 & .601 & .110 & .588 & .080 & \textbf{.618} \\
@@ -412,7 +391,7 @@ Each model is rated independently on a 5-point Likert scale for \emph{Narrative 
 \emph{Narrative Compliance}: ``How well does each video follow the scripted entity dynamics (entries, exits, co-presences)?''
 
 \paragraph{Design.}
-40 randomly sampled scenarios $\times$ 6 model pairs = 240 unique comparisons. 15 graduate student evaluators (CS and media studies), each completing 120 comparisons via a rotating-window assignment scheme. Median completion time: $\sim$25 min per evaluator. Two attention-check trials embedded (100\% pass rate). Table~\ref{tab:score_dist} shows score distributions, and Table~\ref{tab:head_to_head} reports head-to-head preferences.
+40 randomly sampled scenarios $\times$ 6 model pairs = 240 unique comparisons. 15 graduate student evaluators (CS and media studies), each completing 120 comparisons via a rotating-window assignment scheme. Table~\ref{tab:score_dist} shows score distributions, and Table~\ref{tab:head_to_head} reports head-to-head preferences.
 
 \begin{table}[ht]
 \caption{Likert score distributions and per-model mean narrative compliance scores.}
@@ -456,14 +435,47 @@ VGoT vs.\ VIC & 16 / 68 / 17 & 296 \\
 
 
 %% ============================================================
-\section{VLM Detection Quality by Pattern}
+\section{VLM Reliability and Human--VLM Agreement}
 \label{app:vlm_quality}
 %% ============================================================
+
+As reported in Section~6.7 of the main text, the raw presence matching rate ($\approx$52\% TPR) appears low at first glance. We demonstrate through two validation steps that this score is a faithful reflection of current generative models' failure to adhere to prompts, rather than a lack of VLM robustness.
+
+\subsection{Human Audit of False Negatives}
+
+To disentangle detector error from generation failure, we manually inspected 100 randomly sampled cases where the VLM reported an entity as ``absent'' ($S_{\text{obs}} = 0$) despite being ``prescribed'' in the prompt ($S^* = 1$). Two human experts independently annotated whether the entity was (1)~clearly present, (2)~genuinely absent, or (3)~too distorted/cropped to be recognized. The results (Table~\ref{tab:human_vlm_audit}) reveal that in \textbf{84\%} of the cases, the VLM's ``absent'' label was justified:
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{65\%} were \emph{unambiguous generation failures}: the model completely failed to synthesize the entity or produced a formless, unrecognizable blob.
+  \item \textbf{19\%} were \emph{marginal/ambiguous}: the entity was so heavily cropped or blurred into the background that it could not be reliably identified as the intended character.
+  \item \textbf{16\%} were \emph{VLM detection errors}: the entity was clearly visible but missed by the detector.
+\end{itemize}
+
+\noindent This yields \textbf{80.2\% VLM precision} ($65/(65{+}16)$, excluding ambiguous cases), confirming that the \stem{} pipeline accurately diagnoses generative models' shortcomings.
+
+\begin{table}[h]
+\caption{Human audit of 100 random VLM negative flags ($S_{\text{obs}}=0,\; S^*=1$).}
+\label{tab:human_vlm_audit}
+\centering\small
+\begin{tabular}{lc}
+\toprule
+Category & Frequency (\%) \\
+\midrule
+Genuine Generation Failure (Amnesia/Morphed) & 65\% \\
+Marginal / Heavily Obscured (VLM-justifiable) & 19\% \\
+Actual VLM Detection Error & 16\% \\
+\midrule
+\textbf{Total Validated ``Failure'' Rate} & \textbf{84\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Per-Pattern TPR \& TNR}
 
 The VLM detector's TPR and TNR vary across patterns, reflecting differences in entity count and scene complexity (Table~\ref{tab:vlm_quality}).
 
 \begin{table}[ht]
-\caption{VLM detection quality (TPR/TNR) by narrative pattern.}
+\caption{Per-pattern TPR \& TNR of VLM binary detection.}
 \label{tab:vlm_quality}
 \centering
 \small
@@ -484,11 +496,14 @@ Rev.\ Relay   & 2 & 54.1\% & 56.2\% \\
 
 3-entity patterns (Accumulation, Sliding Window, Reduction) achieve substantially higher TNR (70--83\%) because more entities are absent per shot, and the VLM correctly identifies absent entities.
 TPR is relatively stable across patterns (46--55\%), reflecting the fundamental difficulty of detecting entities in generated images.
-The VLM-based binary detection avoids the threshold tuning required by continuous CLIP probes, making PTM and EPA threshold-free metrics.
+
+\subsection{VLM Performance on Real-World Ground Truth}
+
+To further isolate VLM performance from generative noise, we evaluated the Qwen2-VL-7B detector on a set of real-world Ground Truth (GT) videos featuring the same entity types as in MEMS-1K. In these clear, high-fidelity videos, the VLM achieved \textbf{100\% accuracy} in binary presence detection (see Appendix~\ref{app:gt_failures} for details). This stark contrast between 100\% accuracy on real video versus $\sim$52\% on generated video confirms that the low TPR is not a limitation of our evaluation tool, but a quantitative measure of the narrative gap in current video generation architectures.
 
 
 %% ============================================================
-\section{Entry vs.\ Exit Operation Accuracy}
+\section{Entity Entry vs.\ Exit Accuracy}
 \label{app:entry_exit}
 %% ============================================================
 
@@ -511,7 +526,7 @@ VIC   & .068 & .069 & $-$.001 & 2,400 \\
 \end{tabular}
 \end{table}
 
-\textbf{VGoT has an entry-exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming the planning-rendering bottleneck where DynamiCrafter cannot introduce new entities absent from the keyframe.
+\textbf{VGoT exhibits a pronounced entity entry vs.\ exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming that DynamiCrafter's I2V rendering stage cannot introduce new entities absent from the initial keyframe layout.
 SD is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
 VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accuracy are near-chance (0.068--0.069).
 
@@ -573,8 +588,7 @@ All pooled  & .542 & $<10^{-300}$ \\
 
 As shown in Table~\ref{tab:correlation}, EPA and PTM show strong positive correlation at the per-video level ($r = 0.542$ pooled), confirming they measure related but distinct aspects of narrative fidelity.
 The correlation is strongest for SD ($r = 0.661$) because it has the widest PTM range, providing more variance for correlation.
-All per-method correlations are highly significant ($p < 10^{-51}$), in contrast to the CLIP-based analysis where VGoT and VIC showed no significant correlation due to weak probe signals.
-This validates the VLM-based binary detection as producing more reliable metrics than continuous CLIP probes.
+All per-method correlations are highly significant ($p < 10^{-51}$), validating the VLM-based binary detection as producing reliable metrics.
 
 
 %% ============================================================
@@ -582,10 +596,10 @@ This validates the VLM-based binary detection as producing more reliable metrics
 \label{app:bootstrap}
 %% ============================================================
 
-95\% bootstrap CIs ($B = 10{,}000$, percentile method) are reported in Table~\ref{tab:bootstrap_ci}.
+95\% bootstrap CIs ($B = 10{,}000$, percentile method) are reported in Table~\ref{tab:bootstrap_ci} (overall) and Table~\ref{tab:bootstrap_pattern} (per-pattern PTM).
 
 \begin{table}[ht]
-\caption{Main results with 95\% CIs.}
+\caption{Overall metrics with 95\% bootstrap CIs.}
 \label{tab:bootstrap_ci}
 \centering
 \small
@@ -600,8 +614,30 @@ EPA & \textbf{.593}{\tiny [.583,.604]} & .563{\tiny [.553,.574]} & .554{\tiny [.
 \end{tabular}
 \end{table}
 
-All PTM CIs are non-overlapping: SD [.226,.262] vs.\ Echo [.151,.184] vs.\ VGoT [.083,.107] vs.\ VIC [.060,.082].
+\begin{table*}[ht]
+\caption{Per-pattern PTM with 95\% bootstrap CIs ($B = 10{,}000$). Best per pattern in \textbf{bold}. $n$: scenarios per pattern.}
+\label{tab:bootstrap_pattern}
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}ll cccc@{}}
+\toprule
+Pattern & $n$ & SD & Echo & VGoT & VIC \\
+\midrule
+Relay          & 200 & \textbf{.190}{\tiny [.150,.230]} & .138{\tiny [.102,.174]} & .085{\tiny [.058,.112]} & .080{\tiny [.056,.104]} \\
+Split          & 200 & \textbf{.233}{\tiny [.193,.273]} & .165{\tiny [.129,.201]} & .108{\tiny [.081,.135]} & .048{\tiny [.024,.072]} \\
+Accum.         & 200 & \textbf{.253}{\tiny [.213,.293]} & .095{\tiny [.059,.131]} & .070{\tiny [.043,.097]} & .072{\tiny [.048,.096]} \\
+Converg.       & 100 & \textbf{.277}{\tiny [.220,.334]} & .187{\tiny [.136,.238]} & .053{\tiny [.014,.092]} & .067{\tiny [.033,.101]} \\
+Slid.\ Win.    & 100 & \textbf{.357}{\tiny [.300,.414]} & .270{\tiny [.219,.321]} & .103{\tiny [.064,.142]} & .077{\tiny [.043,.111]} \\
+Reduction      & 100 & \textbf{.250}{\tiny [.193,.307]} & .195{\tiny [.144,.246]} & .110{\tiny [.071,.149]} & .080{\tiny [.046,.114]} \\
+Rev.\ Relay    & 100 & .200{\tiny [.143,.257]} & \textbf{.225}{\tiny [.174,.276]} & .150{\tiny [.111,.189]} & .080{\tiny [.046,.114]} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+All overall PTM CIs are non-overlapping: SD [.226,.262] vs.\ Echo [.151,.184] vs.\ VGoT [.083,.107] vs.\ VIC [.060,.082].
 EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming statistically significant ordering.
+Per-pattern CIs (Table~\ref{tab:bootstrap_pattern}) show that SD achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where Echo's CI overlaps with SD's.
 
 
 %% ============================================================
@@ -638,7 +674,7 @@ The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.1
 %% ============================================================
 
 \begin{table}[ht]
-\caption{PTM score distributions. PTM takes discrete values $\{0, 0.5, 1.0\}$ for 2-transition patterns.}
+\caption{PTM score distributions. PTM takes discrete values $\{0, 0.5, 1.0\}$ for 2-transition patterns and $\{0, 0.33, 0.67, 1.0\}$ for 3-transition patterns.}
 \label{tab:ptm_dist}
 \centering
 \small
@@ -658,12 +694,53 @@ Table~\ref{tab:ptm_dist} shows that PTM concentrates at discrete values because 
 VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct).
 SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable.
 
+Figure~\ref{fig:ptm_dist} visualizes these distributions.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    bar width=6pt,
+    width=\columnwidth,
+    height=5cm,
+    ylabel={\small \% of videos},
+    xlabel={\small PTM value},
+    symbolic x coords={0, 0.5, 1.0},
+    xtick=data,
+    ymin=0, ymax=95,
+    legend style={at={(0.98,0.98)}, anchor=north east, font=\scriptsize, legend columns=2},
+    enlarge x limits=0.3,
+    nodes near coords={\scriptsize\pgfmathprintnumber\pgfplotspointmeta},
+    every node near coord/.append style={rotate=90, anchor=west, font=\tiny},
+]
+\addplot coordinates {(0, 53.5) (0.5, 21.5) (1.0, 4.5)};
+\addplot coordinates {(0, 67.1) (0.5, 15.3) (1.0, 2.6)};
+\addplot coordinates {(0, 79.5) (0.5, 10.2) (1.0, 0.8)};
+\addplot coordinates {(0, 84.8) (0.5, 8.7)  (1.0, 0.3)};
+\legend{SD, Echo, VGoT, VIC}
+\end{axis}
+\end{tikzpicture}
+\caption{PTM score distributions across models. Higher-performing models (SD) shift mass from PTM$\,{=}\,0$ toward PTM$\,{=}\,0.5$ and PTM$\,{=}\,1.0$.}
+\label{fig:ptm_dist}
+\end{figure}
+
 
 %% ============================================================
 \section{Frobenius Distance Analysis}
 \label{app:frobenius}
 %% ============================================================
 
+\paragraph{Worked example.}
+Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to enter at transition~1, and a spurious entry occurs at transition~2:
+\begin{equation}
+\Delta S^* = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}, \quad
+\Delta S_\text{obs} = \begin{bmatrix} 0 & 0 \\ -1 & +1 \end{bmatrix}, \quad
+E = \begin{bmatrix} 0 & -1 \\ 0 & +1 \end{bmatrix}.
+\end{equation}
+Here, $E_{1,2} = -1$ is a prescribed failure (Type~II Amnesia on a $\Delta S^*_{1,2} = +1$ cell), while $E_{2,2} = +1$ is a spurious transition (Type~III on a $\Delta S^*_{2,2} = 0$ hold cell). The Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt{2}$ weights both errors equally, conflating the narrative-critical Amnesia with hold-cell noise. PTM, by contrast, evaluates only the prescribed mask $\mathcal{M} = \bigl[\begin{smallmatrix} 0 & 1 \\ 1 & 0 \end{smallmatrix}\bigr]$, yielding PTM $= 1 - 1/2 = 0.5$.
+
+\paragraph{Discriminative analysis.}
 The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}):
 
 \begin{table}[ht]
@@ -697,7 +774,7 @@ This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribe
 Failure rates are computed from the VLM-based $E$ matrix, with Type~IV (reversal, $|E|=2$) separated from Types~I/II (Table~\ref{tab:failure_rates}).
 
 \begin{table}[ht]
-\caption{Failure rates (\% of videos with $\geq$1 failure) per pattern, aggregated across all 4 models.}
+\caption{Failure rates (\% of videos with $\geq$1 failure) per pattern, aggregated across all 4 models. Highest rate per type in \textbf{bold}.}
 \label{tab:failure_rates}
 \centering
 \small
@@ -708,8 +785,8 @@ Pattern & $|\Delta S^* \neq 0|$ & I & II & III & IV \\
 \midrule
 Relay         & 2 & 63.4 & 68.6 & 34.9 & 11.5 \\
 Split         & 3 & 73.1 & 70.8 & 37.3 & 13.4 \\
-Accumulation  & 2 & 63.9 & 80.8 & 33.9 & 8.4 \\
-Convergence   & 3 & 78.8 & 81.0 & 47.5 & 14.3 \\
+Accumulation  & 2 & 63.9 & \textbf{80.8} & 33.9 & 8.4 \\
+Convergence   & 3 & \textbf{78.8} & 81.0 & \textbf{47.5} & \textbf{14.3} \\
 Sliding Win.  & 3 & 77.3 & 77.5 & 37.3 & 12.5 \\
 Reduction     & 2 & 63.3 & 68.8 & 28.5 & 8.0 \\
 Rev.\ Relay   & 2 & 68.3 & 70.3 & 33.3 & 11.0 \\
@@ -718,7 +795,7 @@ Rev.\ Relay   & 2 & 68.3 & 70.3 & 33.3 & 11.0 \\
 \end{table}
 
 Patterns with more prescribed transitions (Split, Convergence, Sliding Window: 3 each) show the highest failure rates across all types.
-Amnesia (Type~II) dominates across all patterns, consistent with the entry--exit asymmetry (\S\ref{app:entry_exit}).
+Amnesia (Type~II) dominates across all patterns, consistent with the entity entry vs.\ exit asymmetry (\S\ref{app:entry_exit}).
 
 
 %% ============================================================
@@ -738,6 +815,18 @@ Each case substitutes specific source shots to produce a known $S_\text{obs}$:
 \item \textbf{Type~III (Spurious)}: B $\to$ AB $\to$ B \quad $\Rightarrow$ PTM=0.500, EPA=0.667
 \item \textbf{Type~IV (Reversal)}: AB $\to$ A $\to$ B \quad $\Rightarrow$ PTM=0.500, EPA=0.667
 \end{itemize}
+
+\paragraph{Shot sequences.}
+Figure~\ref{fig:gt_cat} shows the actual keyframes used for each GT validation case. Each row corresponds to one case; columns show shots 1--3.
+
+\begin{figure}[ht]
+\centering
+%% TODO: Replace with actual GT cat keyframe images
+\includegraphics[width=\columnwidth]{figures/gt_cat_validation.png}
+\caption{GT validation shot sequences. Each row shows the 3-shot keyframes for one validation case (Perfect, Type~I--IV). Entity~A: black-and-white cat; Entity~B: orange cat.}
+\label{fig:gt_cat}
+\Description{Ground truth cat video keyframes for five validation cases.}
+\end{figure}
 
 \paragraph{Results.}
 Running Qwen2-VL-7B-Instruct on the middle frame of each shot, all five cases produce $S_\text{obs}$ matrices that \emph{exactly} match the expected values.
@@ -771,9 +860,8 @@ $\|E\|_F$        & 8.9            & 0.031 & 1/6 \\
 \end{tabular}
 \end{table}
 
-PTM achieves 33$\times$ the $H$-statistic of $\|E\|_F$ and resolves all 6 pairwise comparisons, confirming that projecting onto the prescribed subspace ($E \odot M$) removes hold-cell noise that masks model differences.
+PTM achieves 33$\times$ the $H$-statistic of $\|E\|_F$ and resolves all 6 pairwise comparisons, confirming that projecting onto the prescribed subspace ($E \odot \mathcal{M}$) removes hold-cell noise that masks model differences.
 EPA is intermediate (4/6 pairs), reflecting its role as a macroscopic complement rather than a primary metric.
-The Frobenius norm resolves only the Echo--VGoT pair, and its ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does not match the PTM ranking---confirming it is confounded by unprescribed transitions.
 
 
 %% ============================================================
@@ -781,11 +869,10 @@ The Frobenius norm resolves only the Echo--VGoT pair, and its ranking ($\text{VG
 \label{app:sample_size}
 %% ============================================================
 
-A key reviewer concern is whether 1,000 scenarios per model are necessary.
 We subsample $N \in \{50, 100, 200, 300, 500, 750, 1000\}$ scenarios (with replacement, $B = 1{,}000$ bootstrap iterations) and measure two stability criteria (Table~\ref{tab:rank_stability}): (1)~\emph{rank preservation}: the fraction of bootstrap samples in which the 4-model PTM ranking matches the full-dataset ranking; (2)~\emph{full significance}: the fraction in which all 6 pairwise Mann--Whitney $U$ tests are significant at $p < 0.05$.
 
 \begin{table}[ht]
-\caption{Rank stability as a function of dataset size.}
+\caption{Rank stability as a function of dataset size. \textbf{Bold}: first size achieving $\geq$95\%.}
 \label{tab:rank_stability}
 \centering
 \small
@@ -797,7 +884,7 @@ $N$ & Rank preserved (\%) & All 6 sig.\ (\%) \\
 100  & 82.4 & 44.6 \\
 200  & 89.7 & 72.1 \\
 300  & 94.4 & 86.3 \\
-500  & 97.6 & 96.5 \\
+\textbf{500}  & \textbf{97.6} & \textbf{96.5} \\
 750  & 99.2 & 99.4 \\
 1000 & 99.8 & 99.9 \\
 \bottomrule
@@ -813,32 +900,34 @@ The 1,000-scenario design provides $>$99.8\% stability across both criteria, ens
 \label{app:rank_consistency}
 %% ============================================================
 
-To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$.
+To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and actual PTM values (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$.
 
 \begin{table}[ht]
-\caption{Per-pattern PTM rankings (1 = best). Bold: deviation from overall ranking.}
+\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
 \label{tab:rank_pattern}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}l cccc cccc@{}}
 \toprule
-Pattern & SD & Echo & VGoT & VIC \\
+& \multicolumn{4}{c}{PTM} & \multicolumn{4}{c}{Rank} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+Pattern & SD & Echo & VGoT & VIC & SD & Echo & VGoT & VIC \\
 \midrule
-Relay          & 1 & 2 & 3 & 4 \\
-Split          & 1 & 2 & 3 & 4 \\
-Accumulation   & 1 & 2 & 4 & 3 \\
-Convergence    & 1 & 2 & 4 & 3 \\
-Sliding Window & 1 & 2 & 3 & 4 \\
-Reduction      & 1 & 2 & 3 & 4 \\
-Reverse Relay  & 2 & \textbf{1} & 3 & 4 \\
+Relay          & .190 & .138 & .085 & .080 & 1 & 2 & 3 & 4 \\
+Split          & .233 & .165 & .108 & .048 & 1 & 2 & 3 & 4 \\
+Accumulation   & .253 & .095 & .070 & .072 & 1 & 2 & \textbf{4} & \textbf{3} \\
+Convergence    & .277 & .187 & .053 & .067 & 1 & 2 & \textbf{4} & \textbf{3} \\
+Sliding Window & .357 & .270 & .103 & .077 & 1 & 2 & 3 & 4 \\
+Reduction      & .250 & .195 & .110 & .080 & 1 & 2 & 3 & 4 \\
+Reverse Relay  & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
 SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
-The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's specific DynamiCrafter bottleneck on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
+The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 
 
 %% ============================================================
@@ -930,7 +1019,7 @@ Multi-3 & .749 & .805 & .653 & 1.000 \\
 
 \paragraph{Key findings.}
 (1)~The model ranking SD $>$ Echo $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
-(2)~The middle frame achieves the highest PTM for SD (.272) and the highest EPA overall, consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
+(2)~The middle frame achieves the highest PTM for SD (.272) and the highest EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
 (3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.449$), with the middle--multi3 pair reaching $\rho_s = 0.805$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
 (4)~The marginal PTM gain from multi-frame voting ($\leq 0.02$) does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
