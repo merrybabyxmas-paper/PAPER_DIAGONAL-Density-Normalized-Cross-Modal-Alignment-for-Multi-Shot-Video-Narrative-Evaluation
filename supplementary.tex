@@ -243,79 +243,55 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 \label{app:prompts}
 %% ============================================================
 
-Each prompt has two variants: \texttt{gen\_prompt} (enriched with cinematic quality tags for T2V generation) and \texttt{eval\_prompt} (concise, objective description for VLM entity detection). Entity names are extracted directly from the eval prompts for VLM entity queries. Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
+Each scenario stores an \texttt{eval\_prompt} (concise scene description used for generation) and a set of \texttt{core\_entities} (e.g., $A$: ``toddler'', $B$: ``mother'') that define the named entity roles. For VLM evaluation, entity names are extracted directly from \texttt{core\_entities}---not from the scene descriptions---ensuring unambiguous binary presence queries (Eq.~5, main text). Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
 
 \begin{table}[ht]
-\caption{Relay pattern sample ($A \to AB \to B$).}
+\caption{Relay pattern sample ($A \to AB \to B$). Entities: $A$=toddler, $B$=mother.}
 \label{tab:sample_relay}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.2cm}@{}}
+\begin{tabular}{@{}cp{6.5cm}@{}}
 \toprule
-Shot & Type & Prompt \\
+Shot & eval\_prompt \\
 \midrule
-\multirow{2}{*}{1}
-  & gen\_prompt & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
-\midrule
-\multirow{2}{*}{2}
-  & gen\_prompt & A toddler and a mother sitting together on the rug, the mother helping stack blocks, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
-\midrule
-\multirow{2}{*}{3}
-  & gen\_prompt & A mother tidying up scattered blocks on the rug, the toddler no longer present, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
+1 & A curious toddler stacking colorful wooden blocks on a soft rug in a sunlit living room \\
+2 & A toddler and a mother sitting together on the rug, the mother helping stack blocks \\
+3 & A mother tidying up scattered blocks on the rug, the toddler no longer present \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[ht]
-\caption{Accumulation sample ($A \to AB \to ABC$).}
+\caption{Accumulation sample ($A \to AB \to ABC$). Entities: $A$=eagle, $B$=fox, $C$=rabbit.}
 \label{tab:sample_accum}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.2cm}@{}}
+\begin{tabular}{@{}cp{6.5cm}@{}}
 \toprule
-Shot & Type & Prompt \\
+Shot & eval\_prompt \\
 \midrule
-\multirow{2}{*}{1}
-  & gen\_prompt & A lone eagle soaring above a dense forest canopy at dawn, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & A lone eagle soaring above a dense forest canopy at dawn \\
-\midrule
-\multirow{2}{*}{2}
-  & gen\_prompt & An eagle and a fox standing at the edge of a forest clearing, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & An eagle and a fox standing at the edge of a forest clearing \\
-\midrule
-\multirow{2}{*}{3}
-  & gen\_prompt & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
+1 & A lone eagle soaring above a dense forest canopy at dawn \\
+2 & An eagle and a fox standing at the edge of a forest clearing \\
+3 & An eagle perched on a branch, a fox below, and a rabbit emerging from undergrowth \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[ht]
-\caption{Sliding Window sample ($AB \to BC \to C$).}
+\caption{Sliding Window sample ($AB \to BC \to C$). Entities: $A$=chef, $B$=waiter, $C$=sommelier.}
 \label{tab:sample_slidwin}
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}clp{5.2cm}@{}}
+\begin{tabular}{@{}cp{6.5cm}@{}}
 \toprule
-Shot & Type & Prompt \\
+Shot & eval\_prompt \\
 \midrule
-\multirow{2}{*}{1}
-  & gen\_prompt & A chef and a waiter preparing a large banquet table in an elegant restaurant, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
-\midrule
-\multirow{2}{*}{2}
-  & gen\_prompt & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
-\midrule
-\multirow{2}{*}{3}
-  & gen\_prompt & A sommelier examining a wine bottle under warm chandelier light, alone, cinematic, high quality, detailed, sharp focus \\
-  & eval\_prompt & A sommelier examining a wine bottle under warm chandelier light, alone \\
+1 & A chef and a waiter preparing a large banquet table in an elegant restaurant \\
+2 & A waiter greeting a sommelier at the restaurant entrance, the chef no longer visible \\
+3 & A sommelier examining a wine bottle under warm chandelier light, alone \\
 \bottomrule
 \end{tabular}
 \end{table}
