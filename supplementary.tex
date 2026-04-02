@@ -326,7 +326,12 @@ One middle frame per shot is extracted ($T = 3$ shots per video, 3 frames total)
 Binary yes/no: ``Is there a \{entity\} visible in this image? Answer only Yes or No.'' The VLM response is parsed by prefix: if it starts with ``yes'' (case-insensitive), $S_\text{obs}[t,k] = 1$; otherwise 0. No thresholds are required.
 
 \paragraph{Detection quality.}
-Across 4,000 videos (28,800 cells): TPR(True Positive Rate) $= 52.1\%$, TNR(True Negative Rate) $= 66.7\%$.
+We report two standard binary-classification rates over all $(t, k)$ cells where $S^*[t,k]$ is defined:
+\begin{equation}
+\text{TPR} = \frac{\sum_{t,k} \mathbbm{1}[S_\text{obs}[t,k]{=}1 \;\wedge\; S^*[t,k]{=}1]}{\sum_{t,k} \mathbbm{1}[S^*[t,k]{=}1]}, \quad
+\text{TNR} = \frac{\sum_{t,k} \mathbbm{1}[S_\text{obs}[t,k]{=}0 \;\wedge\; S^*[t,k]{=}0]}{\sum_{t,k} \mathbbm{1}[S^*[t,k]{=}0]}.
+\end{equation}
+Across 4,000 videos (28,800 cells): $\text{TPR} = 52.1\%$, $\text{TNR} = 66.7\%$.
 The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection confirms that the majority of false-negative cases are genuine generation failures (see \S\ref{app:vlm_quality} for the full Human--VLM agreement analysis). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 
