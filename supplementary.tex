@@ -687,44 +687,43 @@ To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/vlm_case_a.png}
-\caption{Gen.\ Failure (Amnesia)}
+\caption{Gen.\ Failure }
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/vlm_case_b.jpg}
-\caption{Gen.\ Failure (Morphed)}
+\caption{Gen.\ Failure}
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/vlm_case_c.png}
-\caption{Marginal / Ambiguous}
+\caption{Ambiguous}
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/vlm_case_d.png}
-\caption{VLM Detection Error}
+\caption{VLM Error}
 \end{subfigure}
 \caption{Representative keyframes for each VLM false-negative category (Table~\ref{tab:vlm_case_study}). All frames were flagged as entity ``absent'' by the VLM ($S_\text{obs} = 0$, $S^* = 1$).}
 \label{fig:vlm_case_study}
 \Description{Four generated keyframes in a row: (a) empty hospital room, (b) cats instead of dog, (c) blurry person at cafe, (d) clearly visible dog missed by VLM.}
 \end{figure*}
-
 \begin{table*}[ht]
 \caption{Structured analysis of VLM false-negative flags corresponding to Figure~\ref{fig:vlm_case_study}.}
 \label{tab:vlm_case_study}
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}p{0.6cm} p{1.8cm} p{2.2cm} p{2.2cm} p{1.5cm} p{6.5cm}@{}}
+\setlength{\tabcolsep}{10pt} % 열 간격을 조금 넓혀 가독성을 높였습니다.
+\begin{tabular}{@{}l l l l l@{}}
 \toprule
-Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
+Panel & Category & Prescribed Entity & VLM Says & Human \\
 \midrule
-(a) & \textbf{Gen.\ Failure} (65\%) & ``visitor'', ``tourist'' & Absent & Absent & The model completely failed to generate any human entity. Only an empty hospital corridor with a bed is rendered. The VLM correctly identifies the absence---this is an \emph{Amnesia} (Type~II) failure of the generation model. \\[6pt]
-(b) & \textbf{Gen.\ Failure} (65\%) & ``dog'' & Absent & Absent & The prescribed dog is morphed into cats---the model generated the wrong species entirely. Neither the VLM nor human annotators can identify the target entity. \\[6pt]
+(a) & Generation Failure & ``visitor'', ``tourist'' & Absent & Absent \\
+(b) & Generation Failure & ``dog'' & Absent & Absent \\
 \midrule
-(c) & \textbf{Marginal} (19\%) & ``customer'' & Absent & Ambiguous & A blurry silhouette walks past the caf\'{e} counter. While it could plausibly be the customer, the figure lacks any distinguishing features. The VLM's ``absent'' judgment is defensible. \\[6pt]
+(c) & Ambiguous & ``customer'' & Absent & Ambiguous \\
 \midrule
-(d) & \textbf{VLM Error} (16\%) & ``dog'' & Absent & Present & A dog is clearly visible sitting in a park with distinct posture and collar. The VLM incorrectly reports it as absent---a genuine detection miss. \\
+(d) & VLM Error & ``dog'' & Absent & Present \\
 \bottomrule
 \end{tabular}
 \end{table*}
