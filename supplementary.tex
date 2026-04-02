@@ -684,18 +684,33 @@ To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm
 
 \begin{figure*}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{figures/vlm_case_study.png}
-\caption{Visual case study of VLM false-negative flags, drawn from the 100-sample audit (Table~\ref{tab:human_vlm_audit}).
-\textbf{(a)~Generation Failure---Amnesia} (SD, Accumulation): the prescribed entities ``visitor'' and ``tourist'' are entirely absent; only an empty hospital bed is rendered. The VLM correctly reports absence.
-\textbf{(b)~Generation Failure---Morphed} (VGoT, Relay): the prescribed ``dog'' is morphed into cats---the model generated the wrong species entirely. Neither the VLM nor human annotators can identify the target entity.
-\textbf{(c)~Marginal / Ambiguous} (SD, Reduction): a blurry silhouette walks past a caf\'{e} counter. While it could plausibly be the prescribed ``customer,'' the figure lacks distinguishing features. The VLM's ``absent'' judgment is defensible.
-\textbf{(d)~VLM Detection Error} (SD, Convergence): a dog is clearly visible sitting in a park with distinct posture and collar, yet the VLM incorrectly reports it as absent---a genuine detection miss (16\% of audited cases).}
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_a.png}
+\caption{Gen.\ Failure (Amnesia)}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_b.jpg}
+\caption{Gen.\ Failure (Morphed)}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_c.png}
+\caption{Marginal / Ambiguous}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_d.png}
+\caption{VLM Detection Error}
+\end{subfigure}
+\caption{Representative keyframes for each VLM false-negative category (Table~\ref{tab:vlm_case_study}). All frames were flagged as entity ``absent'' by the VLM ($S_\text{obs} = 0$, $S^* = 1$).}
 \label{fig:vlm_case_study}
-\Description{Four generated keyframes illustrating VLM false-negative categories: (a) empty hospital room with no entities, (b) cats generated instead of a dog, (c) blurry person at cafe counter, (d) clearly visible dog missed by VLM.}
+\Description{Four generated keyframes in a row: (a) empty hospital room, (b) cats instead of dog, (c) blurry person at cafe, (d) clearly visible dog missed by VLM.}
 \end{figure*}
 
 \begin{table*}[ht]
-\caption{Structured analysis of VLM false-negative flags corresponding to Figure~\ref{fig:vlm_case_study}. \textbf{Category} indicates whether the VLM decision was correct (generation failure), justifiable (marginal/ambiguous), or a genuine VLM error. These cases are drawn from the 100-sample audit in Table~\ref{tab:human_vlm_audit}.}
+\caption{Structured analysis of VLM false-negative flags corresponding to Figure~\ref{fig:vlm_case_study}.}
 \label{tab:vlm_case_study}
 \centering
 \small
