@@ -17,6 +17,11 @@
 \copyrightyear{2026}
 \acmYear{2026}
 \setcopyright{none}
+\acmSubmissionID{4075}
+\acmConference[ACM MM '26]{Proceedings of the 34th ACM International Conference on Multimedia}{November 10--14, 2026}{Rio de Janeiro, Brazil}
+\acmDOI{}
+\acmISBN{}
+\acmPrice{}
 
 \newcommand{\diagonal}{\textsc{Span}}
 \newcommand{\stem}{\textsc{Stem}}
@@ -27,6 +32,7 @@
 \newcommand{\calT}{\mathcal{T}}
 \newcommand{\calP}{\mathcal{P}}
 \newcommand{\calH}{\mathcal{H}}
+\newcommand{\calD}{\mathcal{D}}
 \newcommand{\Eij}{J_{ij}}
 
 \begin{document}
@@ -69,8 +75,6 @@ R_1(X) + R_2(X) = \sum_k \alpha_k + \Bigl(-\sum_k \alpha_k\Bigr) = 0.
 \end{equation}
 However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \end{smallmatrix}\bigr]$ yields $R_1(J_{11}) + R_2(J_{11}) = 1 \neq 0$. Thus, $\calB_1$ variants alone cannot break this symmetric invariant. The Split matrix $\calB_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ -1 & 1 & 0 \end{smallmatrix}\bigr]$ satisfies $R_1(\calB_2) + R_2(\calB_2) = -1$, which is algebraically essential to span the full narrative space.
 
-\label{app:generalization}
-%% ============================================================
 %% ============================================================
 \section{Generalization to Arbitrary Narrative Scales ($T$ Shots, $N$ Entities)}
 \label{app:generalization}
@@ -99,8 +103,6 @@ Appends $N-3$ zero-columns to accommodate arbitrary cast sizes:
 \begin{equation}
     \Pi_5(X + Y) = \Pi_5\left( \left[\begin{smallmatrix} 1 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\right] \right) = \left[\begin{smallmatrix} 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 0 & 0 \end{smallmatrix}\right] = \Pi_5(X) + \Pi_5(Y).
 \end{equation}
-
-\vspace{2.5em}
 
 \subsubsection{\textbf{Temporal Shift Operator ($\Phi_\tau$)}}
 A block matrix insertion operator that embeds local transitions into the temporal window starting at transition index $\tau \in \{1, \ldots, T-2\}$:
@@ -148,7 +150,6 @@ A block matrix insertion operator that embeds local transitions into the tempora
     \end{smallmatrix}\right]}_{\Phi_2(Y)}.
 \end{equation}
 
-\vspace{1em}
 \noindent \textbf{Summary.} By functioning as strict linear operators, $\Pi_N$ and $\Phi_\tau$ ensure that long and multi-character narratives do not become mathematically tangled. Any global storyline can be cleanly decomposed into a sequence of isolated, localized basis operations that are simply added together.
 
 \subsection{Grand Spanning Theorem}
@@ -487,7 +488,7 @@ To disentangle detector error from generation failure, we manually inspected 100
 
 \noindent This yields \textbf{80.2\% VLM precision} ($65/(65{+}16)$, excluding ambiguous cases), confirming that the \stem{} pipeline accurately diagnoses generative models' shortcomings.
 
-\begin{table}[h]
+\begin{table}[ht]
 \caption{Human audit of 100 random VLM negative flags ($S_{\text{obs}}=0,\; S^*=1$).}
 \label{tab:human_vlm_audit}
 \centering\small
@@ -731,8 +732,8 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    ybar=1.5pt, % 얇아진 막대에 맞춰 그룹 내 막대 간격 미세 조정
-    bar width=8pt, % 막대 두께를 슬림하게 (14pt -> 8pt)
+    ybar=1.5pt,
+    bar width=8pt,
     width=\columnwidth,
     height=6cm, 
     ylabel={\small \% of videos},
@@ -772,6 +773,7 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
 \end{tikzpicture}
 \caption{PTM score distributions across models. Higher-performing models (SD) shift mass from PTM$\,{=}\,0$ toward PTM$\,{=}\,0.5$ and PTM$\,{=}\,1.0$.}
 \label{fig:ptm_dist}
+\Description{Grouped bar chart showing PTM score distributions for SD, Echo, VGoT, and VIC across PTM values 0, 0.5, and 1.0.}
 \end{figure}
 
 
@@ -1089,7 +1091,6 @@ As scores decrease to partial compliance ($\text{PTM} \approx 0.67$), models can
 
 Finally, complete failures ($\text{PTM} = 0.0$) exhibit a total disconnect from the prompt's entity requirements. In these cases, models successfully render backgrounds but completely fail to generate the requested subjects. Ultimately, this spectrum highlights that true dynamic storytelling requires moving beyond static visual consistency; generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating.
 
-\vspace{0.5em}
 \noindent \textbf{Summary.} True dynamic storytelling requires moving beyond static visual consistency. Generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating to successfully orchestrate multi-shot narratives.
 \begin{figure}[ht]
 \centering
