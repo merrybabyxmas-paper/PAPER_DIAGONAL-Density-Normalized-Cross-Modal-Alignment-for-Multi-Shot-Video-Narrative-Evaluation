@@ -224,54 +224,13 @@ A block matrix insertion operator that embeds local transitions into the tempora
 
 Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two operators compose to embed a local basis matrix into the global narrative space.
 
-\begin{figure}[ht]
+\begin{figure*}[ht]
 \centering
-\begin{tikzpicture}[
-    mat/.style={draw, thick, minimum width=1.2cm, minimum height=0.8cm, font=\footnotesize},
-    op/.style={-{Stealth[length=3mm]}, thick, font=\small},
-    lbl/.style={font=\footnotesize, align=center},
-]
-
-% Step 1: Local basis B1 (2x3)
-\node[mat, fill=blue!20] (B1) at (0, 0) {$\calB_1$};
-\node[lbl, below=2pt of B1] {$2 \times 3$};
-\node[lbl, above=2pt of B1] {\textbf{Local Basis}};
-
-% Arrow: Pi_N
-\draw[op] (B1.east) -- ++(1.2,0) node[midway, above] {$\Pi_N$};
-
-% Step 2: Spatially padded (2x5)
-\node[mat, minimum width=2.2cm, right=1.2cm of B1] (padded) {};
-\node[mat, fill=blue!20, minimum width=1.2cm, minimum height=0.8cm] at ([xshift=-0.4cm]padded.center) (inner) {};
-\node[mat, fill=gray!15, minimum width=0.7cm, minimum height=0.8cm, right=-0.5pt of inner] (zeros1) {\tiny $\mathbf{0}$};
-\node[lbl, below=2pt of padded] {$2 \times N$};
-\node[lbl, above=2pt of padded] {\textbf{Spatial Pad}};
-
-% Arrow: sigma
-\draw[op] (padded.east) -- ++(1.2,0) node[midway, above] {$\sigma$};
-
-% Step 3: Permuted (2x5)
-\node[mat, fill=green!20, minimum width=2.2cm, right=3.6cm of B1] (perm) {$\sigma \circ \hat{\calB}_1$};
-\node[lbl, below=2pt of perm] {$2 \times N$};
-\node[lbl, above=2pt of perm] {\textbf{Permute}};
-
-% Arrow: Phi_tau
-\draw[op] (perm.east) -- ++(1.2,0) node[midway, above] {$\Phi_\tau$};
-
-% Step 4: Global matrix (4x5)
-\node[mat, minimum width=2.2cm, minimum height=1.6cm, right=6cm of B1] (global) {};
-% Draw internal structure
-\node[mat, fill=gray!15, minimum width=2cm, minimum height=0.35cm] at ([yshift=0.45cm]global.center) (top0) {\tiny $\mathbf{0}$};
-\node[mat, fill=green!20, minimum width=2cm, minimum height=0.55cm] at (global.center) (mid) {\footnotesize $\sigma \circ \hat{\calB}_1$};
-\node[mat, fill=gray!15, minimum width=2cm, minimum height=0.35cm] at ([yshift=-0.45cm]global.center) (bot0) {\tiny $\mathbf{0}$};
-\node[lbl, below=2pt of global] {$(T{-}1) \times N$};
-\node[lbl, above=2pt of global] {\textbf{Global $\Delta S$}};
-
-\end{tikzpicture}
-\caption{Operator pipeline: a local $2 \times 3$ basis matrix $\calB_m$ is first spatially padded by $\Pi_N$ (gray = zero-padding for extra entities), then column-permuted by $\sigma$ to assign entity roles, and finally temporally inserted by $\Phi_\tau$ into the correct row position of the global $(T{-}1) \times N$ transition matrix. Each step is a linear operator, so the full composition preserves spanning.}
+\includegraphics[width=\textwidth]{figures/operator_pipeline.png}
+\caption{Visual overview of the algebraic operator pipeline. \textbf{(I)}~Definitions of the two linear operators: the spatial expansion operator $\Pi_N$ appends zero-columns for additional entities, and the temporal shift operator $\Phi_\tau$ embeds a $2 \times N$ local block into the correct row position of the global $(T{-}1) \times N$ matrix. \textbf{(II)}~The Grand Spanning Theorem (Theorem~B.1): any global transition matrix $\Delta S$ is reconstructed as a linear combination of shifted, permuted, expanded basis matrices. \textbf{(III)}~Worked example: a 4-shot, 3-entity relay chain $A \!\to\! AB \!\to\! BC \!\to\! C$ is decomposed into two local windows ($\tau = 1, 2$), each synthesized from basis matrices ($\calB_1$, $J_{23}$, $J_{22}$), temporally shifted, and summed to recover the full $\Delta S$.}
 \label{fig:operator_pipeline}
-\Description{Conceptual pipeline diagram showing four stages: local basis matrix, spatial padding, column permutation, and temporal insertion into global matrix.}
-\end{figure}
+\Description{Three-panel diagram: (I) spatial and temporal operator definitions with matrix examples, (II) Grand Spanning Theorem flowchart and equation, (III) worked decomposition example for a 4-shot relay chain.}
+\end{figure*}
 
 \subsection{Grand Spanning Theorem}
 
