@@ -680,29 +680,21 @@ To further isolate VLM performance from generative noise, we evaluated the Qwen2
 \label{app:vlm_cases}
 %% ============================================================
 
-To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm_quality}), we present representative examples from the three diagnostic categories. Each row of Table~\ref{tab:vlm_case_study} shows a generated keyframe where the VLM flagged the prescribed entity as ``absent'' ($S_\text{obs} = 0$, $S^* = 1$), alongside the human judgment.
+To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm_quality}), we present representative keyframes from the three diagnostic categories in Figure~\ref{fig:vlm_case_study}. Each panel shows a generated frame where the VLM flagged a prescribed entity as ``absent'' ($S_\text{obs} = 0$, $S^* = 1$), alongside the human judgment.
 
-\begin{table*}[ht]
-\caption{Visual case study of VLM false-negative flags. Each row shows one generated keyframe where the VLM reported the prescribed entity as absent. \textbf{Category} indicates whether the VLM decision was correct (generation failure), justifiable (marginal/ambiguous), or a genuine VLM error. These cases are drawn from the 100-sample audit in Table~\ref{tab:human_vlm_audit}.}
-\label{tab:vlm_case_study}
+\begin{figure*}[ht]
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}p{1.8cm} p{2.2cm} p{2.2cm} p{1.5cm} p{6.5cm}@{}}
-\toprule
-Category & Prescribed Entity & VLM Says & Human Says & Description \\
-\midrule
-\textbf{Generation Failure} (65\%) & ``nurse'' & Absent & Absent & The model completely failed to generate the nurse. Only an empty hospital corridor is rendered. The VLM correctly identifies the absence---this is an \emph{Amnesia} (Type~II) failure of the generation model. \\[6pt]
-\textbf{Generation Failure} (65\%) & ``fox'' & Absent & Absent & The fox is morphed into an unrecognizable orange blob merged with the background foliage. Neither the VLM nor human annotators can identify it as a fox. \\[6pt]
-\midrule
-\textbf{Marginal / Ambiguous} (19\%) & ``waiter'' & Absent & Ambiguous & A human-like silhouette appears in the far background, heavily blurred and cropped at the frame edge. While it could plausibly be the waiter, the figure lacks any distinguishing features. The VLM's ``absent'' judgment is defensible. \\[6pt]
-\midrule
-\textbf{VLM Error} (16\%) & ``eagle'' & Absent & Present & The eagle is clearly perched on a branch in the upper-left quadrant with visible feathers and talons. The VLM incorrectly reports it as absent---a genuine detection miss. \\
-\bottomrule
-\end{tabular}
-\end{table*}
+\includegraphics[width=0.85\textwidth]{figures/vlm_case_study.png}
+\caption{Visual case study of VLM false-negative flags, drawn from the 100-sample audit (Table~\ref{tab:human_vlm_audit}).
+\textbf{(a)~Generation Failure---Amnesia} (SD, Accumulation): the prescribed entities ``visitor'' and ``tourist'' are entirely absent; only an empty hospital bed is rendered. The VLM correctly reports absence.
+\textbf{(b)~Generation Failure---Morphed} (VGoT, Relay): the prescribed ``dog'' is morphed into cats---the model generated the wrong species entirely. Neither the VLM nor human annotators can identify the target entity.
+\textbf{(c)~Marginal / Ambiguous} (SD, Reduction): a blurry silhouette walks past a caf\'{e} counter. While it could plausibly be the prescribed ``customer,'' the figure lacks distinguishing features. The VLM's ``absent'' judgment is defensible.
+\textbf{(d)~VLM Detection Error} (SD, Convergence): a dog is clearly visible sitting in a park with distinct posture and collar, yet the VLM incorrectly reports it as absent---a genuine detection miss (16\% of audited cases).}
+\label{fig:vlm_case_study}
+\Description{Four generated keyframes illustrating VLM false-negative categories: (a) empty hospital room with no entities, (b) cats generated instead of a dog, (c) blurry person at cafe counter, (d) clearly visible dog missed by VLM.}
+\end{figure*}
 
-\noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image. Only 16\% are genuine VLM detection errors. This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not evaluation tool artifacts.
+\noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image (panels a--c). Only 16\% are genuine VLM detection errors (panel d). This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not evaluation tool artifacts.
 
 
 %% ============================================================
