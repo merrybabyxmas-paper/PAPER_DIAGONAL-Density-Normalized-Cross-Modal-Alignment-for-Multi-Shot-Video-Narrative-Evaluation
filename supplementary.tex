@@ -12,7 +12,9 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
-\usetikzlibrary{patterns}
+\usetikzlibrary{patterns,arrows.meta,positioning,calc,fit,backgrounds,decorations.pathreplacing,matrix}
+\usepackage{xcolor}
+\usepackage{listings}
 
 \copyrightyear{2026}
 \acmYear{2026}
@@ -48,6 +50,72 @@
 \renewcommand{\thetheorem}{\Alph{section}.\arabic{theorem}}
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
+
+%% ============================================================
+%% Mini Table of Contents
+%% ============================================================
+\noindent\textbf{\large Appendix Overview}
+\vspace{0.3em}
+
+\noindent This supplementary material contains 27 appendices organized into five thematic groups.
+
+\vspace{0.5em}
+\noindent\textbf{I.\ \ Theoretical Proofs \& Algebraic Generalization}
+\begin{itemize}[nosep,leftmargin=1.5em]
+\item[\S\ref{app:necessity_b2}] Necessity of the Split Basis ($\calB_2$)
+\item[\S\ref{app:generalization}] Generalization to Arbitrary Narrative Scales ($T$ Shots, $N$ Entities)
+\end{itemize}
+
+\vspace{0.3em}
+\noindent\textbf{II.\ \ Benchmark Construction \& Prompt Details}
+\begin{itemize}[nosep,leftmargin=1.5em]
+\item[\S\ref{app:dataset}] Dataset Construction Details
+\item[\S\ref{app:quality_control}] Prompt Quality Control
+\item[\S\ref{app:prompts}] Sample Prompts
+\item[\S\ref{app:models}] Model Implementation Details
+\item[\S\ref{app:eval_details}] Evaluation Details
+\item[\S\ref{app:delta_s}] State Transition Matrices Library
+\item[\S\ref{app:full_prompts}] Full Prompt Templates (Gemini \& VLM)
+\end{itemize}
+
+\vspace{0.3em}
+\noindent\textbf{III.\ \ VLM Reliability \& Validation}
+\begin{itemize}[nosep,leftmargin=1.5em]
+\item[\S\ref{app:human_eval}] Human Evaluation Protocol
+\item[\S\ref{app:vlm_quality}] VLM Reliability and Human--VLM Agreement
+\item[\S\ref{app:vlm_cases}] VLM Detection Case Study (Visual Examples)
+\item[\S\ref{app:gt_failures}] GT Failure Validation
+\end{itemize}
+
+\vspace{0.3em}
+\noindent\textbf{IV.\ \ Extended Quantitative Results}
+\begin{itemize}[nosep,leftmargin=1.5em]
+\item[\S\ref{app:per_pattern}] Full Per-Pattern Results
+\item[\S\ref{app:entry_exit}] Entity Entry vs.\ Exit Accuracy
+\item[\S\ref{app:entity_count}] 2-Entity vs.\ 3-Entity Analysis
+\item[\S\ref{app:correlation}] EPA-PTM Correlation Analysis
+\item[\S\ref{app:bootstrap}] Bootstrap Confidence Intervals
+\item[\S\ref{app:significance}] Statistical Significance and Effect Sizes
+\item[\S\ref{app:distributions}] PTM Score Distribution
+\item[\S\ref{app:frobenius}] Frobenius Distance Analysis
+\item[\S\ref{app:failure_pattern}] Per-Pattern Failure Analysis
+\item[\S\ref{app:metric_discriminability}] Metric Discriminability Comparison
+\item[\S\ref{app:sample_size}] Sample Size Sensitivity
+\item[\S\ref{app:rank_consistency}] Cross-Pattern Rank Consistency
+\item[\S\ref{app:temporal_ablation}] Temporal Frame Sampling Ablation
+\end{itemize}
+
+\vspace{0.3em}
+\noindent\textbf{V.\ \ Qualitative Analysis \& Reproducibility}
+\begin{itemize}[nosep,leftmargin=1.5em]
+\item[\S\ref{app:qualitative_gallery}] Qualitative Failure Gallery
+\item[\S\ref{app:reproducibility}] Reproducibility Checklist
+\end{itemize}
+
+\vspace{1em}
+\hrule
+\vspace{1em}
+
 %% ============================================================
 \section{Necessity of the Split Basis ($\calB_2$)}
 \label{app:necessity_b2}
@@ -151,6 +219,59 @@ A block matrix insertion operator that embeds local transitions into the tempora
 \end{equation}
 
 \noindent \textbf{Summary.} By functioning as strict linear operators, $\Pi_N$ and $\Phi_\tau$ ensure that long and multi-character narratives do not become mathematically tangled. Any global storyline can be cleanly decomposed into a sequence of isolated, localized basis operations that are simply added together.
+
+\subsection{Visual Overview of Operator Pipeline}
+
+Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two operators compose to embed a local basis matrix into the global narrative space.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    mat/.style={draw, thick, minimum width=1.2cm, minimum height=0.8cm, font=\footnotesize},
+    op/.style={-{Stealth[length=3mm]}, thick, font=\small},
+    lbl/.style={font=\footnotesize, align=center},
+]
+
+% Step 1: Local basis B1 (2x3)
+\node[mat, fill=blue!20] (B1) at (0, 0) {$\calB_1$};
+\node[lbl, below=2pt of B1] {$2 \times 3$};
+\node[lbl, above=2pt of B1] {\textbf{Local Basis}};
+
+% Arrow: Pi_N
+\draw[op] (B1.east) -- ++(1.2,0) node[midway, above] {$\Pi_N$};
+
+% Step 2: Spatially padded (2x5)
+\node[mat, minimum width=2.2cm, right=1.2cm of B1] (padded) {};
+\node[mat, fill=blue!20, minimum width=1.2cm, minimum height=0.8cm] at ([xshift=-0.4cm]padded.center) (inner) {};
+\node[mat, fill=gray!15, minimum width=0.7cm, minimum height=0.8cm, right=-0.5pt of inner] (zeros1) {\tiny $\mathbf{0}$};
+\node[lbl, below=2pt of padded] {$2 \times N$};
+\node[lbl, above=2pt of padded] {\textbf{Spatial Pad}};
+
+% Arrow: sigma
+\draw[op] (padded.east) -- ++(1.2,0) node[midway, above] {$\sigma$};
+
+% Step 3: Permuted (2x5)
+\node[mat, fill=green!20, minimum width=2.2cm, right=3.6cm of B1] (perm) {$\sigma \circ \hat{\calB}_1$};
+\node[lbl, below=2pt of perm] {$2 \times N$};
+\node[lbl, above=2pt of perm] {\textbf{Permute}};
+
+% Arrow: Phi_tau
+\draw[op] (perm.east) -- ++(1.2,0) node[midway, above] {$\Phi_\tau$};
+
+% Step 4: Global matrix (4x5)
+\node[mat, minimum width=2.2cm, minimum height=1.6cm, right=6cm of B1] (global) {};
+% Draw internal structure
+\node[mat, fill=gray!15, minimum width=2cm, minimum height=0.35cm] at ([yshift=0.45cm]global.center) (top0) {\tiny $\mathbf{0}$};
+\node[mat, fill=green!20, minimum width=2cm, minimum height=0.55cm] at (global.center) (mid) {\footnotesize $\sigma \circ \hat{\calB}_1$};
+\node[mat, fill=gray!15, minimum width=2cm, minimum height=0.35cm] at ([yshift=-0.45cm]global.center) (bot0) {\tiny $\mathbf{0}$};
+\node[lbl, below=2pt of global] {$(T{-}1) \times N$};
+\node[lbl, above=2pt of global] {\textbf{Global $\Delta S$}};
+
+\end{tikzpicture}
+\caption{Operator pipeline: a local $2 \times 3$ basis matrix $\calB_m$ is first spatially padded by $\Pi_N$ (gray = zero-padding for extra entities), then column-permuted by $\sigma$ to assign entity roles, and finally temporally inserted by $\Phi_\tau$ into the correct row position of the global $(T{-}1) \times N$ transition matrix. Each step is a linear operator, so the full composition preserves spanning.}
+\label{fig:operator_pipeline}
+\Description{Conceptual pipeline diagram showing four stages: local basis matrix, spatial padding, column permutation, and temporal insertion into global matrix.}
+\end{figure}
 
 \subsection{Grand Spanning Theorem}
 
@@ -333,6 +454,57 @@ We report two standard binary-classification rates over all $(t, k)$ cells where
 \end{equation}
 Across 4,000 videos (28,800 cells): $\text{TPR} = 52.1\%$, $\text{TNR} = 66.7\%$.
 The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection confirms that the majority of false-negative cases are genuine generation failures (see \S\ref{app:vlm_quality} for the full Human--VLM agreement analysis). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
+
+
+%% ============================================================
+\section{Full Prompt Templates}
+\label{app:full_prompts}
+%% ============================================================
+
+For full reproducibility, we disclose the exact prompts used at both the dataset construction stage (Gemini) and the evaluation stage (Qwen2-VL).
+
+\subsection{Gemini Prompt for Scenario Generation}
+
+Each of the 1,000 MEMS-1K scenarios was generated by prompting Google Gemini~1.5 (temperature 0.7) with the following structured template. The placeholders \texttt{\{pattern\_name\}}, \texttt{\{pattern\_notation\}}, \texttt{\{theme\}}, and \texttt{\{entity\_types\}} are filled programmatically for each scenario.
+
+\begin{quote}
+\small
+\ttfamily
+You are a creative screenwriter generating short multi-shot video scenarios.\\[4pt]
+\textbf{Task:} Generate a 3-shot video scenario following the \{pattern\_name\} narrative pattern (\{pattern\_notation\}).\\[4pt]
+\textbf{Constraints:}\\
+- Setting: \{theme\} (e.g., Domestic\_LivingRoom)\\
+- Entities: assign \{entity\_types\} (e.g., [Human, Occupation]) to roles A, B (, C)\\
+- Each shot description must mention ONLY the entities prescribed by the pattern's presence matrix\\
+- Entity descriptions must be visually distinctive and unambiguous\\
+- Camera: static, eye-level shot\\
+- Each shot: 1--2 sentences, concrete visual actions\\[4pt]
+\textbf{Output JSON format:}\\
+\{``core\_entities'': \{``A'': ``...'', ``B'': ``...''\},\\
+\ ``shots'': \{``shot\_1'': \{``eval\_prompt'': ``...''\}, ...\}\}
+\end{quote}
+
+\subsection{VLM Entity Detection Prompt}
+
+For each frame, the VLM (Qwen2-VL-7B-Instruct) receives the following query with no system prompt. Entity names are extracted from \texttt{core\_entities}, not from scene descriptions, to avoid ambiguity:
+
+\begin{quote}
+\small
+\ttfamily
+Is there a \{entity\} visible in this image? Answer only Yes or No.
+\end{quote}
+
+\noindent The response is parsed deterministically: if the first token starts with ``yes'' (case-insensitive), $S_\text{obs}[t,k] = 1$; otherwise $S_\text{obs}[t,k] = 0$. No confidence thresholds, chain-of-thought reasoning, or post-processing heuristics are applied. This strict binary protocol ensures that the evaluation is fully deterministic and parameter-free.
+
+\subsection{Generation System Settings}
+
+All four video generation models share the following fixed settings from the scenario JSON:
+\begin{itemize}[nosep,leftmargin=*]
+\item \textbf{Camera:} \texttt{static, eye-level shot}
+\item \textbf{Positive suffix:} \texttt{, masterpiece, cinematic lighting, 4k resolution, photorealistic}
+\item \textbf{Negative prompt:} \texttt{low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark}
+\item \textbf{Random seed:} 42 (fixed across all models and scenarios)
+\end{itemize}
 
 
 %% ============================================================
@@ -540,6 +712,36 @@ TPR is relatively stable across patterns (46--55\%), reflecting the fundamental 
 \subsection{VLM Performance on Real-World Ground Truth}
 
 To further isolate VLM performance from generative noise, we evaluated the Qwen2-VL-7B detector on a set of real-world Ground Truth (GT) videos featuring the same entity types as in MEMS-1K. In these clear, high-fidelity videos, the VLM achieved \textbf{100\% accuracy} in binary presence detection (see Appendix~\ref{app:gt_failures} for details). This stark contrast between 100\% accuracy on real video versus $\sim$52\% on generated video confirms that the low TPR is not a limitation of our evaluation tool, but a quantitative measure of the narrative gap in current video generation architectures.
+
+
+%% ============================================================
+\section{VLM Detection Case Study}
+\label{app:vlm_cases}
+%% ============================================================
+
+To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm_quality}), we present representative examples from the three diagnostic categories. Each row of Table~\ref{tab:vlm_case_study} shows a generated keyframe where the VLM flagged the prescribed entity as ``absent'' ($S_\text{obs} = 0$, $S^* = 1$), alongside the human judgment.
+
+\begin{table*}[ht]
+\caption{Visual case study of VLM false-negative flags. Each row shows one generated keyframe where the VLM reported the prescribed entity as absent. \textbf{Category} indicates whether the VLM decision was correct (generation failure), justifiable (marginal/ambiguous), or a genuine VLM error. These cases are drawn from the 100-sample audit in Table~\ref{tab:human_vlm_audit}.}
+\label{tab:vlm_case_study}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{1.8cm} p{2.2cm} p{2.2cm} p{1.5cm} p{6.5cm}@{}}
+\toprule
+Category & Prescribed Entity & VLM Says & Human Says & Description \\
+\midrule
+\textbf{Generation Failure} (65\%) & ``nurse'' & Absent & Absent & The model completely failed to generate the nurse. Only an empty hospital corridor is rendered. The VLM correctly identifies the absence---this is an \emph{Amnesia} (Type~II) failure of the generation model. \\[6pt]
+\textbf{Generation Failure} (65\%) & ``fox'' & Absent & Absent & The fox is morphed into an unrecognizable orange blob merged with the background foliage. Neither the VLM nor human annotators can identify it as a fox. \\[6pt]
+\midrule
+\textbf{Marginal / Ambiguous} (19\%) & ``waiter'' & Absent & Ambiguous & A human-like silhouette appears in the far background, heavily blurred and cropped at the frame edge. While it could plausibly be the waiter, the figure lacks any distinguishing features. The VLM's ``absent'' judgment is defensible. \\[6pt]
+\midrule
+\textbf{VLM Error} (16\%) & ``eagle'' & Absent & Present & The eagle is clearly perched on a branch in the upper-left quadrant with visible feathers and talons. The VLM incorrectly reports it as absent---a genuine detection miss. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image. Only 16\% are genuine VLM detection errors. This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not evaluation tool artifacts.
 
 
 %% ============================================================
@@ -1090,20 +1292,29 @@ Multi-3 & .749 & .805 & .653 & 1.000 \\
 \label{app:qualitative_gallery}
 %% ============================================================
 
-Figure~\ref{fig:qualitative_gallery} illustrates the full spectrum of narrative fidelity across different PTM score tiers, revealing specific cognitive bottlenecks in multi-entity storytelling. At perfect compliance ($\text{PTM} = 1.0$), which is predominantly observed in two-entity scenarios, models demonstrate robust object permanence. They successfully manage entrances and exits without visual cross-contamination.
+Figure~\ref{fig:qualitative_gallery} illustrates the full spectrum of narrative fidelity across four PTM score tiers, revealing specific cognitive bottlenecks in multi-entity storytelling. We organize the gallery hierarchically by decreasing compliance:
 
-As scores decrease to partial compliance ($\text{PTM} \approx 0.67$), models can synthesize the required entities but struggle with dynamic boundaries. This often leads to the generation of chimeras---where distinct subjects unnaturally blend together---or context bleeding (Type I failures), where exiting entities inappropriately persist in subsequent shots. At lower compliance levels ($\text{PTM} \approx 0.33$), temporal dynamics break down more severely. The narrative either stagnates with frozen visual states across shots, or suffers from amnesia (Type II failures), entirely omitting newly prescribed entities.
+\paragraph{Tier 1: Perfect compliance (\textcolor{green!50!black}{PTM $= 1.0$}).}
+Models demonstrate robust object permanence in two-entity scenarios: entrances and exits are executed without visual cross-contamination. Each entity is distinctly rendered and correctly absent/present per shot.
 
-Finally, complete failures ($\text{PTM} = 0.0$) exhibit a total disconnect from the prompt's entity requirements. In these cases, models successfully render backgrounds but completely fail to generate the requested subjects. Ultimately, this spectrum highlights that true dynamic storytelling requires moving beyond static visual consistency; generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating.
+\paragraph{Tier 2: Partial compliance (\textcolor{orange!80!black}{PTM $\approx 0.67$}).}
+Models can synthesize the required entities but struggle with dynamic boundaries. Two dominant failure modes emerge: (i)~\emph{chimeras}---distinct subjects unnaturally blend into a single composite figure---and (ii)~\emph{context bleeding} (Type~I)---exiting entities inappropriately persist in subsequent shots.
 
-\noindent \textbf{Summary.} True dynamic storytelling requires moving beyond static visual consistency. Generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating to successfully orchestrate multi-shot narratives.
+\paragraph{Tier 3: Low compliance (\textcolor{red!70!black}{PTM $\approx 0.33$}).}
+Temporal dynamics break down more severely. The narrative either stagnates with frozen visual states across shots, or suffers from \emph{amnesia} (Type~II), entirely omitting newly prescribed entities.
+
+\paragraph{Tier 4: Complete failure (\textcolor{red!70!black}{PTM $= 0.0$}).}
+A total disconnect from the prompt's entity requirements. Models render backgrounds but completely fail to generate the requested subjects, producing scenery-only frames throughout all shots.
+
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
-\caption{Qualitative gallery ordered by decreasing PTM (two examples per level). At \textcolor{green!50!black}{PTM$\,{=}\,$1.0}, both entities are correctly generated and each transition is faithfully executed across shots. At \textcolor{orange!80!black}{PTM$\,{=}\,$0.67}, one entity fails to appear in its prescribed shot, or the two entities are visually merged into a chimera-like composite that the VLM cannot distinguish. At \textcolor{red!70!black}{PTM$\,{=}\,$0.33}, the scene context remains static across shots (no visible transition) or the final shot collapses to an empty scene with no recognizable entity. At \textcolor{red!70!black}{PTM$\,{=}\,$0.0}, the model fails to generate any prescribed entity altogether, producing scenery-only frames throughout.}
+\caption{Qualitative gallery ordered by decreasing PTM (two examples per level). \textcolor{green!50!black}{\textbf{PTM$\,{=}\,$1.0}}: both entities are correctly generated and each transition is faithfully executed. \textcolor{orange!80!black}{\textbf{PTM$\,{=}\,$0.67}}: one entity fails to appear or two entities merge into a chimera. \textcolor{red!70!black}{\textbf{PTM$\,{=}\,$0.33}}: scene context remains static (no transition) or the final shot has no recognizable entity. \textcolor{red!70!black}{\textbf{PTM$\,{=}\,$0.0}}: no prescribed entity is generated at all.}
 \label{fig:qualitative_gallery}
-\Description{Eight rows of generated video keyframes ordered by decreasing PTM score.}
+\Description{Eight rows of generated video keyframes ordered by decreasing PTM score, organized into four compliance tiers with color-coded labels.}
 \end{figure}
+
+\noindent \textbf{Summary.} This progression reveals that true dynamic storytelling requires more than static visual consistency. Generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating to successfully orchestrate multi-shot narratives.
 
 
 \bibliographystyle{ACM-Reference-Format}
