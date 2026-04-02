@@ -775,18 +775,6 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
 \end{figure}
 
 
-%% ============================================================
-\section{Frobenius Distance Analysis}
-\label{app:frobenius}
-%% ============================================================
-
-\paragraph{Worked example.}
-Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to enter at transition~1, and a spurious entry occurs at transition~2:
-\begin{equation}
-\Delta S^* = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}, \quad
-\Delta S_\text{obs} = \begin{bmatrix} 0 & 0 \\ -1 & +1 \end{bmatrix}, \quad
-E = \begin{bmatrix} 0 & -1 \\ 0 & +1 \end{bmatrix}.
-\end{equation}
 
 
 %% ============================================================
@@ -1089,13 +1077,20 @@ Multi-3 & .749 & .805 & .653 & 1.000 \\
 (4)~The marginal PTM gain from multi-frame voting ($\leq 0.02$) does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
 
+
 %% ============================================================
 \section{Qualitative Failure Gallery}
 \label{app:qualitative_gallery}
 %% ============================================================
 
-Figure~\ref{fig:qualitative_gallery} presents a gallery of human-selected generated videos ordered by decreasing PTM (two examples per PTM level), illustrating the full spectrum of narrative fidelity. At PTM $= 1.0$, the generated shots faithfully execute all prescribed entity transitions. As PTM decreases, progressively severe deviations emerge---missed entries, persistent entities, and eventually complete narrative collapse at PTM $= 0$.
+Figure~\ref{fig:qualitative_gallery} illustrates the full spectrum of narrative fidelity across different PTM score tiers, revealing specific cognitive bottlenecks in multi-entity storytelling. At perfect compliance ($\text{PTM} = 1.0$), which is predominantly observed in two-entity scenarios, models demonstrate robust object permanence. They successfully manage entrances and exits without visual cross-contamination.
 
+As scores decrease to partial compliance ($\text{PTM} \approx 0.67$), models can synthesize the required entities but struggle with dynamic boundaries. This often leads to the generation of chimeras---where distinct subjects unnaturally blend together---or context bleeding (Type I failures), where exiting entities inappropriately persist in subsequent shots. At lower compliance levels ($\text{PTM} \approx 0.33$), temporal dynamics break down more severely. The narrative either stagnates with frozen visual states across shots, or suffers from amnesia (Type II failures), entirely omitting newly prescribed entities.
+
+Finally, complete failures ($\text{PTM} = 0.0$) exhibit a total disconnect from the prompt's entity requirements. In these cases, models successfully render backgrounds but completely fail to generate the requested subjects. Ultimately, this spectrum highlights that true dynamic storytelling requires moving beyond static visual consistency; generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating.
+
+\vspace{0.5em}
+\noindent \textbf{Summary.} True dynamic storytelling requires moving beyond static visual consistency. Generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating to successfully orchestrate multi-shot narratives.
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
