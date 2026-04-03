@@ -687,17 +687,17 @@ To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/vlm_case_a.png}
-\caption{Gen.\ Failure (Amnesia)}
+\caption{Generation Failure}
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/vlm_case_b.jpg}
-\caption{Gen.\ Failure (Morphed)}
+\caption{Generation Failure}
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/vlm_case_c.png}
-\caption{Marginal / Ambiguous}
+\caption{Ambiguous}
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.235\textwidth}
 \centering
@@ -719,8 +719,8 @@ To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm
 \toprule
 Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
 \midrule
-(a) & \textbf{Gen.\ Failure} (65\%) & ``visitor'', ``tourist'' & Absent & Absent & The model completely failed to generate any human entity. Only an empty hospital corridor with a bed is rendered. The VLM correctly identifies the absence---this is an \emph{Amnesia} (Type~II) failure of the generation model. \\[6pt]
-(b) & \textbf{Gen.\ Failure} (65\%) & ``dog'' & Absent & Absent & The prescribed dog is morphed into cats---the model generated the wrong species entirely. Neither the VLM nor human annotators can identify the target entity. \\[6pt]
+(a) & \textbf{Generation Failure} (65\%) & ``visitor'', ``tourist'' & Absent & Absent & The model completely failed to generate any human entity. Only an empty hospital corridor with a bed is rendered. The VLM correctly identifies the absence---this is an \emph{Amnesia} (Type~II) failure of the generation model. \\[6pt]
+(b) & \textbf{Generation Failure} (65\%) & ``dog'' & Absent & Absent & The prescribed dog is morphed into cats---the model generated the wrong species entirely. Neither the VLM nor human annotators can identify the target entity. \\[6pt]
 \midrule
 (c) & \textbf{Marginal} (19\%) & ``tourist'' & Absent & Ambiguous & A backpack-carrying silhouette walks through a glass doorway, heavily backlit against a sunlit plaza. While the figure could plausibly be the prescribed tourist, it lacks any distinguishing features. The VLM's ``absent'' judgment is defensible. \\[6pt]
 \midrule
