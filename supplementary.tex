@@ -57,7 +57,7 @@
 \noindent\textbf{\large Appendix Overview}
 \vspace{0.3em}
 
-\noindent This supplementary material contains 27 appendices organized into five thematic groups.
+\noindent This supplementary material contains 28 appendices organized into six thematic groups.
 
 \vspace{0.5em}
 \noindent\textbf{I.\ \ Theoretical Proofs \& Algebraic Generalization}
@@ -74,42 +74,47 @@
 \item[\S\ref{app:prompts}] Sample Prompts
 \item[\S\ref{app:models}] Model Implementation Details
 \item[\S\ref{app:eval_details}] Evaluation Details
-\item[\S\ref{app:delta_s}] State Transition Matrices Library
 \item[\S\ref{app:full_prompts}] Full Prompt Templates (Gemini \& VLM)
 \end{itemize}
 
 \vspace{0.3em}
-\noindent\textbf{III.\ \ VLM Reliability \& Validation}
+\noindent\textbf{III.\ \ Evaluation Results \& Human/VLM Validation}
 \begin{itemize}[nosep,leftmargin=1.5em]
+\item[\S\ref{app:per_pattern}] Full Per-Pattern Results
 \item[\S\ref{app:human_eval}] Human Evaluation Protocol
 \item[\S\ref{app:vlm_quality}] VLM Reliability and Human--VLM Agreement
+\item[\S\ref{app:entry_exit}] Entity Entry vs.\ Exit Accuracy
+\item[\S\ref{app:delta_s}] State Transition Matrices Library
 \item[\S\ref{app:vlm_cases}] VLM Detection Case Study (Visual Examples)
-\item[\S\ref{app:gt_failures}] GT Failure Validation
 \end{itemize}
 
 \vspace{0.3em}
-\noindent\textbf{IV.\ \ Extended Quantitative Results}
+\noindent\textbf{IV.\ \ Extended Quantitative Analysis}
 \begin{itemize}[nosep,leftmargin=1.5em]
-\item[\S\ref{app:per_pattern}] Full Per-Pattern Results
-\item[\S\ref{app:entry_exit}] Entity Entry vs.\ Exit Accuracy
 \item[\S\ref{app:entity_count}] 2-Entity vs.\ 3-Entity Analysis
 \item[\S\ref{app:correlation}] EPA-PTM Correlation Analysis
 \item[\S\ref{app:bootstrap}] Bootstrap Confidence Intervals
+\item[\S\ref{app:frobenius}] Frobenius Distance Analysis
 \item[\S\ref{app:significance}] Statistical Significance and Effect Sizes
 \item[\S\ref{app:distributions}] PTM Score Distribution
-\item[\S\ref{app:frobenius}] Frobenius Distance Analysis
 \item[\S\ref{app:failure_pattern}] Per-Pattern Failure Analysis
+\item[\S\ref{app:gt_failures}] GT Failure Validation
 \item[\S\ref{app:metric_discriminability}] Metric Discriminability Comparison
 \item[\S\ref{app:sample_size}] Sample Size Sensitivity
-\item[\S\ref{app:rank_consistency}] Cross-Pattern Rank Consistency
-\item[\S\ref{app:temporal_ablation}] Temporal Frame Sampling Ablation
 \end{itemize}
 
 \vspace{0.3em}
-\noindent\textbf{V.\ \ Qualitative Analysis \& Reproducibility}
+\noindent\textbf{V.\ \ Ablations, Consistency \& Reproducibility}
+\begin{itemize}[nosep,leftmargin=1.5em]
+\item[\S\ref{app:temporal_ablation}] Temporal Frame Sampling Ablation
+\item[\S\ref{app:rank_consistency}] Cross-Pattern Rank Consistency
+\item[\S\ref{app:reproducibility}] Reproducibility Checklist
+\end{itemize}
+
+\vspace{0.3em}
+\noindent\textbf{VI.\ \ Qualitative Analysis}
 \begin{itemize}[nosep,leftmargin=1.5em]
 \item[\S\ref{app:qualitative_gallery}] Qualitative Failure Gallery
-\item[\S\ref{app:reproducibility}] Reproducibility Checklist
 \end{itemize}
 
 \vspace{1em}
@@ -185,7 +190,7 @@ A block matrix insertion operator that embeds local transitions into the tempora
 
 \noindent\textbf{Example 2.1 (Temporal Insertion):} For $T=5$ (yielding 4 transitions), placing $\hat{\calB}_1$ at $\tau = 2$ projects the local transition precisely into the second and third temporal steps:
 \begin{equation}
-    \Phi_2\bigl(\hat{\calB}_1\bigr) = 
+    \Phi_2\bigl(\hat{\calB}_1\bigr) =
     \left[\begin{smallmatrix}
          0 & 0 & 0 & 0 & 0 \\
          0 & 1 & 0 & 0 & 0 \\
@@ -196,13 +201,13 @@ A block matrix insertion operator that embeds local transitions into the tempora
 
 \noindent\textbf{Example 2.2 (Temporal Linearity):} Using $N=5, T=5$, and $\tau=2$, let $X = \hat{\calB}_1$ and $Y = \hat{\calB}_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 & 0 & 0 \\ -1 & 1 & 0 & 0 & 0 \end{smallmatrix}\bigr]$. Applying the shift operator to their algebraic sum elegantly preserves their individual structural placements on a single line:
 \begin{equation}
-    \Phi_2(X + Y) = 
+    \Phi_2(X + Y) =
     \left[\begin{smallmatrix}
          0 &  0 & 0 & 0 & 0 \\
          0 &  0 & 0 & 0 & 0 \\
         -2 &  1 & 0 & 0 & 0 \\
          0 &  0 & 0 & 0 & 0
-    \end{smallmatrix}\right] = 
+    \end{smallmatrix}\right] =
     \underbrace{\left[\begin{smallmatrix}
          0 &  0 & 0 & 0 & 0 \\
          0 &  1 & 0 & 0 & 0 \\
@@ -469,59 +474,11 @@ All four video generation models share the following fixed settings from the sce
 
 
 %% ============================================================
-\section{State Transition Matrices Library}
-\label{app:delta_s}
-%% ============================================================
-
-Table~\ref{tab:delta_s} lists the prescribed transition matrices $\Delta S^*$ and presence matrices $S^*$ for all 7 canonical patterns.
-
-\begin{table}[ht]
-\caption{Prescribed transition matrices ($\Delta S^*$) and presence matrices ($S^*$) for all 7 canonical patterns in MEMS-1K.}
-\label{tab:delta_s}
-\centering
-\small
-\renewcommand{\arraystretch}{1.2}
-\setlength{\tabcolsep}{8pt}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Pattern & Transition $\Delta S^*$ & Presence $S^*$ \\
-\midrule
-Relay &
-$\begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$ &
-$\begin{bmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{bmatrix}$ \\[12pt]
-
-Split &
-$\begin{bmatrix} 0 & -1 \\ -1 & 1 \end{bmatrix}$ &
-$\begin{bmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{bmatrix}$ \\[12pt]
-
-Accumulation &
-$\begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$ &
-$\begin{bmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{bmatrix}$ \\[12pt]
-
-Convergence &
-$\begin{bmatrix} -1 & 1 \\ 1 & 0 \end{bmatrix}$ &
-$\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}$ \\[12pt]
-
-Sliding Window &
-$\begin{bmatrix} -1 & 0 & 1 \\ 0 & -1 & 0 \end{bmatrix}$ &
-$\begin{bmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{bmatrix}$ \\[12pt]
-
-Reduction &
-$\begin{bmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{bmatrix}$ &
-$\begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 0 \\ 1 & 0 & 0 \end{bmatrix}$ \\[12pt]
-
-Reverse Relay &
-$\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$ &
-$\begin{bmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{bmatrix}$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-%% ============================================================
 \section{Full Per-Pattern Results}
 \label{app:per_pattern}
 %% ============================================================
+
+\noindent\emph{Note: The main text Table~2 caption refers to per-pattern EPA scores as ``Appendix~I.''}
 
 \begin{table*}[ht]
 \caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.}
@@ -674,6 +631,107 @@ TPR is relatively stable across patterns (46--55\%), reflecting the fundamental 
 
 To further isolate VLM performance from generative noise, we evaluated the Qwen2-VL-7B detector on a set of real-world Ground Truth (GT) videos featuring the same entity types as in MEMS-1K. In these clear, high-fidelity videos, the VLM achieved \textbf{100\% accuracy} in binary presence detection (see Appendix~\ref{app:gt_failures} for details). This stark contrast between 100\% accuracy on real video versus $\sim$52\% on generated video confirms that the low TPR is not a limitation of our evaluation tool, but a quantitative measure of the narrative gap in current video generation architectures.
 
+\subsection{VLM Detector Comparison}
+
+\begin{table}[ht]
+\caption{VLM detector comparison on MEMS-1K. Qwen2-VL-7B-Instruct provides the best balance of TPR and TNR.}
+\label{tab:vlm_comparison}
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Detector & TPR & TNR \\
+\midrule
+Grounding DINO~\cite{groundingdino} & 89.3\% & 4.0\% \\
+Qwen2-VL-2B-Instruct & 40.1\% & 58.2\% \\
+\textbf{Qwen2-VL-7B-Instruct} & \textbf{52.1\%} & \textbf{66.7\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Grounding DINO's extremely low TNR (4\%) means it reports nearly every entity as ``present'' regardless of actual content, rendering it useless for measuring entity \emph{absence}---the core signal for narrative transition evaluation. The 2B VLM variant shows markedly lower TPR (40.1\%) than the 7B model (52.1\%), confirming that instruction-following capacity scales with model size for this binary detection task.
+
+
+%% ============================================================
+\section{Entity Entry vs.\ Exit Accuracy}
+\label{app:entry_exit}
+%% ============================================================
+
+\noindent\emph{Note: The main text \S5 refers to entry vs.\ exit asymmetry as ``Appendix~L.''}
+
+We decompose PTM into entry (prescribed $\Delta S^* = +1$) and exit (prescribed $\Delta S^* = -1$) operations (Table~\ref{tab:entry_exit}).
+
+\begin{table}[ht]
+\caption{PTM decomposed by operation type. $\Delta$ = entry $-$ exit accuracy.}
+\label{tab:entry_exit}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & Entry (+1) & Exit ($-1$) & $\Delta$ & $n$ \\
+\midrule
+SD    & \textbf{.256} & \textbf{.242} & +.014 & 2,400 \\
+Echo  & .154 & .190 & $-$.036 & 2,400 \\
+VGoT  & .068 & .120 & $-$.052 & 2,400 \\
+VIC   & .068 & .069 & $-$.001 & 2,400 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{VGoT exhibits a pronounced entity entry vs.\ exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming that DynamiCrafter's I2V rendering stage cannot introduce new entities absent from the initial keyframe layout.
+SD is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
+VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accuracy are near-chance (0.068--0.069).
+
+
+%% ============================================================
+\section{State Transition Matrices Library}
+\label{app:delta_s}
+%% ============================================================
+
+Table~\ref{tab:delta_s} lists the prescribed transition matrices $\Delta S^*$ and presence matrices $S^*$ for all 7 canonical patterns.
+
+\begin{table}[ht]
+\caption{Prescribed transition matrices ($\Delta S^*$) and presence matrices ($S^*$) for all 7 canonical patterns in MEMS-1K. Two-entity patterns show the compact $2 \times 2$ form; the canonical $2 \times 3$ representation (Theorem~3.1) is obtained by appending a zero column.}
+\label{tab:delta_s}
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Pattern & Transition $\Delta S^*$ & Presence $S^*$ \\
+\midrule
+Relay &
+$\begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{bmatrix}$ \\[12pt]
+
+Split &
+$\begin{bmatrix} 0 & -1 \\ -1 & 1 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{bmatrix}$ \\[12pt]
+
+Accumulation &
+$\begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{bmatrix}$ \\[12pt]
+
+Convergence &
+$\begin{bmatrix} -1 & 1 \\ 1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix}$ \\[12pt]
+
+Sliding Window &
+$\begin{bmatrix} -1 & 0 & 1 \\ 0 & -1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{bmatrix}$ \\[12pt]
+
+Reduction &
+$\begin{bmatrix} 0 & 0 & -1 \\ 0 & -1 & 0 \end{bmatrix}$ &
+$\begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 0 \\ 1 & 0 & 0 \end{bmatrix}$ \\[12pt]
+
+Reverse Relay &
+$\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$ &
+$\begin{bmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{bmatrix}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 
 %% ============================================================
 \section{VLM Detection Case Study}
@@ -731,35 +789,6 @@ Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
 \end{table*}
 
 \noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image (panels a--c). Only 16\% are genuine VLM detection errors (panel d). This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not evaluation tool artifacts.
-
-
-%% ============================================================
-\section{Entity Entry vs.\ Exit Accuracy}
-\label{app:entry_exit}
-%% ============================================================
-
-We decompose PTM into entry (prescribed $\Delta S^* = +1$) and exit (prescribed $\Delta S^* = -1$) operations (Table~\ref{tab:entry_exit}).
-
-\begin{table}[ht]
-\caption{PTM decomposed by operation type. $\Delta$ = entry $-$ exit accuracy.}
-\label{tab:entry_exit}
-\centering
-\small
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Model & Entry (+1) & Exit ($-1$) & $\Delta$ & $n$ \\
-\midrule
-SD    & \textbf{.256} & \textbf{.242} & +.014 & 2,400 \\
-Echo  & .154 & .190 & $-$.036 & 2,400 \\
-VGoT  & .068 & .120 & $-$.052 & 2,400 \\
-VIC   & .068 & .069 & $-$.001 & 2,400 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{VGoT exhibits a pronounced entity entry vs.\ exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming that DynamiCrafter's I2V rendering stage cannot introduce new entities absent from the initial keyframe layout.
-SD is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
-VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accuracy are near-chance (0.068--0.069).
 
 
 %% ============================================================
@@ -839,7 +868,7 @@ All per-method correlations are highly significant ($p < 10^{-51}$), validating 
 \toprule
 Metric & SD & Echo & VGoT & VIC \\
 \midrule
-PTM & \textbf{.243}{\tiny [.226,.262]} & .167{\tiny [.151,.184]} & .094{\tiny [.083,.107]} & .070{\tiny [.060,.082]} \\
+PTM & \textbf{.243}{\tiny [.226,.262]} & .167{\tiny [.151,.183]} & .094{\tiny [.082,.107]} & .070{\tiny [.060,.082]} \\
 EPA & \textbf{.593}{\tiny [.583,.604]} & .563{\tiny [.553,.574]} & .554{\tiny [.545,.564]} & .546{\tiny [.536,.557]} \\
 \bottomrule
 \end{tabular}
@@ -866,9 +895,51 @@ Rev.\ Relay    & 100 & .200{\tiny [.143,.257]} & \textbf{.225}{\tiny [.174,.276]
 \end{tabular}
 \end{table*}
 
-All overall PTM CIs are non-overlapping: SD [.226,.262] vs.\ Echo [.151,.184] vs.\ VGoT [.083,.107] vs.\ VIC [.060,.082].
+All overall PTM CIs are non-overlapping: SD [.226,.262] vs.\ Echo [.151,.183] vs.\ VGoT [.082,.107] vs.\ VIC [.060,.082].
 EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming statistically significant ordering.
 Per-pattern CIs (Table~\ref{tab:bootstrap_pattern}) show that SD achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where Echo's CI overlaps with SD's.
+
+
+%% ============================================================
+\section{Frobenius Distance Analysis}
+\label{app:frobenius}
+%% ============================================================
+
+\noindent\emph{Note: The main text \S4.3 refers to Frobenius distance significance as ``Appendix~R.''}
+
+\emph{Example: Relay scenario.}\;
+Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to enter at transition~1, and a spurious entry occurs at transition~2:
+\begin{equation}
+    \Delta S^* = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}, \quad
+    \Delta S_\text{obs} = \begin{bmatrix} 0 & 0 \\ -1 & +1 \end{bmatrix}, \quad
+    E = \begin{bmatrix} 0 & -1 \\ 0 & +1 \end{bmatrix}.
+\end{equation}
+In this error matrix, the Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt{2}$ weights both errors equally, conflating the narrative-critical missed transition (Amnesia) with spurious hold-cell noise. PTM, by contrast, evaluates only the prescribed mask $\mathcal{M} = \left[ \begin{smallmatrix} 0 & 1 \\ 1 & 0 \end{smallmatrix} \right]$, yielding $\text{PTM} = 1 - 1/2 = 0.5$.
+
+
+
+\paragraph{Discriminative analysis.}
+The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}). Only 1 of 6 pairs (Echo--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does \emph{not} match the PTM ranking.
+This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribed-subspace projection (PTM).
+
+\begin{table}[ht]
+\caption{Pairwise Mann-Whitney $U$ tests for $\|E\|_F$.}
+\label{tab:frobenius}
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Pair & $p$-value & Mean$_1$ / Mean$_2$ \\
+\midrule
+SD--Echo    & 0.436 & 1.640 / 1.670 \\
+SD--VGoT    & 0.051 & 1.640 / 1.613 \\
+SD--VIC     & 0.363 & 1.640 / 1.643 \\
+Echo--VGoT  & \textbf{0.004} & 1.670 / 1.613 \\
+Echo--VIC   & 0.062 & 1.670 / 1.643 \\
+VGoT--VIC   & 0.315 & 1.613 / 1.643 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
 %% ============================================================
@@ -911,7 +982,7 @@ The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.1
 \small
 \begin{tabular}{@{}l cccc@{}}
 \toprule
-Model & $\mu \pm \sigma$ & $= 0$\% & $= 0.5$\% & $= 1.0$\% \\
+Model & $\mu \pm \sigma$ & PTM$=$0 (\%) & PTM$=$0.5 (\%) & PTM$=$1.0 (\%) \\
 \midrule
 SD    & .243$\pm$.291 & 53.5 & 21.5 & 4.5 \\
 Echo  & .167$\pm$.260 & 67.1 & 15.3 & 2.6 \\
@@ -920,6 +991,8 @@ VIC   & .070$\pm$.173 & 84.8 & 8.7  & 0.3 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\noindent\emph{Note:} 3-transition patterns (Accumulation, Sliding Window, Reduction) can also take PTM values of 0.33 and 0.67, which account for the remaining percentage not shown in the table columns above.
 
 Table~\ref{tab:ptm_dist} shows that PTM concentrates at discrete values because most patterns have 2 prescribed transitions, yielding PTM $\in \{0, 0.5, 1.0\}$.
 VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct).
@@ -931,22 +1004,22 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
     ybar=1.5pt,
     bar width=8pt,
     width=\columnwidth,
-    height=6cm, 
+    height=6cm,
     ylabel={\small \% of videos},
     xlabel={\small PTM value},
     symbolic x coords={0, 0.5, 1.0},
     xtick=data,
-    ymin=0, ymax=100, 
-    ymajorgrids=true, 
+    ymin=0, ymax=100,
+    ymajorgrids=true,
     grid style=dashed,
-    axis x line*=bottom, 
+    axis x line*=bottom,
     axis y line*=left,
     legend style={
-        at={(0.5,1.12)}, 
-        anchor=south, 
-        legend columns=-1, 
+        at={(0.5,1.12)},
+        anchor=south,
+        legend columns=-1,
         font=\small,
-        draw=none 
+        draw=none
     },
     enlarge x limits=0.25,
     nodes near coords={
@@ -954,7 +1027,7 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
     },
     every node near coord/.append style={
         font=\tiny,
-        anchor=south, 
+        anchor=south,
         yshift=1pt
     },
 ]
@@ -971,48 +1044,6 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
 \label{fig:ptm_dist}
 \Description{Grouped bar chart showing PTM score distributions for SD, Echo, VGoT, and VIC across PTM values 0, 0.5, and 1.0.}
 \end{figure}
-
-
-
-
-%% ============================================================
-\section{Frobenius Distance Analysis}
-\label{app:frobenius}
-%% ============================================================
-
-\emph{Example: Relay scenario.}\;
-Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to enter at transition~1, and a spurious entry occurs at transition~2:
-\begin{equation}
-    \Delta S^* = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}, \quad
-    \Delta S_\text{obs} = \begin{bmatrix} 0 & 0 \\ -1 & +1 \end{bmatrix}, \quad
-    E = \begin{bmatrix} 0 & -1 \\ 0 & +1 \end{bmatrix}.
-\end{equation}
-In this error matrix, the Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt{2}$ weights both errors equally, conflating the narrative-critical missed transition (Amnesia) with spurious hold-cell noise. PTM, by contrast, evaluates only the prescribed mask $\mathcal{M} = \left[ \begin{smallmatrix} 0 & 1 \\ 1 & 0 \end{smallmatrix} \right]$, yielding $\text{PTM} = 1 - 1/2 = 0.5$.
-
-
-
-\paragraph{Discriminative analysis.}
-The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}). Only 1 of 6 pairs (Echo--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does \emph{not} match the PTM ranking.
-This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribed-subspace projection (PTM).
-
-\begin{table}[ht]
-\caption{Pairwise Mann-Whitney $U$ tests for $\|E\|_F$.}
-\label{tab:frobenius}
-\centering
-\small
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Pair & $p$-value & Mean$_1$ / Mean$_2$ \\
-\midrule
-SD--Echo    & 0.436 & 1.640 / 1.670 \\
-SD--VGoT    & 0.051 & 1.640 / 1.613 \\
-SD--VIC     & 0.363 & 1.640 / 1.643 \\
-Echo--VGoT  & \textbf{0.004} & 1.670 / 1.613 \\
-Echo--VIC   & 0.062 & 1.670 / 1.643 \\
-VGoT--VIC   & 0.315 & 1.613 / 1.643 \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 
 
@@ -1147,61 +1178,6 @@ The 1,000-scenario design provides $>$99.8\% stability across both criteria, ens
 
 
 %% ============================================================
-\section{Cross-Pattern Rank Consistency}
-\label{app:rank_consistency}
-%% ============================================================
-
-To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and actual PTM values (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$. Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
-SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
-The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
-
-\begin{table}[ht]
-\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
-\label{tab:rank_pattern}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}l cccc cccc@{}}
-\toprule
-& \multicolumn{4}{c}{PTM} & \multicolumn{4}{c}{Rank} \\
-\cmidrule(lr){2-5} \cmidrule(lr){6-9}
-Pattern & SD & Echo & VGoT & VIC & SD & Echo & VGoT & VIC \\
-\midrule
-Relay          & .190 & .138 & .085 & .080 & 1 & 2 & 3 & 4 \\
-Split          & .233 & .165 & .108 & .048 & 1 & 2 & 3 & 4 \\
-Accumulation   & .253 & .095 & .070 & .072 & 1 & 2 & \textbf{4} & \textbf{3} \\
-Convergence    & .277 & .187 & .053 & .067 & 1 & 2 & \textbf{4} & \textbf{3} \\
-Sliding Window & .357 & .270 & .103 & .077 & 1 & 2 & 3 & 4 \\
-Reduction      & .250 & .195 & .110 & .080 & 1 & 2 & 3 & 4 \\
-Reverse Relay  & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-
-
-%% ============================================================
-\section{Reproducibility Checklist}
-\label{app:reproducibility}
-%% ============================================================
-
-\begin{itemize}[leftmargin=*,nosep]
-\item All evaluation code, prompts, and 4,000 generated videos are released.
-\item Fixed random seed for generation and ablation bootstraps.
-\item VLM detector: Qwen2-VL-7B-Instruct (fp16, greedy decoding).
-\item Entity query: ``Is there a \{entity\} visible in this image? Answer only Yes or No.''
-\item 1 middle frame per shot (3 frames per video).
-\item PTM: prescribed transitions only ($\Delta S^* \neq 0$), no threshold.
-\item EPA: exact match $S_\text{obs}[t,k] = S^*[t,k]$, no threshold.
-\item Bootstrap: $B = 10{,}000$ iterations, percentile CIs.
-\item Permutation test: 1,000 character role swappings.
-\item Hardware: 4$\times$ NVIDIA RTX 4090 (24 GB each).
-\item Evaluation runtime: $\sim$20 minutes for 4,000 videos (VLM inference).
-\item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
-\end{itemize}
-
-%% ============================================================
 \section{Temporal Frame Sampling Ablation}
 \label{app:temporal_ablation}
 %% ============================================================
@@ -1216,6 +1192,8 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 \end{itemize}
 
 \noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments.
+
+\noindent\emph{Implementation note:} The temporal ablation was conducted on the subset of videos for which raw frame-level data was available at the time of the ablation run. Minor numerical differences from the main-text Table~2 (which reports the primary evaluation on the full 1,000 scenarios) arise from this difference in sample coverage.
 
 \begin{table}[ht]
 \caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. Model ranking is \emph{identical} across all four strategies (SD $>$ Echo $>$ VGoT $>$ VIC).}
@@ -1275,6 +1253,58 @@ Multi-3 & .749 & .805 & .653 & 1.000 \\
 (4)~The marginal PTM gain from multi-frame voting ($\leq 0.02$) does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
 
+%% ============================================================
+\section{Cross-Pattern Rank Consistency}
+\label{app:rank_consistency}
+%% ============================================================
+
+To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and actual PTM values (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$. Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
+SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
+The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
+
+\begin{table}[ht]
+\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
+\label{tab:rank_pattern}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l cccc cccc@{}}
+\toprule
+& \multicolumn{4}{c}{PTM} & \multicolumn{4}{c}{Rank} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+Pattern & SD & Echo & VGoT & VIC & SD & Echo & VGoT & VIC \\
+\midrule
+Relay          & .190 & .138 & .085 & .080 & 1 & 2 & 3 & 4 \\
+Split          & .233 & .165 & .108 & .048 & 1 & 2 & 3 & 4 \\
+Accumulation   & .253 & .095 & .070 & .072 & 1 & 2 & \textbf{4} & \textbf{3} \\
+Convergence    & .277 & .187 & .053 & .067 & 1 & 2 & \textbf{4} & \textbf{3} \\
+Sliding Window & .357 & .270 & .103 & .077 & 1 & 2 & 3 & 4 \\
+Reduction      & .250 & .195 & .110 & .080 & 1 & 2 & 3 & 4 \\
+Reverse Relay  & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Reproducibility Checklist}
+\label{app:reproducibility}
+%% ============================================================
+
+\begin{itemize}[leftmargin=*,nosep]
+\item All evaluation code, prompts, and 4,000 generated videos are released.
+\item Fixed random seed for generation and ablation bootstraps.
+\item VLM detector: Qwen2-VL-7B-Instruct (fp16, greedy decoding).
+\item Entity query: ``Is there a \{entity\} visible in this image? Answer only Yes or No.''
+\item 1 middle frame per shot (3 frames per video).
+\item PTM: prescribed transitions only ($\Delta S^* \neq 0$), no threshold.
+\item EPA: exact match $S_\text{obs}[t,k] = S^*[t,k]$, no threshold.
+\item Bootstrap: $B = 10{,}000$ iterations, percentile CIs.
+\item Permutation test: 1,000 character role swappings.
+\item Hardware: 4$\times$ NVIDIA RTX 4090 (24 GB each).
+\item Evaluation runtime: $\sim$20 minutes for 4,000 videos (VLM inference).
+\item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
+\end{itemize}
 
 %% ============================================================
 \section{Qualitative Failure Gallery}
