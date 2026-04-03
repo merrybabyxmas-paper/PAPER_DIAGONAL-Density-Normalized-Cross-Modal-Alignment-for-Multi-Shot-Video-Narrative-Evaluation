@@ -721,11 +721,11 @@ Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
 \midrule
 (a) & \textbf{Generation Failure} & ``visitor'', ``tourist'' & Absent & Absent & The model completely failed to generate any human entity. Only an empty hospital corridor is rendered. \\
 \midrule
-(b) & \textbf{Generation Failure} & ``dog'' & \textbf{Unidentifiable} & \textbf{Unidentifiable} & The model fails to clear the preceding context of the ``cat.'' \\
+(b) & \textbf{Generation Failure} & ``dog'' & Absent & Absent & The model fails to clear the preceding context of the ``cat.'' \\
 \midrule
-(c) & \textbf{Marginal} & ``barista'' & Absent & Ambiguous & A person is visible but lacks occupational cues (no apron or coffee equipment). The VLM's ``absent'' judgment is defensible due to lack of context. \\
+(c) & \textbf{Marginal} & ``barista'' & Absent & Ambiguous & A person is visible but lacks occupational cues (no apron or coffee equipment). \\
 \midrule
-(d) & \textbf{VLM Error} & ``dog'' & Absent & Present & A dog is clearly visible with a distinct posture and collar. The VLM incorrectly reports it as absent---a genuine detection miss. \\
+(d) & \textbf{VLM Error} & ``dog'' & Absent & Present & A dog is clearly visible with a distinct posture and collar.  \\
 \bottomrule
 \end{tabular}
 \end{table*}
