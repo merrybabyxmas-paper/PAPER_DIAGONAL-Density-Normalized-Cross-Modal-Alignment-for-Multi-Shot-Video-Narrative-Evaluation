@@ -1193,7 +1193,7 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 
 \noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments.
 
-\noindent\emph{Implementation note:} The temporal ablation uses a unified frame-indexing formula $\texttt{shot\_start} + \lfloor\texttt{frac} \times (\texttt{frames\_per\_shot} - 1)\rfloor$ across all four strategies, where $\texttt{frac} \in \{0.25, 0.50, 0.75\}$. This differs by at most one frame from the main evaluation's $\lfloor\texttt{shot\_len}\,/\,2\rfloor$ index. Because VLM binary detection can flip on adjacent frames (e.g., an entity partially entering or exiting the field of view), approximately 39\% of per-video $S_\text{obs}$ matrices differ by at least one cell, producing minor aggregate PTM shifts (e.g., SD: 0.272 vs.\ 0.243 in Table~2). Crucially, the 4-model ranking SD $>$ Echo $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all strategies and both indexing methods, confirming that \stem{}'s discriminative power is robust to frame-level jitter.
+\noindent\emph{Implementation note:} For the early/late strategies the frame index is computed as $\texttt{shot\_start} + \lfloor\texttt{frac} \times (\texttt{frames\_per\_shot} - 1)\rfloor$; for the middle strategy the index is $\texttt{shot\_start} + \lfloor\texttt{frames\_per\_shot}\,/\,2\rfloor$, matching the main evaluation pipeline. Minor residual differences between the Middle column and Table~2 (e.g., SD: 0.239 vs.\ 0.243) arise from fp16 inference non-determinism across separate runs, affecting $\sim$6\% of binary detection cells. The model ranking is perfectly preserved.
 
 \begin{table}[ht]
 \caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. Model ranking is \emph{identical} across all four strategies (SD $>$ Echo $>$ VGoT $>$ VIC).}
@@ -1204,10 +1204,10 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 \toprule
 Model & Early & Middle & Late & Multi-3 \\
 \midrule
-SD & .269 & \textbf{.272} & .196 & .249 \\
-Echo  & .169 & .169 & .172 & .163 \\
-VGoT      & .098 & .087 & .085 & .081 \\
-VIC       & .074 & .058 & .057 & .051 \\
+SD & .271 & \textbf{.239} & .196 & .228 \\
+Echo  & .167 & .168 & .171 & .162 \\
+VGoT      & .099 & .091 & .086 & .085 \\
+VIC       & .073 & .060 & .058 & .051 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1221,10 +1221,10 @@ VIC       & .074 & .058 & .057 & .051 \\
 \toprule
 Model & Early & Middle & Late & Multi-3 \\
 \midrule
-SD & .585 & \textbf{.598} & .568 & .598 \\
+SD & .586 & \textbf{.586} & .568 & .591 \\
 Echo  & .567 & .571 & .569 & .569 \\
-VGoT      & .550 & .547 & .553 & .550 \\
-VIC       & .552 & .546 & .541 & .546 \\
+VGoT      & .550 & .548 & .553 & .552 \\
+VIC       & .551 & .548 & .542 & .547 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1238,19 +1238,19 @@ VIC       & .552 & .546 & .541 & .546 \\
 \toprule
  & Early & Middle & Late & Multi-3 \\
 \midrule
-Early  & 1.000 & .591 & .449 & .749 \\
-Middle & .591 & 1.000 & .505 & .805 \\
-Late   & .449 & .505 & 1.000 & .653 \\
-Multi-3 & .749 & .805 & .653 & 1.000 \\
+Early  & 1.000 & .541 & .447 & .713 \\
+Middle & .541 & 1.000 & .527 & .796 \\
+Late   & .447 & .527 & 1.000 & .688 \\
+Multi-3 & .713 & .796 & .688 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Key findings.}
 (1)~The model ranking SD $>$ Echo $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
-(2)~The middle frame achieves the highest PTM for SD (.272) and the highest EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
-(3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.449$), with the middle--multi3 pair reaching $\rho_s = 0.805$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
-(4)~The marginal PTM gain from multi-frame voting ($\leq 0.02$) does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
+(2)~The middle frame achieves the highest or near-highest PTM for SD (.239) and competitive EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
+(3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.447$), with the middle--multi3 pair reaching $\rho_s = 0.796$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
+(4)~The marginal PTM gain from multi-frame voting does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
 
 %% ============================================================

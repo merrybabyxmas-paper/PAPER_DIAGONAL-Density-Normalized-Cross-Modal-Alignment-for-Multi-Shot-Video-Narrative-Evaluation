@@ -51,7 +51,11 @@ def extract_frames(video_path, shot_fractions):
         shot_start = shot_idx * frames_per_shot
         shot_frames = []
         for frac in shot_fractions:
-            frame_idx = shot_start + int(frac * (frames_per_shot - 1))
+            if frac == 0.50:
+                # Match main eval: shot_len // 2 (consistent with eval_vlm_fullscale.py)
+                frame_idx = shot_start + frames_per_shot // 2
+            else:
+                frame_idx = shot_start + int(frac * (frames_per_shot - 1))
             frame_idx = min(frame_idx, total_frames - 1)
             cap.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)
             ret, frame = cap.read()
