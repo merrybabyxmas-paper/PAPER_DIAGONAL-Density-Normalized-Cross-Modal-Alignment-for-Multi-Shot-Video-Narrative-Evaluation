@@ -1193,7 +1193,7 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 
 \noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments.
 
-\noindent\emph{Implementation note:} The temporal ablation was conducted on the subset of videos for which raw frame-level data was available at the time of the ablation run. Minor numerical differences from the main-text Table~2 (which reports the primary evaluation on the full 1,000 scenarios) arise from this difference in sample coverage.
+\noindent\emph{Implementation note:} The temporal ablation uses a unified frame-indexing formula $\texttt{shot\_start} + \lfloor\texttt{frac} \times (\texttt{frames\_per\_shot} - 1)\rfloor$ across all four strategies, where $\texttt{frac} \in \{0.25, 0.50, 0.75\}$. This differs by at most one frame from the main evaluation's $\lfloor\texttt{shot\_len}\,/\,2\rfloor$ index. Because VLM binary detection can flip on adjacent frames (e.g., an entity partially entering or exiting the field of view), approximately 39\% of per-video $S_\text{obs}$ matrices differ by at least one cell, producing minor aggregate PTM shifts (e.g., SD: 0.272 vs.\ 0.243 in Table~2). Crucially, the 4-model ranking SD $>$ Echo $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all strategies and both indexing methods, confirming that \stem{}'s discriminative power is robust to frame-level jitter.
 
 \begin{table}[ht]
 \caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. Model ranking is \emph{identical} across all four strategies (SD $>$ Echo $>$ VGoT $>$ VIC).}
