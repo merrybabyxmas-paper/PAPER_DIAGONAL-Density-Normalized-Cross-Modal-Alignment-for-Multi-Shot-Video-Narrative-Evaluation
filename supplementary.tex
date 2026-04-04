@@ -199,7 +199,7 @@ A block matrix insertion operator that embeds local transitions into the tempora
     \end{smallmatrix}\right] \in \mathbb{Z}^{4 \times 5}.
 \end{equation}
 
-\noindent\textbf{Example 2.2 (Temporal Linearity):} Using $N=5, T=5$, and $\tau=2$, let $X = \hat{\calB}_1$ and $Y = \hat{\calB}_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 & 0 & 0 \\ -1 & 1 & 0 & 0 & 0 \end{smallmatrix}\bigr]$. Applying the shift operator to their algebraic sum elegantly preserves their individual structural placements on a single line:
+\noindent\textbf{Example 2.2 (Temporal Linearity):} Using $N=5, T=5$, and $\tau=2$, let $X = \hat{\calB}_1$ and $Y = \hat{\calB}_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 & 0 & 0 \\ -1 & 1 & 0 & 0 & 0 \end{smallmatrix}\bigr]$. Applying the shift operator to their algebraic sum preserves their individual structural placements on a single line:
 \begin{equation}
     \Phi_2(X + Y) =
     \left[\begin{smallmatrix}
@@ -246,7 +246,7 @@ Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two 
 \subsection{Grand Spanning Theorem}
 
 \setcounter{theorem}{0}
-\begin{theorem}[Topological Generalization]
+\begin{theorem}[Narrative Generalization]
 For any sequence length $T \geq 3$ and entity count $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{Z}^{(T-1)\times N}$ can be algebraically expressed as:
 \begin{equation}
 \Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\; \bigl(\Phi_\tau \circ \sigma_{\tau,m} \circ \Pi_N\bigr)(\calB_m),
@@ -260,11 +260,11 @@ Any global transition matrix $\Delta S \in \mathbb{Z}^{(T-1)\times N}$ can be ex
 \begin{equation}
     \Delta S = \sum_{\tau=1}^{T-2} \Phi_\tau\bigl( \Delta S^{(\tau)} \bigr),
 \end{equation}
-where each $\Delta S^{(\tau)} \in \mathbb{Z}^{2 \times N}$ captures the transitions for window $\tau$. By Theorem~3.1, each local window is fully spanned by the extended bases $\hat{\calB}_m$. Because the spatial expansion $\Pi_N$ and the temporal shift $\Phi_\tau$ are strictly linear operators, their composition preserves this spanning property across the entirely expanded global dimensions.
+where each $\Delta S^{(\tau)} \in \mathbb{Z}^{2 \times N}$ captures the transitions for window $\tau$. By Theorem~3.1 in the main paper, each local window is fully spanned by the extended bases $\hat{\calB}_m$. Because the spatial expansion $\Pi_N$ and the temporal shift $\Phi_\tau$ are strictly linear operators, their composition preserves this spanning property across the entirely expanded global dimensions.
 \end{proof}
 
 
-\subsection{Worked Example: Matrix Decomposition}
+\subsection{Example: Matrix Decomposition}
 Consider a 4-shot, 3-entity narrative: $A \!\to\! AB \!\to\! BC \!\to\! C$ (a character relay chain). Its prescribed transition matrix is:
 \begin{equation}
 \Delta S = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix} \in \mathbb{Z}^{3 \times 3}.
