@@ -707,7 +707,7 @@ VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accu
 Table~\ref{tab:delta_s} lists the prescribed transition matrices $\Delta S^*$ and presence matrices $S^*$ for all 7 canonical patterns.
 
 \begin{table}[ht]
-\caption{Prescribed transition matrices ($\Delta S^*$) and presence matrices ($S^*$) for all 7 canonical patterns in MEMS-1K. Two-entity patterns show the compact $2 \times 2$ form; the canonical $2 \times 3$ representation (Theorem~3.1) is obtained by appending a zero column.}
+\caption{Prescribed transition matrices ($\Delta S^*$) and presence matrices ($S^*$) for all 7 patterns in MEMS-1K}
 \label{tab:delta_s}
 \centering
 \small
@@ -804,7 +804,7 @@ Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
 \end{tabular}
 \end{table*}
 
-\noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image (panels a--c). Only 16\% are genuine VLM detection errors (panel d). This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not evaluation tool artifacts.
+\noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image (panels a--c). 16\% are genuine VLM detection errors (panel d). This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not the problem of evaluation itself.
 
 
 %% ============================================================
@@ -921,10 +921,10 @@ Per-pattern CIs (Table~\ref{tab:bootstrap_pattern}) show that SD achieves non-ov
 \label{app:frobenius}
 %% ============================================================
 
-\noindent\emph{Note: The main text \S4.3 refers to Frobenius distance significance as ``Appendix~R.''}
+
 
 \emph{Example: Relay scenario.}\;
-Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to enter at transition~1, and a spurious entry occurs at transition~2:
+Consider a Relay scenario ($A \!\to\! AB \!\to\! B$) where entity $B$ fails to enter at transition~1, and a entry occurs at transition~2:
 \begin{equation}
     \Delta S^* = \begin{bmatrix} 0 & +1 \\ -1 & 0 \end{bmatrix}, \quad
     \Delta S_\text{obs} = \begin{bmatrix} 0 & 0 \\ -1 & +1 \end{bmatrix}, \quad
