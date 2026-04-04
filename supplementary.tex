@@ -976,40 +976,37 @@ The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.1
 %% ============================================================
 
 \begin{table}[ht]
-\caption{PTM score distributions. PTM takes discrete values $\{0, 0.5, 1.0\}$ for 2-transition patterns and $\{0, 0.33, 0.67, 1.0\}$ for 3-transition patterns.}
+\caption{Complete PTM score distributions (\% of videos). PTM takes 5 discrete values: $\{0, \tfrac{1}{3}, \tfrac{1}{2}, \tfrac{2}{3}, 1\}$. Patterns with 2 prescribed transitions (Relay, Accumulation, Reduction, Reverse Relay) produce PTM $\in \{0, 0.5, 1.0\}$; patterns with 3 prescribed transitions (Split, Convergence, Sliding Window) additionally produce PTM $\in \{0.33, 0.67\}$.}
 \label{tab:ptm_dist}
 \centering
 \small
-\begin{tabular}{@{}l cccc@{}}
+\begin{tabular}{@{}l c ccccc@{}}
 \toprule
-Model & $\mu \pm \sigma$ & PTM$=$0 (\%) & PTM$=$0.5 (\%) & PTM$=$1.0 (\%) \\
+Model & $\mu \pm \sigma$ & PTM$=$0 & PTM$=$0.33 & PTM$=$0.5 & PTM$=$0.67 & PTM$=$1.0 \\
 \midrule
-SD    & .243$\pm$.291 & 53.5 & 21.5 & 4.5 \\
-Echo  & .167$\pm$.260 & 67.1 & 15.3 & 2.6 \\
-VGoT  & .094$\pm$.197 & 79.5 & 10.2 & 0.8 \\
-VIC   & .070$\pm$.173 & 84.8 & 8.7  & 0.3 \\
+SD    & .243$\pm$.292 & 53.5 & 13.7 & 21.5 & 6.8 & 4.5 \\
+Echo  & .167$\pm$.260 & 67.1 & 10.6 & 15.3 & 4.4 & 2.6 \\
+VGoT  & .094$\pm$.197 & 79.5 &  8.4 & 10.2 & 1.1 & 0.8 \\
+VIC   & .070$\pm$.173 & 84.8 &  5.2 &  8.7 & 1.0 & 0.3 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent\emph{Note:} 3-transition patterns (Accumulation, Sliding Window, Reduction) can also take PTM values of 0.33 and 0.67, which account for the remaining percentage not shown in the table columns above.
+Table~\ref{tab:ptm_dist} shows the complete PTM distribution across all 5 discrete values. The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct). SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. The intermediate values PTM $= 0.33$ and PTM $= 0.67$ arise exclusively from 3-transition patterns (Split, Convergence, Sliding Window), where partial compliance is possible. Figure~\ref{fig:ptm_dist} visualizes these distributions.
 
-Table~\ref{tab:ptm_dist} shows that PTM concentrates at discrete values because most patterns have 2 prescribed transitions, yielding PTM $\in \{0, 0.5, 1.0\}$.
-VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct).
-SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{fig:ptm_dist} visualizes these distributions.
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    ybar=1.5pt,
-    bar width=8pt,
+    ybar=1.2pt,
+    bar width=6pt,
     width=\columnwidth,
-    height=6cm,
+    height=6.5cm,
     ylabel={\small \% of videos},
     xlabel={\small PTM value},
-    symbolic x coords={0, 0.5, 1.0},
+    symbolic x coords={0, 0.33, 0.5, 0.67, 1.0},
     xtick=data,
-    ymin=0, ymax=100,
+    ymin=0, ymax=90,
     ymajorgrids=true,
     grid style=dashed,
     axis x line*=bottom,
@@ -1021,7 +1018,7 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
         font=\small,
         draw=none
     },
-    enlarge x limits=0.25,
+    enlarge x limits=0.15,
     nodes near coords={
         \pgfmathprintnumber[fixed,precision=1]{\pgfplotspointmeta}
     },
@@ -1032,17 +1029,17 @@ SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. Figure~\ref{f
     },
 ]
 
-\addplot[fill=blue!30, draw=blue!80, thick] coordinates {(0, 53.5) (0.5, 21.5) (1.0, 4.5)};
-\addplot[fill=red!30, draw=red!80, thick] coordinates {(0, 67.1) (0.5, 15.3) (1.0, 2.6)};
-\addplot[fill=green!30, draw=green!80, thick] coordinates {(0, 79.5) (0.5, 10.2) (1.0, 0.8)};
-\addplot[fill=orange!30, draw=orange!80, thick] coordinates {(0, 84.8) (0.5, 8.7)  (1.0, 0.3)};
+\addplot[fill=blue!30, draw=blue!80, thick] coordinates {(0, 53.5) (0.33, 13.7) (0.5, 21.5) (0.67, 6.8) (1.0, 4.5)};
+\addplot[fill=red!30, draw=red!80, thick] coordinates {(0, 67.1) (0.33, 10.6) (0.5, 15.3) (0.67, 4.4) (1.0, 2.6)};
+\addplot[fill=green!30, draw=green!80, thick] coordinates {(0, 79.5) (0.33, 8.4) (0.5, 10.2) (0.67, 1.1) (1.0, 0.8)};
+\addplot[fill=orange!30, draw=orange!80, thick] coordinates {(0, 84.8) (0.33, 5.2) (0.5, 8.7) (0.67, 1.0) (1.0, 0.3)};
 
 \legend{SD, Echo, VGoT, VIC}
 \end{axis}
 \end{tikzpicture}
-\caption{PTM score distributions across models. Higher-performing models (SD) shift mass from PTM$\,{=}\,0$ toward PTM$\,{=}\,0.5$ and PTM$\,{=}\,1.0$.}
+\caption{Complete PTM score distributions across all 5 discrete values. Higher-performing models (SD) shift mass rightward from PTM$\,{=}\,0$ toward higher compliance levels. The PTM$\,{=}\,0.33$ and PTM$\,{=}\,0.67$ bins arise from 3-transition patterns (Split, Convergence, Sliding Window).}
 \label{fig:ptm_dist}
-\Description{Grouped bar chart showing PTM score distributions for SD, Echo, VGoT, and VIC across PTM values 0, 0.5, and 1.0.}
+\Description{Grouped bar chart showing PTM score distributions for SD, Echo, VGoT, and VIC across all 5 PTM values: 0, 0.33, 0.5, 0.67, and 1.0.}
 \end{figure}
 
 
