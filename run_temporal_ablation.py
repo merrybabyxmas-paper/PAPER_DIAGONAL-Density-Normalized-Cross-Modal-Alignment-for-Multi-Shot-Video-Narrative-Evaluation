@@ -173,10 +173,9 @@ def process_batch(gpu_id, entries, strategies):
         }
 
         for strat_name, fractions in strategies.items():
-            # Extract frames
+            # Extract frames and run VLM
             all_frames = extract_frames(video_path, fractions)
 
-            # Query VLM for each shot × entity
             S_obs = []
             for shot_idx in range(NUM_SHOTS):
                 shot_presence = []
