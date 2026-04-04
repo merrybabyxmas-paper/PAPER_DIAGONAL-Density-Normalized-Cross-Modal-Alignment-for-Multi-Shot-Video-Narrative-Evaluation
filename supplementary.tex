@@ -496,6 +496,8 @@ All four video generation models share the following fixed settings from the sce
 %% ============================================================
 
 
+Table~\ref{tab:full_pattern} reports the complete per-pattern results for all 7 patterns across 4 models.
+
 \begin{table*}[ht]
 \caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.}
 \label{tab:full_pattern}
@@ -518,7 +520,7 @@ Rev.\ Relay (D, 2-ent) & .200 & \textbf{.562} & \textbf{.225} & .555 & .150 & .5
 \end{tabular}
 \end{table*}
 
-Table~\ref{tab:full_pattern} reports the complete per-pattern results. Sliding Window produces the widest PTM spread (0.077--0.357), making it the most discriminative test.
+Sliding Window produces the widest PTM spread (0.077--0.357), making it the most discriminative test.
 VIC's PTM range is only 0.032 (0.048--0.080), confirming a fixed consistency ceiling invariant to pattern complexity.
 
 
@@ -963,6 +965,8 @@ VGoT--VIC   & 0.315 & 1.613 / 1.643 \\
 \label{app:significance}
 %% ============================================================
 
+Table~\ref{tab:mann_whitney} reports pairwise significance tests for PTM using the Mann--Whitney $U$ test with Cohen's $d$ effect sizes.
+
 \begin{table}[ht]
 \caption{Pairwise Mann-Whitney $U$ tests for PTM. Cohen's $d$ reports effect size.}
 \label{tab:mann_whitney}
@@ -981,7 +985,7 @@ SD--VIC     & $2.7 \times 10^{-53}$ & 0.72 & $^{***}$ \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:mann_whitney} reports pairwise significance tests. All pairwise PTM differences are significant ($p < 0.01$).
+All pairwise PTM differences are significant ($p < 0.01$).
 The SD--VIC comparison has the largest effect size ($d = 0.72$), representing a 3.5$\times$ difference in PTM (0.243 vs.\ 0.070).
 The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.13$), consistent with both models being in the low-PTM regime.
 
@@ -990,6 +994,8 @@ The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.1
 \section{PTM Score Distribution}
 \label{app:distributions}
 %% ============================================================
+
+Table~\ref{tab:ptm_dist} and Figure~\ref{fig:ptm_dist} show the complete PTM distribution across all 5 discrete values.
 
 \begin{table}[ht]
 \caption{Complete PTM score distributions (\% of videos). PTM takes 5 discrete values: $\{0, \tfrac{1}{3}, \tfrac{1}{2}, \tfrac{2}{3}, 1\}$. Patterns with 2 prescribed transitions (Relay, Accumulation, Reduction, Reverse Relay) produce PTM $\in \{0, 0.5, 1.0\}$; patterns with 3 prescribed transitions (Split, Convergence, Sliding Window) additionally produce PTM $\in \{0.33, 0.67\}$.}
@@ -1008,7 +1014,7 @@ VIC   & .070$\pm$.173 & 84.8 &  5.2 &  8.7 & 1.0 & 0.3 \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:ptm_dist} shows the complete PTM distribution across all 5 discrete values. The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct). SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. The intermediate values PTM $= 0.33$ and PTM $= 0.67$ arise exclusively from 3-transition patterns (Split, Convergence, Sliding Window), where partial compliance is possible. Figure~\ref{fig:ptm_dist} visualizes these distributions.
+The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct). SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. The intermediate values PTM $= 0.33$ and PTM $= 0.67$ arise exclusively from 3-transition patterns (Split, Convergence, Sliding Window), where partial compliance is possible. Figure~\ref{fig:ptm_dist} visualizes these distributions.
 
 \begin{figure}[ht]
 \centering
@@ -1204,7 +1210,7 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 \item \textbf{Multi-3} ($t \in \{0.25, 0.50, 0.75\}$): majority vote over 3 frames per shot.
 \end{itemize}
 
-\noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments.
+\noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments. Tables~\ref{tab:temporal_ablation_ptm}--\ref{tab:temporal_ablation_spearman} report the results.
 
 \begin{table}[ht]
 \caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. The Middle column reproduces the main evaluation (Table~2). Model ranking is \emph{identical} across all four strategies (SD $>$ Echo $>$ VGoT $>$ VIC).}
