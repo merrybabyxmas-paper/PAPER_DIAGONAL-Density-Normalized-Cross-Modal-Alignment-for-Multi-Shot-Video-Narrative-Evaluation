@@ -253,7 +253,6 @@ A block matrix insertion operator that embeds local transitions into the tempora
 \subsection{Visual Overview of Operator Pipeline}
 
 Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two operators compose to embed a local basis matrix into the global narrative space.
-
 \begin{figure*}[ht]
 \centering
 \includegraphics[width=\textwidth]{figures/operator_pipeline.png}
@@ -313,7 +312,6 @@ Of 1,200 initial candidates, 200 (16.7\%) were discarded for ambiguous descripti
 
 \paragraph{Entity type distribution.}
 Entities belong to three categories: \emph{Human} (general people, e.g., toddler, mother, jogger), \emph{Occupation} (role-defined characters, e.g., chef, waiter, nurse), and \emph{Animal} (e.g., dog, eagle, cat). Table~\ref{tab:entity_types} shows the full distribution.
-
 \begin{table}[ht]
 \caption{Entity type combination distribution.}
 \label{tab:entity_types}
@@ -355,7 +353,6 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 %% ============================================================
 
 Each scenario stores an \texttt{eval\_prompt} (concise scene description used for generation) and a set of \texttt{core\_entities} (e.g., $A$: ``toddler'', $B$: ``mother'') that define the named entity roles. For VLM evaluation, entity names are extracted directly from \texttt{core\_entities}---not from the scene descriptions---ensuring unambiguous binary presence queries (Eq.~5, main text). Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
-
 \begin{table}[H]
 \caption{Relay pattern sample ($A \to AB \to B$).}
 \label{tab:sample_relay}
@@ -505,7 +502,6 @@ All four video generation models share the following fixed settings from the sce
 
 
 Table~\ref{tab:full_pattern} reports the complete per-pattern results for all 7 patterns across 4 models.
-
 \begin{table*}[ht]
 \caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.}
 \label{tab:full_pattern}
@@ -548,7 +544,6 @@ Each model is rated independently on a 5-point Likert scale for \emph{Narrative 
 
 \paragraph{Design.}
 40 randomly sampled scenarios $\times$ 6 model pairs = 240 unique comparisons. 15 graduate student evaluators (CS and media studies), each completing 120 comparisons via a rotating-window assignment scheme. Table~\ref{tab:score_dist} shows score distributions, and Table~\ref{tab:head_to_head} reports head-to-head preferences.
-
 \begin{table}[ht]
 \caption{Likert score distributions and per-model mean narrative compliance scores.}
 \label{tab:score_dist}
@@ -608,7 +603,6 @@ To disentangle detector error from generation failure, we manually inspected 100
 \end{itemize}
 
 \noindent This yields \textbf{80.2\% VLM precision} ($65/(65{+}16)$, excluding ambiguous cases), confirming that the \stem{} pipeline accurately diagnoses generative models' shortcomings.
-
 \begin{table}[ht]
 \caption{Human audit of 100 random VLM negative flags ($S_{\text{obs}}=0,\; S^*=1$).}
 \label{tab:human_vlm_audit}
@@ -629,7 +623,6 @@ Actual VLM Detection Error & 16\% \\
 \subsection{Per-Pattern TPR \& TNR}
 
 The VLM detector's TPR and TNR vary across patterns, reflecting differences in entity count and scene complexity (Table~\ref{tab:vlm_quality}).
-
 \begin{table}[ht]
 \caption{Per-pattern TPR \& TNR of VLM binary detection.}
 \label{tab:vlm_quality}
@@ -658,7 +651,6 @@ TPR is relatively stable across patterns (46--55\%), reflecting the fundamental 
 To further isolate VLM performance from generative noise, we evaluated the Qwen2-VL-7B detector on a set of real-world Ground Truth (GT) videos featuring the same entity types as in MEMS-1K. In these clear, high-fidelity videos, the VLM achieved \textbf{100\% accuracy} in binary presence detection (see Appendix~\ref{app:gt_failures} for details). This stark contrast between 100\% accuracy on real video versus $\sim$52\% on generated video confirms that the low TPR is not a limitation of our evaluation tool, but a quantitative measure of the narrative gap in current video generation architectures.
 
 \subsection{VLM Detector Comparison}
-
 \begin{table}[H]
 \caption{VLM detector comparison on MEMS-1K. Qwen2-VL-7B-Instruct provides the best balance of TPR and TNR.}
 \label{tab:vlm_comparison}
@@ -685,7 +677,6 @@ Qwen2-VL-2B-Instruct & 40.1\% & 58.2\% \\
 
 
 We decompose PTM into entry (prescribed $\Delta S^* = +1$) and exit (prescribed $\Delta S^* = -1$) operations (Table~\ref{tab:entry_exit}).
-
 \begin{table}[ht]
 \caption{PTM decomposed by operation type. $\Delta$ = entry $-$ exit accuracy.}
 \label{tab:entry_exit}
@@ -714,7 +705,6 @@ VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accu
 %% ============================================================
 
 Table~\ref{tab:delta_s} lists the prescribed transition matrices $\Delta S^*$ and presence matrices $S^*$ for all 7 canonical patterns.
-
 \begin{table}[ht]
 \caption{Prescribed transition matrices ($\Delta S^*$) and presence matrices ($S^*$) for all 7 patterns in MEMS-1K}
 \label{tab:delta_s}
@@ -764,7 +754,6 @@ $\begin{bmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{bmatrix}$ \\
 %% ============================================================
 
 To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm_quality}), we present representative keyframes from the three diagnostic categories. Figure~\ref{fig:vlm_case_study} shows actual generated frames where the VLM flagged a prescribed entity as ``absent'' ($S_\text{obs} = 0$, $S^* = 1$), and Table~\ref{tab:vlm_case_study} provides the corresponding structured analysis.
-
 \begin{figure*}[ht]
 \centering
 \begin{subfigure}[t]{0.235\textwidth}
@@ -822,7 +811,6 @@ Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
 %% ============================================================
 
 Patterns use either 2 entities (Relay, Split, Convergence, Reverse Relay; $n = 600$ per model) or 3 entities (Accumulation, Sliding Window, Reduction; $n = 400$ per model). Table~\ref{tab:entity_strat} reports the stratified results.
-
 \begin{table}[H]
 \caption{Metrics stratified by entity count.}
 \label{tab:entity_strat}
@@ -882,7 +870,6 @@ All per-method correlations are highly significant ($p < 10^{-51}$), validating 
 %% ============================================================
 
 95\% bootstrap CIs ($B = 10{,}000$, percentile method) are reported in Table~\ref{tab:bootstrap_ci} (overall) and Table~\ref{tab:bootstrap_pattern} (per-pattern PTM).
-
 \begin{table}[H]
 \caption{Overall metrics with 95\% bootstrap CIs.}
 \label{tab:bootstrap_ci}
@@ -946,7 +933,6 @@ In this error matrix, the Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt
 \paragraph{Discriminative analysis.}
 The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}). Only 1 of 6 pairs (Echo--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does \emph{not} match the PTM ranking.
 This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribed-subspace projection (PTM).
-
 \begin{table}[H]
 \caption{Pairwise Mann-Whitney $U$ tests for $\|E\|_F$.}
 \label{tab:frobenius}
@@ -973,7 +959,6 @@ VGoT--VIC   & 0.315 & 1.613 / 1.643 \\
 %% ============================================================
 
 Table~\ref{tab:mann_whitney} reports pairwise significance tests for PTM using the Mann--Whitney $U$ test with Cohen's $d$ effect sizes.
-
 \begin{table}[H]
 \caption{Pairwise Mann-Whitney $U$ tests for PTM. Cohen's $d$ reports effect size.}
 \label{tab:mann_whitney}
@@ -1003,7 +988,6 @@ The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.1
 %% ============================================================
 
 Table~\ref{tab:ptm_dist} and Figure~\ref{fig:ptm_dist} show the complete PTM distribution across all 5 discrete values.
-
 \begin{table}[H]
 \caption{Complete PTM score distributions (\% of videos). PTM takes 5 discrete values: $\{0, \tfrac{1}{3}, \tfrac{1}{2}, \tfrac{2}{3}, 1\}$. Patterns with 2 prescribed transitions (Relay, Accumulation, Reduction, Reverse Relay) produce PTM $\in \{0, 0.5, 1.0\}$; patterns with 3 prescribed transitions (Split, Convergence, Sliding Window) additionally produce PTM $\in \{0.33, 0.67\}$.}
 \label{tab:ptm_dist}
@@ -1022,7 +1006,6 @@ VIC   & .070$\pm$.173 & 84.8 &  5.2 &  8.7 & 1.0 & 0.3 \\
 \end{table}
 
 The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct). SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. The intermediate values PTM $= 0.33$ and PTM $= 0.67$ arise exclusively from 3-transition patterns (Split, Convergence, Sliding Window), where partial compliance is possible. Figure~\ref{fig:ptm_dist} visualizes these distributions.
-
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
@@ -1126,7 +1109,6 @@ Each case substitutes specific source shots to produce a known $S_\text{obs}$:
 
 \paragraph{Shot sequences.}
 Figure~\ref{fig:gt_cat} shows the actual keyframes used for each GT validation case. Each row corresponds to one case; columns show shots 1--3.
-
 \begin{figure}[ht]
 \centering
 %% TODO: Replace with actual GT cat keyframe images
@@ -1151,7 +1133,6 @@ The VLM achieves 100\% detection accuracy on these unambiguous, real-world image
 %% ============================================================
 
 We compare the discriminative power of three candidate metrics: PTM ($\ell_0$-norm on prescribed cells), EPA (entity presence accuracy), and raw Frobenius distance $\|E\|_F$ (Table~\ref{tab:discriminability}).
-
 \begin{table}[ht]
 \caption{Discriminability of candidate metrics. $H$: Kruskal--Wallis statistic across 4 models. Sig.\ pairs: number of pairwise Mann--Whitney $U$ tests significant at $\alpha = 0.005$ (out of 6).}
 \label{tab:discriminability}
@@ -1178,7 +1159,6 @@ EPA is intermediate (4/6 pairs), reflecting its role as a macroscopic complement
 %% ============================================================
 
 We subsample $N \in \{50, 100, 200, 300, 500, 750, 1000\}$ scenarios (with replacement, $B = 1{,}000$ bootstrap iterations) and measure two stability criteria (Table~\ref{tab:rank_stability}): (1)~\emph{rank preservation}: the fraction of bootstrap samples in which the 4-model PTM ranking matches the full-dataset ranking; (2)~\emph{full significance}: the fraction in which all 6 pairwise Mann--Whitney $U$ tests are significant at $p < 0.05$.
-
 \begin{table}[ht]
 \caption{Rank stability as a function of dataset size. \textbf{Bold}: first size achieving $\geq$95\%.}
 \label{tab:rank_stability}
@@ -1218,7 +1198,6 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 \end{itemize}
 
 \noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments. Tables~\ref{tab:temporal_ablation_ptm}--\ref{tab:temporal_ablation_spearman} report the results.
-
 \begin{table}[ht]
 \caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. The Middle column reproduces the main evaluation (Table~2). Model ranking is \emph{identical} across all four strategies (SD $>$ Echo $>$ VGoT $>$ VIC).}
 \label{tab:temporal_ablation_ptm}
@@ -1278,7 +1257,6 @@ Multi-3 & .713 & .796 & .688 & 1.000 \\
 
 \paragraph{Inference reproducibility.}
 To quantify VLM inference stability, we repeated the full temporal ablation three times on identical frames using the same model (Qwen2-VL-7B-Instruct, fp16, greedy decoding). For the early, late, and multi-3 strategies, all three runs produced \emph{bit-identical} PTM and EPA values ($\sigma = 0$). For the middle strategy, runs~2 and~3 (executed in the same software environment) also agreed perfectly, while run~1 (the original main evaluation, conducted earlier with a different library version) differed by at most $\pm 0.006$ PTM (Table~\ref{tab:reproducibility_runs}). The 4-model ranking was preserved across all 12 run$\times$strategy combinations without exception.
-
 \begin{table}[H]
 \caption{VLM inference reproducibility: middle-strategy PTM across 3 independent runs. Runs~2--3 use the same software environment and produce identical results; Run~1 (the main evaluation) used an earlier library version.}
 \label{tab:reproducibility_runs}
@@ -1305,7 +1283,6 @@ VIC   & .070 & .060 & .060 & .006 \\
 To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and actual PTM values (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$. Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
 SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
 The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
-
 \begin{table}[H]
 \caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
 \label{tab:rank_pattern}
@@ -1368,7 +1345,6 @@ Temporal dynamics break down more severely. The narrative either stagnates with 
 
 \paragraph{Tier 4: Complete failure (\textcolor{red!70!black}{PTM $= 0.0$}).}
 A total disconnect from the prompt's entity requirements. Models render backgrounds but completely fail to generate the requested subjects, producing scenery-only frames throughout all shots.
-
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
