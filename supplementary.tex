@@ -9,6 +9,7 @@
 \usepackage{enumitem}
 \usepackage{pifont}
 \usepackage{subcaption}
+\usepackage{float}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
@@ -348,7 +349,7 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 
 Each scenario stores an \texttt{eval\_prompt} (concise scene description used for generation) and a set of \texttt{core\_entities} (e.g., $A$: ``toddler'', $B$: ``mother'') that define the named entity roles. For VLM evaluation, entity names are extracted directly from \texttt{core\_entities}---not from the scene descriptions---ensuring unambiguous binary presence queries (Eq.~5, main text). Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Relay pattern sample ($A \to AB \to B$).}
 \label{tab:sample_relay}
 \centering
@@ -365,7 +366,7 @@ Shot & Entities & eval\_prompt \\
 \end{tabular}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Accumulation sample ($A \to AB \to ABC$).}
 \label{tab:sample_accum}
 \centering
@@ -382,7 +383,7 @@ Shot & Entities & eval\_prompt \\
 \end{tabular}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Sliding Window sample ($AB \to BC \to C$).}
 \label{tab:sample_slidwin}
 \centering
@@ -651,7 +652,7 @@ To further isolate VLM performance from generative noise, we evaluated the Qwen2
 
 \subsection{VLM Detector Comparison}
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{VLM detector comparison on MEMS-1K. Qwen2-VL-7B-Instruct provides the best balance of TPR and TNR.}
 \label{tab:vlm_comparison}
 \centering
@@ -816,7 +817,7 @@ Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
 
 Patterns use either 2 entities (Relay, Split, Convergence, Reverse Relay; $n = 600$ per model) or 3 entities (Accumulation, Sliding Window, Reduction; $n = 400$ per model). Table~\ref{tab:entity_strat} reports the stratified results.
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Metrics stratified by entity count.}
 \label{tab:entity_strat}
 \centering
@@ -846,7 +847,7 @@ SD benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), suggesting CSA
 \label{app:correlation}
 %% ============================================================
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{EPA-PTM correlation. Per-video Pearson $r$.}
 \label{tab:correlation}
 \centering
@@ -940,7 +941,7 @@ In this error matrix, the Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt
 The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}). Only 1 of 6 pairs (Echo--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does \emph{not} match the PTM ranking.
 This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribed-subspace projection (PTM).
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Pairwise Mann-Whitney $U$ tests for $\|E\|_F$.}
 \label{tab:frobenius}
 \centering
@@ -967,7 +968,7 @@ VGoT--VIC   & 0.315 & 1.613 / 1.643 \\
 
 Table~\ref{tab:mann_whitney} reports pairwise significance tests for PTM using the Mann--Whitney $U$ test with Cohen's $d$ effect sizes.
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Pairwise Mann-Whitney $U$ tests for PTM. Cohen's $d$ reports effect size.}
 \label{tab:mann_whitney}
 \centering
@@ -997,7 +998,7 @@ The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.1
 
 Table~\ref{tab:ptm_dist} and Figure~\ref{fig:ptm_dist} show the complete PTM distribution across all 5 discrete values.
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Complete PTM score distributions (\% of videos). PTM takes 5 discrete values: $\{0, \tfrac{1}{3}, \tfrac{1}{2}, \tfrac{2}{3}, 1\}$. Patterns with 2 prescribed transitions (Relay, Accumulation, Reduction, Reverse Relay) produce PTM $\in \{0, 0.5, 1.0\}$; patterns with 3 prescribed transitions (Split, Convergence, Sliding Window) additionally produce PTM $\in \{0.33, 0.67\}$.}
 \label{tab:ptm_dist}
 \centering
@@ -1076,7 +1077,7 @@ Failure rates are computed from the VLM-based $E$ matrix, with Type~IV (reversal
 Amnesia (Type~II) dominates across all patterns, consistent with the entity entry vs.\ exit asymmetry (\S\ref{app:entry_exit}).
 
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Failure rates (\% of videos with $\geq$1 failure) per pattern, aggregated across all 4 models. Highest rate per type in \textbf{bold}.}
 \label{tab:failure_rates}
 \centering
@@ -1272,7 +1273,7 @@ Multi-3 & .713 & .796 & .688 & 1.000 \\
 \paragraph{Inference reproducibility.}
 To quantify VLM inference stability, we repeated the full temporal ablation three times on identical frames using the same model (Qwen2-VL-7B-Instruct, fp16, greedy decoding). For the early, late, and multi-3 strategies, all three runs produced \emph{bit-identical} PTM and EPA values ($\sigma = 0$). For the middle strategy, runs~2 and~3 (executed in the same software environment) also agreed perfectly, while run~1 (the original main evaluation, conducted earlier with a different library version) differed by at most $\pm 0.006$ PTM (Table~\ref{tab:reproducibility_runs}). The 4-model ranking was preserved across all 12 run$\times$strategy combinations without exception.
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{VLM inference reproducibility: middle-strategy PTM across 3 independent runs. Runs~2--3 use the same software environment and produce identical results; Run~1 (the main evaluation) used an earlier library version.}
 \label{tab:reproducibility_runs}
 \centering
@@ -1299,7 +1300,7 @@ To verify that model rankings are not driven by a single easy/hard pattern, we c
 SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
 The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
 \label{tab:rank_pattern}
 \centering
