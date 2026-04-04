@@ -154,7 +154,7 @@ However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 
 %% ============================================================
 
 \subsection{Linear Mapping Operators}
-To formalize the dimensional expansion from the canonical local space ($\mathbb{Z}^{2\times 3}$) to the global narrative space ($\mathbb{Z}^{(T-1) \times N}$), we define two structure-preserving linear operators.
+To formalize the dimensional expansion from the canonical local space($\mathbb{Z}^{2\times 3}$) to the global narrative space ($\mathbb{Z}^{(T-1) \times N}$), we define two structure-preserving linear operators. 
 
 \subsubsection{\textbf{Spatial Expansion Operator ($\Pi_N$)}}
 Appends $N-3$ zero-columns to accommodate arbitrary cast sizes:
@@ -199,7 +199,7 @@ A block matrix insertion operator that embeds local transitions into the tempora
     \end{smallmatrix}\right] \in \mathbb{Z}^{4 \times 5}.
 \end{equation}
 
-\noindent\textbf{Example 2.2 (Temporal Linearity):} Using $N=5, T=5$, and $\tau=2$, let $X = \hat{\calB}_1$ and $Y = \hat{\calB}_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 & 0 & 0 \\ -1 & 1 & 0 & 0 & 0 \end{smallmatrix}\bigr]$. Applying the shift operator to their algebraic sum elegantly preserves their individual structural placements on a single line:
+\noindent\textbf{Example 2.2 (Temporal Linearity):} Using $N=5, T=5$, and $\tau=2$, let $X = \hat{\calB}_1$ and $Y = \hat{\calB}_2 = \bigl[\begin{smallmatrix} 0 & -1 & 0 & 0 & 0 \\ -1 & 1 & 0 & 0 & 0 \end{smallmatrix}\bigr]$. Applying the shift operator to their algebraic sum preserves their individual structural placements on a single line:
 \begin{equation}
     \Phi_2(X + Y) =
     \left[\begin{smallmatrix}
@@ -240,7 +240,7 @@ Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two 
 \subsection{Grand Spanning Theorem}
 
 \setcounter{theorem}{0}
-\begin{theorem}[Topological Generalization]
+\begin{theorem}[Narrative Generalization]
 For any sequence length $T \geq 3$ and entity count $N \geq 3$, every state transition matrix $\Delta S \in \mathbb{Z}^{(T-1)\times N}$ can be algebraically expressed as:
 \begin{equation}
 \Delta S = \sum_{\tau=1}^{T-2} \sum_{m=1}^{2} c_{\tau,m}\; \bigl(\Phi_\tau \circ \sigma_{\tau,m} \circ \Pi_N\bigr)(\calB_m),
@@ -258,8 +258,8 @@ where each $\Delta S^{(\tau)} \in \mathbb{Z}^{2 \times N}$ captures the transiti
 \end{proof}
 
 
-\subsection{Worked Example: Matrix Decomposition}
-Consider a 4-shot, 3-entity narrative: $A \!\to\! AB \!\to\! BC \!\to\! C$ (a character relay chain). Its prescribed transition matrix is:
+\subsection{Example: Matrix Decomposition}
+Consider a 4-shot, 3-entity narrative: $A \!\to\! AB \!\to\! BC \!\to\! C$. Its prescribed transition matrix is:
 \begin{equation}
 \Delta S = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix} \in \mathbb{Z}^{3 \times 3}.
 \end{equation}
@@ -272,7 +272,7 @@ Let $\Delta S^{(1)}$ and $\Delta S^{(2)}$ denote the inner $2 \times 3$ matrices
 \begin{equation}
 \Delta S^{(1)} = \underbrace{\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} + \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & +1 \end{bmatrix}}_{J_{23}} = \calB_1 + J_{23},
 \end{equation}
-where the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2). Similarly, $\Delta S^{(2)}$ is simply $-J_{22}$, which is also fully constructible. By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines gracefully reduce to localized, algebraically tractable basis operations.
+where the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2 in the main paper). Similarly, $\Delta S^{(2)}$ is simply $-J_{22}$, which is also fully constructible. By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines simply reduce to localized, algebraically tractable basis operations.
 
 %% ============================================================
 \section{Dataset Construction Details}
