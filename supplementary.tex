@@ -153,8 +153,22 @@ However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 
 \label{app:generalization}
 %% ============================================================
 
+
+
+\noindent \textbf{Additional notations} To express how local basis matrices linearly compose into a global narrative transition $\Delta S$, we introduce two operational parameters:
+\begin{itemize}[nosep,leftmargin=*]
+\item $\Sigma_N$ denotes the symmetric group of degree $N$. A permutation $\sigma_{\tau,m} \in \Sigma_N$ acts as a column-reordering operator, mapping the generic entity positions of a basis matrix $\calB_m$ to the specific characters involved in the transition at window $\tau$.
+\item $c_{\tau,m} \in \mathbb{Z}$ are integer coefficients (typically $+1$, $-1$, or $0$) that determine the activation and directional sign of the basis matrix $\calB_m$ within the temporal window $\tau$.
+\end{itemize}
+
+\vspace{0.5em}
+\noindent \textbf{Example:} For $N=3$ entities, consider the Relay basis $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$. A permutation $\sigma \in \Sigma_3$ swapping columns 1 and 3 reorders the entities to yield $\sigma \circ \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ 0 & 0 & -1 \end{smallmatrix}\bigr]$. Subsequently, applying a coefficient $c = -1$ inverts the direction of the transition, resulting in $-1 \cdot (\sigma \circ \calB_1) = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ 0 & 0 & 1 \end{smallmatrix}\bigr]$.
+
 \subsection{Linear Mapping Operators}
 To formalize the dimensional expansion from the canonical local space ($\mathbb{Z}^{2\times 3}$) to the global narrative space ($\mathbb{Z}^{(T-1) \times N}$), we define two structure-preserving linear operators.
+
+
+
 
 \subsubsection{\textbf{Spatial Expansion Operator ($\Pi_N$)}}
 Appends $N-3$ zero-columns to accommodate arbitrary cast sizes:
@@ -225,11 +239,8 @@ A block matrix insertion operator that embeds local transitions into the tempora
 
 \noindent \textbf{Summary.} By functioning as strict linear operators, $\Pi_N$ and $\Phi_\tau$ ensure that long and multi-character narratives do not become mathematically tangled. Any global storyline can be cleanly decomposed into a sequence of isolated, localized basis operations that are simply added together.
 
-\noindent \textbf{Notation for global composition.} To express how these operators combine to reconstruct an arbitrary narrative, we introduce two additional symbols:
-\begin{itemize}[nosep,leftmargin=*]
-\item $\Sigma_N$ denotes the \emph{symmetric group} of degree $N$, i.e., the set of all $N!$ permutations of entity indices $\{1, \ldots, N\}$. A permutation $\sigma \in \Sigma_N$ acts on a matrix by reordering its columns, thereby reassigning which entity occupies which column position. In the context of narrative decomposition, applying $\sigma_{\tau,m}$ to a padded basis $\hat{\calB}_m$ selects which specific characters are involved in the transition at window $\tau$.
-\item $c_{\tau,m} \in \mathbb{Z}$ are \emph{integer coefficients} that determine how many times (and with what sign) basis $\calB_m$ contributes within temporal window $\tau$. These serve as scalar weights in the linear combination that reconstructs each local $2 \times N$ sub-matrix from the two basis patterns.
-\end{itemize}
+
+
 
 \subsection{Visual Overview of Operator Pipeline}
 
@@ -278,7 +289,7 @@ Let $\Delta S^{(1)}$ and $\Delta S^{(2)}$ denote the inner $2 \times 3$ matrices
 \begin{equation}
 \Delta S^{(1)} = \underbrace{\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} + \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & +1 \end{bmatrix}}_{J_{23}} = \calB_1 + J_{23},
 \end{equation}
-where the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2). In terms of the notation introduced above, the first window uses coefficients $c_{1,1} = 1$ (one copy of $\calB_1$) with the identity permutation $\sigma_{1,1} = \text{id}$, plus an additional $J_{23}$ term. Similarly, $\Delta S^{(2)}$ is simply $-J_{22}$ (i.e., $c_{2,m}$ values that produce $-J_{22}$ from the bases), which is also fully constructible. By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines gracefully reduce to localized, algebraically tractable basis operations.
+Note that the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2 in the main paper). By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines simply reduce to localized, algebraically tractable basis operations.
 
 %% ============================================================
 \section{Dataset Construction Details}
@@ -484,7 +495,6 @@ All four video generation models share the following fixed settings from the sce
 \label{app:per_pattern}
 %% ============================================================
 
-\noindent\emph{Note: The main text Table~2 caption refers to per-pattern EPA scores as ``Appendix~I.''}
 
 \begin{table*}[ht]
 \caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.}
