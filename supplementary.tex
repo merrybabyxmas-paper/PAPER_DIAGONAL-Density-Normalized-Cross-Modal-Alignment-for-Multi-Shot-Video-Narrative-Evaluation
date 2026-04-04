@@ -876,7 +876,7 @@ All per-method correlations are highly significant ($p < 10^{-51}$), validating 
 
 95\% bootstrap CIs ($B = 10{,}000$, percentile method) are reported in Table~\ref{tab:bootstrap_ci} (overall) and Table~\ref{tab:bootstrap_pattern} (per-pattern PTM).
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Overall metrics with 95\% bootstrap CIs.}
 \label{tab:bootstrap_ci}
 \centering
@@ -892,12 +892,12 @@ EPA & \textbf{.593}{\tiny [.583,.604]} & .563{\tiny [.553,.574]} & .554{\tiny [.
 \end{tabular}
 \end{table}
 
-\begin{table*}[ht]
+\begin{table}[H]
 \caption{Per-pattern PTM with 95\% bootstrap CIs ($B = 10{,}000$). Best per pattern in \textbf{bold}. $n$: scenarios per pattern.}
 \label{tab:bootstrap_pattern}
 \centering
 \small
-\setlength{\tabcolsep}{2.5pt}
+\setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}ll cccc@{}}
 \toprule
 Pattern & $n$ & SD & Echo & VGoT & VIC \\
@@ -911,7 +911,7 @@ Reduction      & 100 & \textbf{.250}{\tiny [.193,.307]} & .195{\tiny [.144,.246]
 Rev.\ Relay    & 100 & .200{\tiny [.143,.257]} & \textbf{.225}{\tiny [.174,.276]} & .150{\tiny [.111,.189]} & .080{\tiny [.046,.114]} \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
 
 All overall PTM CIs are non-overlapping: SD [.226,.262] vs.\ Echo [.151,.183] vs.\ VGoT [.082,.107] vs.\ VIC [.060,.082].
 EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming statistically significant ordering.
