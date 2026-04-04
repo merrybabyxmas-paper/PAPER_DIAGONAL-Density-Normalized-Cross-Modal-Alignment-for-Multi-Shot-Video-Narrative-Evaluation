@@ -225,6 +225,12 @@ A block matrix insertion operator that embeds local transitions into the tempora
 
 \noindent \textbf{Summary.} By functioning as strict linear operators, $\Pi_N$ and $\Phi_\tau$ ensure that long and multi-character narratives do not become mathematically tangled. Any global storyline can be cleanly decomposed into a sequence of isolated, localized basis operations that are simply added together.
 
+\noindent \textbf{Notation for global composition.} To express how these operators combine to reconstruct an arbitrary narrative, we introduce two additional symbols:
+\begin{itemize}[nosep,leftmargin=*]
+\item $\Sigma_N$ denotes the \emph{symmetric group} of degree $N$, i.e., the set of all $N!$ permutations of entity indices $\{1, \ldots, N\}$. A permutation $\sigma \in \Sigma_N$ acts on a matrix by reordering its columns, thereby reassigning which entity occupies which column position. In the context of narrative decomposition, applying $\sigma_{\tau,m}$ to a padded basis $\hat{\calB}_m$ selects which specific characters are involved in the transition at window $\tau$.
+\item $c_{\tau,m} \in \mathbb{Z}$ are \emph{integer coefficients} that determine how many times (and with what sign) basis $\calB_m$ contributes within temporal window $\tau$. These serve as scalar weights in the linear combination that reconstructs each local $2 \times N$ sub-matrix from the two basis patterns.
+\end{itemize}
+
 \subsection{Visual Overview of Operator Pipeline}
 
 Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two operators compose to embed a local basis matrix into the global narrative space.
@@ -272,7 +278,7 @@ Let $\Delta S^{(1)}$ and $\Delta S^{(2)}$ denote the inner $2 \times 3$ matrices
 \begin{equation}
 \Delta S^{(1)} = \underbrace{\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} + \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & +1 \end{bmatrix}}_{J_{23}} = \calB_1 + J_{23},
 \end{equation}
-where the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2). Similarly, $\Delta S^{(2)}$ is simply $-J_{22}$, which is also fully constructible. By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines gracefully reduce to localized, algebraically tractable basis operations.
+where the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2). In terms of the notation introduced above, the first window uses coefficients $c_{1,1} = 1$ (one copy of $\calB_1$) with the identity permutation $\sigma_{1,1} = \text{id}$, plus an additional $J_{23}$ term. Similarly, $\Delta S^{(2)}$ is simply $-J_{22}$ (i.e., $c_{2,m}$ values that produce $-J_{22}$ from the bases), which is also fully constructible. By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines gracefully reduce to localized, algebraically tractable basis operations.
 
 %% ============================================================
 \section{Dataset Construction Details}
