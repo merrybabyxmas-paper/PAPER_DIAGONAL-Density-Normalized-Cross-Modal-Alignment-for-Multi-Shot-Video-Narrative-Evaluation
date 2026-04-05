@@ -908,9 +908,31 @@ Rev.\ Relay    & 100 & .200{\tiny [.143,.257]} & \textbf{.225}{\tiny [.174,.276]
 \end{tabular}
 \end{table}
 
+Table~\ref{tab:bootstrap_pattern_epa} provides the corresponding per-pattern EPA bootstrap CIs.
+\begin{table}[H]
+\caption{Per-pattern EPA with 95\% bootstrap CIs ($B = 10{,}000$). Best per pattern in \textbf{bold}. $n$: scenarios per pattern.}
+\label{tab:bootstrap_pattern_epa}
+\centering
+\small
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}ll cccc@{}}
+\toprule
+Pattern & $n$ & StoryDiff & EchoShot & VGoT & VIC \\
+\midrule
+Relay          & 200 & \textbf{.536}{\tiny [.511,.561]} & .506{\tiny [.482,.529]} & .531{\tiny [.512,.549]} & .522{\tiny [.498,.545]} \\
+Split          & 200 & \textbf{.553}{\tiny [.531,.577]} & .538{\tiny [.516,.560]} & .537{\tiny [.517,.559]} & .497{\tiny [.477,.516]} \\
+Accum.         & 200 & \textbf{.662}{\tiny [.644,.681]} & .610{\tiny [.589,.631]} & .642{\tiny [.624,.659]} & .594{\tiny [.568,.619]} \\
+Converg.       & 100 & \textbf{.595}{\tiny [.558,.632]} & .558{\tiny [.535,.582]} & .497{\tiny [.477,.517]} & .555{\tiny [.525,.583]} \\
+Slid.\ Win.    & 100 & \textbf{.627}{\tiny [.601,.651]} & .611{\tiny [.582,.640]} & .502{\tiny [.478,.527]} & .523{\tiny [.496,.551]} \\
+Reduction      & 100 & \textbf{.644}{\tiny [.612,.677]} & .601{\tiny [.570,.631]} & .588{\tiny [.551,.626]} & .618{\tiny [.580,.653]} \\
+Rev.\ Relay    & 100 & \textbf{.562}{\tiny [.527,.598]} & .555{\tiny [.523,.587]} & .537{\tiny [.510,.563]} & .540{\tiny [.507,.572]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 All overall PTM CIs are non-overlapping: StoryDiff [.226,.262] vs.\ EchoShot [.151,.183] vs.\ VGoT [.082,.107] vs.\ VIC [.060,.082].
 EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming statistically significant ordering.
-Per-pattern CIs (Table~\ref{tab:bootstrap_pattern}) show that StoryDiff achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where EchoShot's CI overlaps with StoryDiff's.
+Per-pattern PTM CIs (Table~\ref{tab:bootstrap_pattern}) show that StoryDiff achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where EchoShot's CI overlaps with StoryDiff's. Per-pattern EPA CIs (Table~\ref{tab:bootstrap_pattern_epa}) confirm that StoryDiff leads across all patterns, though EPA CIs are generally tighter due to the higher baseline values.
 
 
 %% ============================================================
