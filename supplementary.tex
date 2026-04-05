@@ -1272,7 +1272,7 @@ Multi-3 & .713 & .796 & .688 & 1.000 \\
 
 \paragraph{Key findings.}
 (1)~The model ranking StoryDiff $>$ EchoShot $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
-(2)~The middle frame achieves the highest EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
+(2)~Although the early frame yields marginally higher PTM for some models (e.g., StoryDiff: .271 vs.\ .243), we adopt the middle frame as the default because it best captures the \emph{representative visual state} of each shot. Frames near shot boundaries (early/late) risk sampling transition artifacts---partial fades, motion blur, or incomplete scene changes---that do not reflect the intended narrative content of the shot. The middle frame maximizes temporal distance from these boundaries, providing the most faithful snapshot for entity presence detection.
 (3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.447$), with the middle--multi3 pair reaching $\rho_s = 0.796$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
 (4)~The marginal PTM gain from multi-frame voting does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
