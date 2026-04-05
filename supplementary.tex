@@ -1278,24 +1278,6 @@ Multi-3 & .713 & .796 & .688 & 1.000 \\
 (3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.447$), with the middle--multi3 pair reaching $\rho_s = 0.796$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
 (4)~The marginal PTM gain from multi-frame voting does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
-\paragraph{Inference reproducibility.}
-To quantify VLM inference stability, we repeated the full temporal ablation three times on identical frames using the same model (Qwen2-VL-7B-Instruct, fp16, greedy decoding). For the early, late, and multi-3 strategies, all three runs produced \emph{bit-identical} PTM and EPA values ($\sigma = 0$). For the middle strategy, runs~2 and~3 (executed in the same software environment) also agreed perfectly, while run~1 (the original main evaluation, conducted earlier with a different library version) differed by at most $\pm 0.006$ PTM (Table~\ref{tab:reproducibility_runs}). The 4-model ranking was preserved across all 12 run$\times$strategy combinations without exception.
-\begin{table}[H]
-\caption{VLM inference reproducibility: middle-strategy PTM across 3 independent runs. Runs~2--3 use the same software environment and produce identical results; Run~1 (the main evaluation) used an earlier library version.}
-\label{tab:reproducibility_runs}
-\centering
-\small
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Model & Run 1 & Run 2 & Run 3 & $\sigma$ \\
-\midrule
-StoryDiff    & .243 & .239 & .239 & .003 \\
-EchoShot  & .167 & .168 & .168 & .001 \\
-VGoT  & .094 & .091 & .091 & .002 \\
-VIC   & .070 & .060 & .060 & .006 \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 
 %% ============================================================
@@ -1307,7 +1289,7 @@ To verify that model rankings are not driven by a single easy/hard pattern, we c
 StoryDiff ranks 1st in 6/7 patterns; EchoShot claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
 The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 \begin{table}[H]
-\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (StoryDiff\,$>$\,EchoShot\,$>$\,VGoT\,$>$\,VIC).}
+\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
 \label{tab:rank_pattern}
 \centering
 \small
@@ -1316,19 +1298,18 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's Dyna
 \toprule
 & \multicolumn{4}{c}{PTM} & \multicolumn{4}{c}{Rank} \\
 \cmidrule(lr){2-5} \cmidrule(lr){6-9}
-Pattern & StoryDiff & EchoShot & VGoT & VIC & StoryDiff & EchoShot & VGoT & VIC \\
+Pattern & SD & Echo & VGoT & VIC & SD & Echo & VGoT & VIC \\
 \midrule
-Relay          & .190 & .138 & .085 & .080 & 1 & 2 & 3 & 4 \\
-Split          & .233 & .165 & .108 & .048 & 1 & 2 & 3 & 4 \\
-Accumulation   & .253 & .095 & .070 & .072 & 1 & 2 & \textbf{4} & \textbf{3} \\
-Convergence    & .277 & .187 & .053 & .067 & 1 & 2 & \textbf{4} & \textbf{3} \\
+Relay           & .190 & .138 & .085 & .080 & 1 & 2 & 3 & 4 \\
+Split           & .233 & .165 & .108 & .048 & 1 & 2 & 3 & 4 \\
+Accumulation    & .253 & .095 & .070 & .072 & 1 & 2 & \textbf{4} & \textbf{3} \\
+Convergence     & .277 & .187 & .053 & .067 & 1 & 2 & \textbf{4} & \textbf{3} \\
 Sliding Window & .357 & .270 & .103 & .077 & 1 & 2 & 3 & 4 \\
-Reduction      & .250 & .195 & .110 & .080 & 1 & 2 & 3 & 4 \\
-Reverse Relay  & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
+Reduction       & .250 & .195 & .110 & .080 & 1 & 2 & 3 & 4 \\
+Reverse Relay   & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 %% ============================================================
 \section{Reproducibility Checklist}
