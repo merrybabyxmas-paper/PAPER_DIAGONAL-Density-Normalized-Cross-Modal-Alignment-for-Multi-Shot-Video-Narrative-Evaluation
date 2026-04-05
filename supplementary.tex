@@ -596,7 +596,7 @@ As reported in Section~6.7 of the main text, the raw presence matching rate ($\a
 
 \subsection{Human Audit of False Negatives}
 
-To disentangle detector error from generation failure, we manually inspected 100 randomly sampled cases where the VLM reported an entity as ``absent'' ($S_{\text{obs}} = 0$) despite being ``prescribed'' in the prompt ($S^* = 1$). Two human experts independently annotated whether the entity was (1)~clearly present, (2)~genuinely absent, or (3)~present but lacking sufficient identifying cues. The results (Table~\ref{tab:human_vlm_audit}) reveal that in \textbf{84\%} of the cases, the VLM's ``absent'' label was justified:
+To disentangle detector error from generation failure, we manually inspected 100 randomly sampled cases where the VLM reported an entity as ``absent'' ($S_{\text{obs}} = 0$) despite being ``prescribed'' in the prompt ($S^* = 1$). Two human experts independently annotated whether the entity was (1)~clearly present, (2)~genuinely absent, or (3)~ambiguous (something present but lacking sufficient identifying cues). The results (Table~\ref{tab:human_vlm_audit}) reveal that in \textbf{84\%} of the cases, the VLM's ``absent'' label was justified:
 \begin{table}[H]
 \caption{Human audit of 100 random VLM negative flags ($S_{\text{obs}}=0,\; S^*=1$).}
 \label{tab:human_vlm_audit}
@@ -605,9 +605,9 @@ To disentangle detector error from generation failure, we manually inspected 100
 \toprule
 Category & Frequency (\%) \\
 \midrule
-Genuine Generation Failure (Amnesia/Morphed) & 65\% \\
-Insufficient Identifying Cues (VLM-justifiable) & 19\% \\
-Actual VLM Detection Error & 16\% \\
+Generation Failure & 65\% \\
+ambiguous & 19\% \\
+VLM Detection Error & 16\% \\
 \midrule
 \textbf{Total Validated ``Failure'' Rate} & \textbf{84\%} \\
 \bottomrule
@@ -616,7 +616,7 @@ Actual VLM Detection Error & 16\% \\
 
 \begin{itemize}[leftmargin=*,nosep]
   \item \textbf{65\%} were \emph{generation failures}: the model completely failed to synthesize the entity or produced a formless, unrecognizable blob.
-  \item \textbf{19\%} were \emph{insufficient cues}: a human-like figure or object was present in the frame, but lacked the occupational or species-specific visual cues (e.g., no apron for ``barista,'' no collar for ``dog'') needed to confirm it as the prescribed entity. The VLM's ``absent'' judgment is defensible because entity \emph{identity} cannot be established from the generated image alone.
+  \item \textbf{19\%} were \emph{ambiguous}: a human-like figure or object was present in the frame, but lacked the occupational or species-specific visual cues (e.g., no apron for ``barista,'' no collar for ``dog'') needed to confirm it as the prescribed entity. The VLM's ``absent'' judgment is defensible because entity \emph{identity} cannot be established from the generated image alone.
   \item \textbf{16\%} were \emph{VLM detection errors}: the entity was clearly visible with unambiguous identifying features, but missed by the detector.
 \end{itemize}
 
@@ -646,7 +646,7 @@ Rev.\ Relay   & 2 & 54.1\% & 56.2\% \\
 \end{table}
 
 3-entity patterns (Accumulation, Sliding Window, Reduction) achieve substantially higher TNR (70--83\%) because more entities are absent per shot, and the VLM correctly identifies absent entities.
-TPR is relatively stable across patterns (46--55\%), reflecting the fundamental difficulty of detecting entities in generated images.
+TPR is relatively stable across patterns (46--55\%)
 
 \subsection{VLM Performance on Real-World Ground Truth}
 
