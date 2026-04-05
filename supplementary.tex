@@ -671,6 +671,53 @@ Qwen2-VL-2B-Instruct & 40.1\% & 58.2\% \\
 
 \noindent As shown in Table~\ref{tab:vlm_comparison}, Grounding DINO's extremely low TNR (4\%) means it reports nearly every entity as ``present'' regardless of actual content, rendering it useless for measuring entity \emph{absence}---the core signal for narrative transition evaluation. The 2B VLM variant shows markedly lower TPR (40.1\%) than the 7B model (52.1\%), confirming that instruction-following capacity scales with model size for this binary detection task.
 
+%% Pre-declare figure*/table* here so LaTeX places them on this page's top
+\begin{figure*}[t]
+\centering
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_a.png}
+\caption{Generation Failure}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_b.jpg}
+\caption{Generation Failure}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_c.png}
+\caption{Ambiguous}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.235\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/vlm_case_d.png}
+\caption{VLM Detection Error}
+\end{subfigure}
+\caption{Representative keyframes for each VLM false-negative category (Table~\ref{tab:vlm_case_study}). All frames were flagged as entity ``absent'' by the VLM ($S_\text{obs} = 0$, $S^* = 1$).}
+\label{fig:vlm_case_study}
+\Description{Four generated keyframes in a row: (a) empty hospital room, (b) cats instead of dog, (c) blurry person at cafe, (d) clearly visible dog missed by VLM.}
+\end{figure*}
+\begin{table*}[t]
+\caption{Structured analysis of VLM false-negative flags corresponding to Figure~\ref{fig:vlm_case_study}.}
+\label{tab:vlm_case_study}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.6cm} p{1.8cm} p{2.2cm} p{2.2cm} p{1.5cm} p{6.5cm}@{}}
+\toprule
+Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
+\midrule
+(a) & \textbf{Generation Failure} & ``visitor'', ``tourist'' & Absent & Absent & The model completely failed to generate any human entity. Only an empty hospital corridor is rendered. \\
+\midrule
+(b) & \textbf{Generation Failure} & ``dog'' & Absent & Absent & The model fails to clear the preceding context of the ``cat.'' \\
+\midrule
+(c) & \textbf{Marginal} & ``barista'' & Absent & Ambiguous & A person is visible but lacks occupational cues (no apron or coffee equipment). \\
+\midrule
+(d) & \textbf{VLM Error} & ``dog'' & Absent & Present & A dog is clearly visible with a distinct posture and collar. \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 %% ============================================================
 \section{Entity Entry vs.\ Exit Accuracy}
@@ -756,52 +803,6 @@ $\begin{bmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{bmatrix}$ \\
 %% ============================================================
 
 To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm_quality}), we present representative keyframes from the three diagnostic categories. Figure~\ref{fig:vlm_case_study} shows actual generated frames where the VLM flagged a prescribed entity as ``absent'' ($S_\text{obs} = 0$, $S^* = 1$), and Table~\ref{tab:vlm_case_study} provides the corresponding structured analysis.
-\begin{figure*}[t]
-\centering
-\begin{subfigure}[t]{0.235\textwidth}
-\centering
-\includegraphics[width=\textwidth]{figures/vlm_case_a.png}
-\caption{Generation Failure}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.235\textwidth}
-\centering
-\includegraphics[width=\textwidth]{figures/vlm_case_b.jpg}
-\caption{Generation Failure}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.235\textwidth}
-\centering
-\includegraphics[width=\textwidth]{figures/vlm_case_c.png}
-\caption{Ambiguous}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.235\textwidth}
-\centering
-\includegraphics[width=\textwidth]{figures/vlm_case_d.png}
-\caption{VLM Detection Error}
-\end{subfigure}
-\caption{Representative keyframes for each VLM false-negative category (Table~\ref{tab:vlm_case_study}). All frames were flagged as entity ``absent'' by the VLM ($S_\text{obs} = 0$, $S^* = 1$).}
-\label{fig:vlm_case_study}
-\Description{Four generated keyframes in a row: (a) empty hospital room, (b) cats instead of dog, (c) blurry person at cafe, (d) clearly visible dog missed by VLM.}
-\end{figure*}
-\begin{table*}[t]
-\caption{Structured analysis of VLM false-negative flags corresponding to Figure~\ref{fig:vlm_case_study}.}
-\label{tab:vlm_case_study}
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}p{0.6cm} p{1.8cm} p{2.2cm} p{2.2cm} p{1.5cm} p{6.5cm}@{}}
-\toprule
-Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
-\midrule
-(a) & \textbf{Generation Failure} & ``visitor'', ``tourist'' & Absent & Absent & The model completely failed to generate any human entity. Only an empty hospital corridor is rendered. \\
-\midrule
-(b) & \textbf{Generation Failure} & ``dog'' & Absent & Absent & The model fails to clear the preceding context of the ``cat.'' \\
-\midrule
-(c) & \textbf{Marginal} & ``barista'' & Absent & Ambiguous & A person is visible but lacks occupational cues (no apron or coffee equipment). \\
-\midrule
-(d) & \textbf{VLM Error} & ``dog'' & Absent & Present & A dog is clearly visible with a distinct posture and collar. \\
-\bottomrule
-\end{tabular}
-\end{table*}
 
 \noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image (panels a--c). 16\% are genuine VLM detection errors (panel d). This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not the problem of evaluation itself.
 
