@@ -503,12 +503,12 @@ All four video generation models share the following fixed settings from the sce
 
 
 Table~\ref{tab:full_pattern} reports the complete per-pattern results for all 7 patterns across 4 models.
-\begin{table*}[ht]
+\begin{table}[H]
 \caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.}
 \label{tab:full_pattern}
 \centering
 \small
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}l|cc|cc|cc|cc@{}}
 \toprule
 & \multicolumn{2}{c|}{StoryDiff} & \multicolumn{2}{c|}{EchoShot} & \multicolumn{2}{c|}{VGoT} & \multicolumn{2}{c}{VIC} \\
@@ -523,7 +523,7 @@ Reduction (D, 3-ent)   & \textbf{.250} & .644 & .195 & .601 & .110 & .588 & .080
 Rev.\ Relay (D, 2-ent) & .200 & \textbf{.562} & \textbf{.225} & .555 & .150 & .537 & .080 & .540 \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
 
 Sliding Window produces the widest PTM spread (0.077--0.357), making it the most discriminative test.
 VIC's PTM range is only 0.032 (0.048--0.080), confirming a fixed consistency ceiling invariant to pattern complexity.
@@ -546,7 +546,7 @@ Each model is rated independently on a 5-point Likert scale for \emph{Narrative 
 
 \paragraph{Design.}
 40 randomly sampled scenarios $\times$ 6 model pairs = 240 unique comparisons. 15 graduate student evaluators (CS and media studies), each completing 120 comparisons via a rotating-window assignment scheme. Table~\ref{tab:score_dist} shows score distributions, and Table~\ref{tab:head_to_head} reports head-to-head preferences.
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Likert score distributions and per-model mean narrative compliance scores.}
 \label{tab:score_dist}
 \centering
@@ -566,7 +566,7 @@ All   & 36.2 & 45.3 & 10.4 & 5.2 & 2.8 & 1.93 & 0.96 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Head-to-head preferences (\%). M1 win / MutualFail / M2 win.}
 \label{tab:head_to_head}
 \centering
