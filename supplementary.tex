@@ -255,7 +255,7 @@ Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two 
 \begin{figure*}[ht]
 \centering
 \includegraphics[width=\textwidth]{figures/operator_pipeline.png}
-\caption{Visual overview of the algebraic operator pipeline. \textbf{(I)}~Definitions of the two linear operators: the spatial expansion operator $\Pi_N$ appends zero-columns for additional entities, and the temporal shift operator $\Phi_\tau$ embeds a $2 \times N$ local block into the correct row position of the global $(T{-}1) \times N$ matrix. \textbf{(II)}~The Grand Spanning Theorem (Theorem~B.1): any global transition matrix $\Delta S$ is reconstructed as a linear combination of shifted, permuted, expanded basis matrices. \textbf{(III)}~Worked example: a 4-shot, 3-entity relay chain $A \!\to\! AB \!\to\! BC \!\to\! C$ is decomposed into two local windows ($\tau = 1, 2$), each synthesized from basis matrices ($\calB_1$, $J_{23}$, $J_{22}$), temporally shifted, and summed to recover the full $\Delta S$.}
+\caption{Visual overview of the algebraic operator pipeline. \textbf{(I)}~Definitions of the two linear operators: the spatial expansion operator $\Pi_N$ appends zero-columns for additional entities, and the temporal shift operator $\Phi_\tau$ embeds a $2 \times N$ local block into the correct row position of the global $(T{-}1) \times N$ matrix. \textbf{(II)}~The Grand Spanning Theorem (Theorem~B.1): any global transition matrix $\Delta S$ is reconstructed as a linear combination of shifted, permuted, expanded basis matrices. \textbf{(III)}~Worked example: a 4-shot, 3-entity relay chain $A \!\to\! AB \!\to\! BC \!\to\! C$ is decomposed into two local windows ($\tau = 1, 2$), each synthesized from basis matrices ($\calB_1$, $J_{23}$, $-J_{22}$), temporally shifted, and summed to recover the full $\Delta S$.}
 \label{fig:operator_pipeline}
 \Description{Three-panel diagram: (I) spatial and temporal operator definitions with matrix examples, (II) Grand Spanning Theorem flowchart and equation, (III) worked decomposition example for a 4-shot relay chain.}
 \end{figure*}
@@ -286,7 +286,7 @@ Consider a 4-shot, 3-entity narrative: $A \!\to\! AB \!\to\! BC \!\to\! C$ (a ch
 \begin{equation}
 \Delta S = \begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \\ 0 & -1 & 0 \end{bmatrix} \in \mathbb{Z}^{3 \times 3}.
 \end{equation}
-To express this using our operators, we partition the rows into distinct local windows to avoid temporal overlap conflicts. We assign the first two transitions (rows 1 and 2) to window $\tau=1$, and the remaining transition (row 3) to window $\tau=2$:
+To express this using our operators, we partition the rows into distinct local windows to avoid temporal overlap conflicts. We assign the first two transitions (rows 1 and 2) to window $\tau=1$, and the remaining transition (row 3) to window $\tau=2$. Since $\Phi_\tau$ always operates on $2 \times N$ blocks, the second window pads row~3 with a zero row above it to form the required $2 \times 3$ input:
 \begin{equation}
 \Delta S = \underbrace{\Phi_1\!\left(\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & +1 \end{bmatrix}\right)}_{\text{covers rows 1 and 2}} \;+\; \underbrace{\Phi_2\!\left(\begin{bmatrix} 0 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}\right)}_{\text{covers row 3}}.
 \label{eq:worked_decomp}
@@ -295,7 +295,7 @@ Let $\Delta S^{(1)}$ and $\Delta S^{(2)}$ denote the inner $2 \times 3$ matrices
 \begin{equation}
 \Delta S^{(1)} = \underbrace{\begin{bmatrix} 0 & +1 & 0 \\ -1 & 0 & 0 \end{bmatrix}}_{\calB_1} + \underbrace{\begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & +1 \end{bmatrix}}_{J_{23}} = \calB_1 + J_{23},
 \end{equation}
-Note that the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2 in the main paper). By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines simply reduce to localized, algebraically tractable basis operations.
+Note that the single-entry matrix $J_{23}$ is itself derivable from the bases (Theorem~3.1, Step 2 in the main paper). Similarly, $\Delta S^{(2)} = \bigl[\begin{smallmatrix} 0 & 0 & 0 \\ 0 & -1 & 0 \end{smallmatrix}\bigr] = -J_{22}$, where the negative sign reflects entity $B$'s exit ($-1$). By projecting these local constructions through the linear operators ($\Phi_1$ and $\Phi_2$), we successfully rebuild the complex global narrative $\Delta S$. This demonstrates how arbitrarily long storylines simply reduce to localized, algebraically tractable basis operations.
 
 %% ============================================================
 \section{Dataset Construction Details}
@@ -1311,6 +1311,27 @@ Reverse Relay   & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
 
 
 %% ============================================================
+\section{Reproducibility Checklist}
+\label{app:reproducibility}
+%% ============================================================
+
+\begin{itemize}[leftmargin=*,nosep]
+\item All evaluation code, prompts, and 4,000 generated videos are released.
+\item Fixed random seed (42) for generation and ablation bootstraps.
+\item VLM detector: Qwen2-VL-7B-Instruct (fp16, greedy decoding).
+\item Entity query: ``Is there a \{entity\} visible in this image? Answer only Yes or No.''
+\item 1 middle frame per shot (3 frames per video).
+\item PTM: prescribed transitions only ($\Delta S^* \neq 0$), no threshold.
+\item EPA: exact match $S_\text{obs}[t,k] = S^*[t,k]$, no threshold.
+\item Bootstrap: $B = 10{,}000$ iterations, percentile CIs.
+\item Permutation test: 1,000 character role swappings.
+\item Hardware: 4$\times$ NVIDIA RTX 4090 (24 GB each).
+\item Evaluation runtime: $\sim$20 minutes for 4,000 videos (VLM inference).
+\item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
+\end{itemize}
+
+
+%% ============================================================
 \section{Qualitative Failure Gallery}
 \label{app:qualitative_gallery}
 %% ============================================================
@@ -1332,6 +1353,8 @@ A total disconnect from the prompt's entity requirements. Models render backgrou
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
 \caption{Qualitative gallery ordered by decreasing PTM (two examples per level).}
+\label{fig:qualitative_gallery}
+\Description{Generated video keyframes ordered by decreasing PTM score across four compliance tiers.}
 \end{figure}
 
 \noindent \textbf{Summary.} This progression reveals that true dynamic storytelling requires more than static visual consistency. Generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating to successfully orchestrate multi-shot narratives.
