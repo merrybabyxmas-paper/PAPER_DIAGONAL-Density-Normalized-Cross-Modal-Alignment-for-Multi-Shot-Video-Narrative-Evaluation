@@ -127,9 +127,7 @@
 \item[\S\ref{app:qualitative_gallery}] Qualitative Failure Gallery
 \end{itemize}
 
-\vspace{1em}
-\hrule
-\vspace{1em}
+
 
 %% ============================================================
 \section{Necessity of the Split Basis ($\calB_2$)}
@@ -1289,7 +1287,7 @@ To verify that model rankings are not driven by a single easy/hard pattern, we c
 StoryDiff ranks 1st in 6/7 patterns; EchoShot claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
 The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 \begin{table}[H]
-\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
+\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC; SD: Story Diffusion).}
 \label{tab:rank_pattern}
 \centering
 \small
@@ -1311,25 +1309,6 @@ Reverse Relay   & .200 & .225 & .150 & .080 & \textbf{2} & \textbf{1} & 3 & 4 \\
 \end{tabular}
 \end{table}
 
-%% ============================================================
-\section{Reproducibility Checklist}
-\label{app:reproducibility}
-%% ============================================================
-
-\begin{itemize}[leftmargin=*,nosep]
-\item All evaluation code, prompts, and 4,000 generated videos are released.
-\item Fixed random seed for generation and ablation bootstraps.
-\item VLM detector: Qwen2-VL-7B-Instruct (fp16, greedy decoding).
-\item Entity query: ``Is there a \{entity\} visible in this image? Answer only Yes or No.''
-\item 1 middle frame per shot (3 frames per video).
-\item PTM: prescribed transitions only ($\Delta S^* \neq 0$), no threshold.
-\item EPA: exact match $S_\text{obs}[t,k] = S^*[t,k]$, no threshold.
-\item Bootstrap: $B = 10{,}000$ iterations, percentile CIs.
-\item Permutation test: 1,000 character role swappings.
-\item Hardware: 4$\times$ NVIDIA RTX 4090 (24 GB each).
-\item Evaluation runtime: $\sim$20 minutes for 4,000 videos (VLM inference).
-\item Table reproduction: \texttt{generate\_tables.py} reproduces all paper tables from \texttt{vlm\_fullscale\_merged.json}.
-\end{itemize}
 
 %% ============================================================
 \section{Qualitative Failure Gallery}
@@ -1352,9 +1331,7 @@ A total disconnect from the prompt's entity requirements. Models render backgrou
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
-\caption{Qualitative gallery ordered by decreasing PTM (two examples per level). \textcolor{green!50!black}{\textbf{PTM$\,{=}\,$1.0}}: both entities are correctly generated and each transition is faithfully executed. \textcolor{orange!80!black}{\textbf{PTM$\,{=}\,$0.67}}: one entity fails to appear or two entities merge into a chimera. \textcolor{red!70!black}{\textbf{PTM$\,{=}\,$0.33}}: scene context remains static (no transition) or the final shot has no recognizable entity. \textcolor{red!70!black}{\textbf{PTM$\,{=}\,$0.0}}: no prescribed entity is generated at all.}
-\label{fig:qualitative_gallery}
-\Description{Eight rows of generated video keyframes ordered by decreasing PTM score, organized into four compliance tiers with color-coded labels.}
+\caption{Qualitative gallery ordered by decreasing PTM (two examples per level).}
 \end{figure}
 
 \noindent \textbf{Summary.} This progression reveals that true dynamic storytelling requires more than static visual consistency. Generative models must develop stronger mechanisms for conceptual disentanglement and dynamic state updating to successfully orchestrate multi-shot narratives.
