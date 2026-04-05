@@ -748,13 +748,7 @@ $\begin{bmatrix} 0 & 1 \\ 1 & 1 \\ 1 & 0 \end{bmatrix}$ \\
 \end{tabular}
 \end{table}
 
-
-%% ============================================================
-\section{VLM Detection Case Study}
-\label{app:vlm_cases}
-%% ============================================================
-
-To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm_quality}), we present representative keyframes from the three diagnostic categories. Figure~\ref{fig:vlm_case_study} shows actual generated frames where the VLM flagged a prescribed entity as ``absent'' ($S_\text{obs} = 0$, $S^* = 1$), and Table~\ref{tab:vlm_case_study} provides the corresponding structured analysis.
+%% Declare figure*/table* after delta_s so numbering is S12(entry_exit) → S13(delta_s) → S14(vlm_case)
 \begin{figure*}[t]
 \centering
 \begin{subfigure}[t]{0.235\textwidth}
@@ -801,6 +795,13 @@ Panel & Category & Prescribed Entity & VLM Says & Human Says & Description \\
 \bottomrule
 \end{tabular}
 \end{table*}
+
+%% ============================================================
+\section{VLM Detection Case Study}
+\label{app:vlm_cases}
+%% ============================================================
+
+To provide visual evidence for the Human--VLM agreement analysis (\S\ref{app:vlm_quality}), we present representative keyframes from the three diagnostic categories. Figure~\ref{fig:vlm_case_study} shows actual generated frames where the VLM flagged a prescribed entity as ``absent'' ($S_\text{obs} = 0$, $S^* = 1$), and Table~\ref{tab:vlm_case_study} provides the corresponding structured analysis.
 
 \noindent\textbf{Takeaway.} In 84\% of the audited cases (65\% generation failure + 19\% marginal), the VLM's negative flag faithfully reflects an actual deficiency in the generated image (panels a--c). 16\% are genuine VLM detection errors (panel d). This confirms that the \stem{} pipeline's low TPR ($\approx$52\%) is predominantly measuring generative model limitations, not the problem of evaluation itself.
 
