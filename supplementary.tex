@@ -596,16 +596,8 @@ As reported in Section~6.7 of the main text, the raw presence matching rate ($\a
 
 \subsection{Human Audit of False Negatives}
 
-To disentangle detector error from generation failure, we manually inspected 100 randomly sampled cases where the VLM reported an entity as ``absent'' ($S_{\text{obs}} = 0$) despite being ``prescribed'' in the prompt ($S^* = 1$). Two human experts independently annotated whether the entity was (1)~clearly present, (2)~genuinely absent, or (3)~too ambiguous to determine. The results (Table~\ref{tab:human_vlm_audit}) reveal that in \textbf{84\%} of the cases, the VLM's ``absent'' label was justified:
-
-\begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{65\%} were \emph{ generation failures}: the model completely failed to synthesize the entity or produced a formless, unrecognizable blob.
-  \item \textbf{19\%} were \emph{ambiguous}: the entity was so heavily cropped or blurred into the background that it could not be reliably identified as the intended character.
-  \item \textbf{16\%} were \emph{VLM detection errors}: the entity was clearly visible but missed by the detector.
-\end{itemize}
-
-\noindent This yields \textbf{80.2\% VLM precision} ($65/(65{+}16)$, excluding ambiguous cases), confirming that the \stem{} pipeline accurately diagnoses generative models' shortcomings.
-\begin{table}[ht]
+To disentangle detector error from generation failure, we manually inspected 100 randomly sampled cases where the VLM reported an entity as ``absent'' ($S_{\text{obs}} = 0$) despite being ``prescribed'' in the prompt ($S^* = 1$). Two human experts independently annotated whether the entity was (1)~clearly present, (2)~genuinely absent, or (3)~present but lacking sufficient identifying cues. The results (Table~\ref{tab:human_vlm_audit}) reveal that in \textbf{84\%} of the cases, the VLM's ``absent'' label was justified:
+\begin{table}[H]
 \caption{Human audit of 100 random VLM negative flags ($S_{\text{obs}}=0,\; S^*=1$).}
 \label{tab:human_vlm_audit}
 \centering\small
@@ -614,7 +606,7 @@ To disentangle detector error from generation failure, we manually inspected 100
 Category & Frequency (\%) \\
 \midrule
 Genuine Generation Failure (Amnesia/Morphed) & 65\% \\
-Marginal / Heavily Obscured (VLM-justifiable) & 19\% \\
+Insufficient Identifying Cues (VLM-justifiable) & 19\% \\
 Actual VLM Detection Error & 16\% \\
 \midrule
 \textbf{Total Validated ``Failure'' Rate} & \textbf{84\%} \\
@@ -622,10 +614,18 @@ Actual VLM Detection Error & 16\% \\
 \end{tabular}
 \end{table}
 
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{65\%} were \emph{generation failures}: the model completely failed to synthesize the entity or produced a formless, unrecognizable blob.
+  \item \textbf{19\%} were \emph{insufficient cues}: a human-like figure or object was present in the frame, but lacked the occupational or species-specific visual cues (e.g., no apron for ``barista,'' no collar for ``dog'') needed to confirm it as the prescribed entity. The VLM's ``absent'' judgment is defensible because entity \emph{identity} cannot be established from the generated image alone.
+  \item \textbf{16\%} were \emph{VLM detection errors}: the entity was clearly visible with unambiguous identifying features, but missed by the detector.
+\end{itemize}
+
+\noindent This yields \textbf{80.2\% VLM precision} ($65/(65{+}16)$, excluding ambiguous cases), confirming that the \stem{} pipeline accurately diagnoses generative models' shortcomings.
+
 \subsection{Per-Pattern TPR \& TNR}
 
 The VLM detector's TPR and TNR vary across patterns, reflecting differences in entity count and scene complexity (Table~\ref{tab:vlm_quality}).
-\begin{table}[ht]
+\begin{table}[H]
 \caption{Per-pattern TPR \& TNR of VLM binary detection.}
 \label{tab:vlm_quality}
 \centering
