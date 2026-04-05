@@ -928,7 +928,7 @@ Rev.\ Relay    & 100 & \textbf{.562}{\tiny [.527,.598]} & .555{\tiny [.523,.587]
 \end{table}
 
 All overall PTM CIs are non-overlapping: StoryDiff [.226,.262] vs.\ EchoShot [.151,.183] vs.\ VGoT [.082,.107] vs.\ VIC [.060,.082].
-EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming statistically significant ordering.
+EPA CIs are tight; non-adjacent pairs (e.g., StoryDiff vs.\ VIC) show clear separation, while adjacent pairs (e.g., EchoShot [.553,.574] vs.\ VGoT [.545,.564]) exhibit partial overlap, consistent with the smaller effect sizes reported in Table~\ref{tab:mann_whitney}.
 Per-pattern PTM CIs (Table~\ref{tab:bootstrap_pattern}) show that StoryDiff achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where EchoShot's CI overlaps with StoryDiff's. Per-pattern EPA CIs (Table~\ref{tab:bootstrap_pattern_epa}) confirm that StoryDiff leads across all patterns, though EPA CIs are generally tighter due to the higher baseline values.
 
 
@@ -1272,7 +1272,7 @@ Multi-3 & .713 & .796 & .688 & 1.000 \\
 
 \paragraph{Key findings.}
 (1)~The model ranking StoryDiff $>$ EchoShot $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
-(2)~The middle frame achieves the highest PTM for StoryDiff (.243) and the highest EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
+(2)~The middle frame achieves the highest EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
 (3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.447$), with the middle--multi3 pair reaching $\rho_s = 0.796$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
 (4)~The marginal PTM gain from multi-frame voting does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
