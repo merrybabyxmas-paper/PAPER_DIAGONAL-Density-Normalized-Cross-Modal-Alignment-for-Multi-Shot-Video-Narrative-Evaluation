@@ -412,11 +412,11 @@ Shot & Entities & eval\_prompt \\
 \label{app:models}
 %% ============================================================
 
-All four models---StoryDiffusion (SD), EchoShot (Echo), VideoGen-of-Thought (VGoT), and VIC---use a fixed seed and the shared negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark.'' All four models successfully generated 1,000 videos each (4,000 total). Model-specific implementation notes:
+All four models---StoryDiffusion (StoryDiff), EchoShot, VideoGen-of-Thought (VGoT), and VIC---use a fixed seed and the shared negative prompt: ``low quality, blurry, deformed, morphed, distorted, extra limbs, bad anatomy, text, watermark.'' All four models successfully generated 1,000 videos each (4,000 total). Model-specific implementation notes:
 
 \begin{itemize}[leftmargin=*,nosep]
-  \item \textbf{Story Diffusion}: Two-stage pipeline. SDXL generates keyframes (30 steps), then SEINE~\cite{seine} synthesizes inter-frame motion (50 steps). Consistent Self-Attention (CSA) shares features across shots.
-  \item \textbf{Echo}: Single-stage flow-matching via Wan2.1-1.3B (50 steps). Spatio-temporal echo guidance conditions on reference portraits.
+  \item \textbf{StoryDiffusion}: Two-stage pipeline. SDXL generates keyframes (30 steps), then SEINE~\cite{seine} synthesizes inter-frame motion (50 steps). Consistent Self-Attention (CSA) shares features across shots.
+  \item \textbf{EchoShot}: Single-stage flow-matching via Wan2.1-1.3B (50 steps). Spatio-temporal echo guidance conditions on reference portraits.
   \item \textbf{VGoT}: Two-stage cascaded pipeline. Kolors generates initial keyframes (25 steps), then DynamiCrafter~\cite{dynamicrafter} animates them (50 steps). An LLM planner decomposes the narrative into per-shot layouts.
   \item \textbf{VIC}: In-context generation via CogVideoX-5B~\cite{cogvideox} with LoRA (50 steps). Prior shots are concatenated as in-context conditioning for subsequent generation.
 \end{itemize}
@@ -512,7 +512,7 @@ Table~\ref{tab:full_pattern} reports the complete per-pattern results for all 7 
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}l|cc|cc|cc|cc@{}}
 \toprule
-& \multicolumn{2}{c|}{SD} & \multicolumn{2}{c|}{Echo} & \multicolumn{2}{c|}{VGoT} & \multicolumn{2}{c}{VIC} \\
+& \multicolumn{2}{c|}{StoryDiff} & \multicolumn{2}{c|}{EchoShot} & \multicolumn{2}{c|}{VGoT} & \multicolumn{2}{c}{VIC} \\
 Pattern & PTM & EPA & PTM & EPA & PTM & EPA & PTM & EPA \\
 \midrule
 Relay (B, 2-ent)       & \textbf{.190} & .536 & .138 & .506 & .085 & \textbf{.531} & .080 & .522 \\
@@ -556,8 +556,8 @@ Each model is rated independently on a 5-point Likert scale for \emph{Narrative 
 & \multicolumn{5}{c}{Score \%} & \multicolumn{2}{c}{Summary} \\
 Model & 1 & 2 & 3 & 4 & 5 & $\mu$ & $\sigma$ \\
 \midrule
-SD    & 34.4 & 38.4 & 16.5 & 6.7 & 3.9 & 2.07 & 1.06 \\
-Echo  & 35.3 & 48.7 & 9.1 & 5.0 & 2.0 & 1.90 & 0.90 \\
+StoryDiff    & 34.4 & 38.4 & 16.5 & 6.7 & 3.9 & 2.07 & 1.06 \\
+EchoShot  & 35.3 & 48.7 & 9.1 & 5.0 & 2.0 & 1.90 & 0.90 \\
 VGoT  & 39.2 & 46.4 & 8.3 & 3.8 & 2.3 & 1.84 & 0.90 \\
 VIC   & 36.1 & 47.6 & 7.9 & 5.3 & 3.1 & 1.91 & 0.96 \\
 \midrule
@@ -576,11 +576,11 @@ All   & 36.2 & 45.3 & 10.4 & 5.2 & 2.8 & 1.93 & 0.96 \\
 \toprule
 Matchup & Preference (\%) & $n$ \\
 \midrule
-SD vs.\ Echo  & 21 / 61 / 18 & 284 \\
-SD vs.\ VGoT  & \textbf{29} / 51 / 19 & 268 \\
-SD vs.\ VIC   & \textbf{23} / 60 / 17 & 309 \\
-Echo vs.\ VGoT & 19 / 67 / 13 & 335 \\
-Echo vs.\ VIC & 17 / 66 / 18 & 308 \\
+StoryDiff vs.\ EchoShot  & 21 / 61 / 18 & 284 \\
+StoryDiff vs.\ VGoT  & \textbf{29} / 51 / 19 & 268 \\
+StoryDiff vs.\ VIC   & \textbf{23} / 60 / 17 & 309 \\
+EchoShot vs.\ VGoT & 19 / 67 / 13 & 335 \\
+EchoShot vs.\ VIC & 17 / 66 / 18 & 308 \\
 VGoT vs.\ VIC & 16 / 68 / 17 & 296 \\
 \bottomrule
 \end{tabular}
@@ -688,8 +688,8 @@ We decompose PTM into entry (prescribed $\Delta S^* = +1$) and exit (prescribed 
 \toprule
 Model & Entry (+1) & Exit ($-1$) & $\Delta$ & $n$ \\
 \midrule
-SD    & \textbf{.256} & \textbf{.242} & +.014 & 2,400 \\
-Echo  & .154 & .190 & $-$.036 & 2,400 \\
+StoryDiff    & \textbf{.256} & \textbf{.242} & +.014 & 2,400 \\
+EchoShot  & .154 & .190 & $-$.036 & 2,400 \\
 VGoT  & .068 & .120 & $-$.052 & 2,400 \\
 VIC   & .068 & .069 & $-$.001 & 2,400 \\
 \bottomrule
@@ -697,7 +697,7 @@ VIC   & .068 & .069 & $-$.001 & 2,400 \\
 \end{table}
 
 \textbf{VGoT exhibits a pronounced entity entry vs.\ exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming that DynamiCrafter's I2V rendering stage cannot introduce new entities absent from the initial keyframe layout.
-SD is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
+StoryDiff is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
 VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accuracy are near-chance (0.068--0.069).
 
 
@@ -825,8 +825,8 @@ Patterns use either 2 entities (Relay, Split, Convergence, Reverse Relay; $n = 6
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
 Model & PTM & EPA & PTM & EPA \\
 \midrule
-SD    & .221 & .556 & \textbf{.278} & \textbf{.649} \\
-Echo  & .169 & .534 & .164 & .608 \\
+StoryDiff    & .221 & .556 & \textbf{.278} & \textbf{.649} \\
+EchoShot  & .169 & .534 & .164 & .608 \\
 VGoT  & .098 & .528 & .088 & .593 \\
 VIC   & .067 & .522 & .075 & .582 \\
 \bottomrule
@@ -834,8 +834,8 @@ VIC   & .067 & .522 & .075 & .582 \\
 \end{table}
 
 3-entity patterns achieve higher EPA across all models (0.582--0.649 vs.\ 0.522--0.556) due to the larger denominator reducing per-cell noise impact.
-PTM rankings are preserved in both strata: SD $>$ Echo $>$ VGoT $>$ VIC for 2-entity, and SD $>$ Echo $>$ VGoT $\approx$ VIC for 3-entity.
-SD benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), suggesting CSA excels when more entities provide stronger discriminative anchors.
+PTM rankings are preserved in both strata: StoryDiff $>$ EchoShot $>$ VGoT $>$ VIC for 2-entity, and StoryDiff $>$ EchoShot $>$ VGoT $\approx$ VIC for 3-entity.
+StoryDiff benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), suggesting CSA excels when more entities provide stronger discriminative anchors.
 
 
 %% ============================================================
@@ -852,8 +852,8 @@ SD benefits most from 3-entity patterns (PTM: 0.221 $\to$ 0.278), suggesting CSA
 \toprule
 Scope & Pearson $r$ & $p$ \\
 \midrule
-SD only     & .661 & $1.2 \times 10^{-126}$ \\
-Echo only   & .530 & $1.9 \times 10^{-73}$ \\
+StoryDiff only     & .661 & $1.2 \times 10^{-126}$ \\
+EchoShot only   & .530 & $1.9 \times 10^{-73}$ \\
 VGoT only   & .472 & $1.1 \times 10^{-56}$ \\
 VIC only    & .452 & $1.6 \times 10^{-51}$ \\
 All pooled  & .542 & $<10^{-300}$ \\
@@ -862,7 +862,7 @@ All pooled  & .542 & $<10^{-300}$ \\
 \end{table}
 
 As shown in Table~\ref{tab:correlation}, EPA and PTM show strong positive correlation at the per-video level ($r = 0.542$ pooled), confirming they measure related but distinct aspects of narrative fidelity.
-The correlation is strongest for SD ($r = 0.661$) because it has the widest PTM range, providing more variance for correlation.
+The correlation is strongest for StoryDiff ($r = 0.661$) because it has the widest PTM range, providing more variance for correlation.
 All per-method correlations are highly significant ($p < 10^{-51}$), validating the VLM-based binary detection as producing reliable metrics.
 
 
@@ -880,7 +880,7 @@ All per-method correlations are highly significant ($p < 10^{-51}$), validating 
 \setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Metric & SD & Echo & VGoT & VIC \\
+Metric & StoryDiff & EchoShot & VGoT & VIC \\
 \midrule
 PTM & \textbf{.243}{\tiny [.226,.262]} & .167{\tiny [.151,.183]} & .094{\tiny [.082,.107]} & .070{\tiny [.060,.082]} \\
 EPA & \textbf{.593}{\tiny [.583,.604]} & .563{\tiny [.553,.574]} & .554{\tiny [.545,.564]} & .546{\tiny [.536,.557]} \\
@@ -896,7 +896,7 @@ EPA & \textbf{.593}{\tiny [.583,.604]} & .563{\tiny [.553,.574]} & .554{\tiny [.
 \setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}ll cccc@{}}
 \toprule
-Pattern & $n$ & SD & Echo & VGoT & VIC \\
+Pattern & $n$ & StoryDiff & EchoShot & VGoT & VIC \\
 \midrule
 Relay          & 200 & \textbf{.190}{\tiny [.150,.230]} & .138{\tiny [.102,.174]} & .085{\tiny [.058,.112]} & .080{\tiny [.056,.104]} \\
 Split          & 200 & \textbf{.233}{\tiny [.193,.273]} & .165{\tiny [.129,.201]} & .108{\tiny [.081,.135]} & .048{\tiny [.024,.072]} \\
@@ -909,9 +909,9 @@ Rev.\ Relay    & 100 & .200{\tiny [.143,.257]} & \textbf{.225}{\tiny [.174,.276]
 \end{tabular}
 \end{table}
 
-All overall PTM CIs are non-overlapping: SD [.226,.262] vs.\ Echo [.151,.183] vs.\ VGoT [.082,.107] vs.\ VIC [.060,.082].
+All overall PTM CIs are non-overlapping: StoryDiff [.226,.262] vs.\ EchoShot [.151,.183] vs.\ VGoT [.082,.107] vs.\ VIC [.060,.082].
 EPA CIs are tight but also non-overlapping for all adjacent pairs, confirming statistically significant ordering.
-Per-pattern CIs (Table~\ref{tab:bootstrap_pattern}) show that SD achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where Echo's CI overlaps with SD's.
+Per-pattern CIs (Table~\ref{tab:bootstrap_pattern}) show that StoryDiff achieves non-overlapping superiority on most patterns, with the exception of Reverse Relay where EchoShot's CI overlaps with StoryDiff's.
 
 
 %% ============================================================
@@ -933,7 +933,7 @@ In this error matrix, the Frobenius norm $\|E\|_F = \sqrt{0 + 1 + 0 + 1} = \sqrt
 
 
 \paragraph{Discriminative analysis.}
-The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}). Only 1 of 6 pairs (Echo--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{SD} < \text{VIC} < \text{Echo}$) does \emph{not} match the PTM ranking.
+The raw Frobenius distance $\|E\|_F$ is weakly discriminative (Table~\ref{tab:frobenius}). Only 1 of 6 pairs (EchoShot--VGoT) reaches significance at $\alpha = 0.05$, and the ranking ($\text{VGoT} < \text{StoryDiff} < \text{VIC} < \text{EchoShot}$) does \emph{not} match the PTM ranking.
 This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribed-subspace projection (PTM).
 \begin{table}[H]
 \caption{Pairwise Mann-Whitney $U$ tests for $\|E\|_F$.}
@@ -944,11 +944,11 @@ This confirms that hold-cell noise dominates $\|E\|_F$, motivating the prescribe
 \toprule
 Pair & $p$-value & Mean$_1$ / Mean$_2$ \\
 \midrule
-SD--Echo    & 0.436 & 1.640 / 1.670 \\
-SD--VGoT    & 0.051 & 1.640 / 1.613 \\
-SD--VIC     & 0.363 & 1.640 / 1.643 \\
-Echo--VGoT  & \textbf{0.004} & 1.670 / 1.613 \\
-Echo--VIC   & 0.062 & 1.670 / 1.643 \\
+StoryDiff--EchoShot    & 0.436 & 1.640 / 1.670 \\
+StoryDiff--VGoT    & 0.051 & 1.640 / 1.613 \\
+StoryDiff--VIC     & 0.363 & 1.640 / 1.643 \\
+EchoShot--VGoT  & \textbf{0.004} & 1.670 / 1.613 \\
+EchoShot--VIC   & 0.062 & 1.670 / 1.643 \\
 VGoT--VIC   & 0.315 & 1.613 / 1.643 \\
 \bottomrule
 \end{tabular}
@@ -971,16 +971,16 @@ Table~\ref{tab:mann_whitney} reports pairwise significance tests for PTM using t
 \toprule
 Pair & $p$ & Cohen's $d$ & Sig. \\
 \midrule
-SD--Echo    & $3.3 \times 10^{-10}$ & 0.28 & $^{***}$ \\
-Echo--VGoT  & $2.3 \times 10^{-11}$ & 0.32 & $^{***}$ \\
+StoryDiff--EchoShot    & $3.3 \times 10^{-10}$ & 0.28 & $^{***}$ \\
+EchoShot--VGoT  & $2.3 \times 10^{-11}$ & 0.32 & $^{***}$ \\
 VGoT--VIC   & $2.9 \times 10^{-3}$  & 0.13 & $^{**}$  \\
-SD--VIC     & $2.7 \times 10^{-53}$ & 0.72 & $^{***}$ \\
+StoryDiff--VIC     & $2.7 \times 10^{-53}$ & 0.72 & $^{***}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 All pairwise PTM differences are significant ($p < 0.01$).
-The SD--VIC comparison has the largest effect size ($d = 0.72$), representing a 3.5$\times$ difference in PTM (0.243 vs.\ 0.070).
+The StoryDiff--VIC comparison has the largest effect size ($d = 0.72$), representing a 3.5$\times$ difference in PTM (0.243 vs.\ 0.070).
 The VGoT--VIC comparison, while significant, has a smaller effect size ($d = 0.13$), consistent with both models being in the low-PTM regime.
 
 
@@ -999,15 +999,15 @@ Table~\ref{tab:ptm_dist} and Figure~\ref{fig:ptm_dist} show the complete PTM dis
 \toprule
 Model & $\mu \pm \sigma$ & PTM$=$0 & PTM$=$0.33 & PTM$=$0.5 & PTM$=$0.67 & PTM$=$1.0 \\
 \midrule
-SD    & .243$\pm$.292 & 53.5 & 13.7 & 21.5 & 6.8 & 4.5 \\
-Echo  & .167$\pm$.260 & 67.1 & 10.6 & 15.3 & 4.4 & 2.6 \\
+StoryDiff    & .243$\pm$.292 & 53.5 & 13.7 & 21.5 & 6.8 & 4.5 \\
+EchoShot  & .167$\pm$.260 & 67.1 & 10.6 & 15.3 & 4.4 & 2.6 \\
 VGoT  & .094$\pm$.197 & 79.5 &  8.4 & 10.2 & 1.1 & 0.8 \\
 VIC   & .070$\pm$.173 & 84.8 &  5.2 &  8.7 & 1.0 & 0.3 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct). SD achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. The intermediate values PTM $= 0.33$ and PTM $= 0.67$ arise exclusively from 3-transition patterns (Split, Convergence, Sliding Window), where partial compliance is possible. Figure~\ref{fig:ptm_dist} visualizes these distributions.
+The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (no correct transitions) and only 0.3\% at PTM $= 1.0$ (all correct). StoryDiff achieves PTM $= 1.0$ for 4.5\% of videos---rare but achievable. The intermediate values PTM $= 0.33$ and PTM $= 0.67$ arise exclusively from 3-transition patterns (Split, Convergence, Sliding Window), where partial compliance is possible. Figure~\ref{fig:ptm_dist} visualizes these distributions.
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
@@ -1048,12 +1048,12 @@ The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (
 \addplot[fill=green!30, draw=green!80, thick] coordinates {(0, 79.5) (0.33, 8.4) (0.5, 10.2) (0.67, 1.1) (1.0, 0.8)};
 \addplot[fill=orange!30, draw=orange!80, thick] coordinates {(0, 84.8) (0.33, 5.2) (0.5, 8.7) (0.67, 1.0) (1.0, 0.3)};
 
-\legend{SD, Echo, VGoT, VIC}
+\legend{StoryDiff, EchoShot, VGoT, VIC}
 \end{axis}
 \end{tikzpicture}
-\caption{Complete PTM score distributions across all 5 discrete values. Higher-performing models (SD) shift mass rightward from PTM$\,{=}\,0$ toward higher compliance levels. The PTM$\,{=}\,0.33$ and PTM$\,{=}\,0.67$ bins arise from 3-transition patterns (Split, Convergence, Sliding Window).}
+\caption{Complete PTM score distributions across all 5 discrete values. Higher-performing models (StoryDiff) shift mass rightward from PTM$\,{=}\,0$ toward higher compliance levels. The PTM$\,{=}\,0.33$ and PTM$\,{=}\,0.67$ bins arise from 3-transition patterns (Split, Convergence, Sliding Window).}
 \label{fig:ptm_dist}
-\Description{Grouped bar chart showing PTM score distributions for SD, Echo, VGoT, and VIC across all 5 PTM values: 0, 0.33, 0.5, 0.67, and 1.0.}
+\Description{Grouped bar chart showing PTM score distributions for StoryDiff, EchoShot, VGoT, and VIC across all 5 PTM values: 0, 0.33, 0.5, 0.67, and 1.0.}
 \end{figure}
 
 
@@ -1201,7 +1201,7 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 
 \noindent Each strategy yields a complete $S_\text{obs}$ matrix from which PTM and EPA are computed identically to the main experiments. Tables~\ref{tab:temporal_ablation_ptm}--\ref{tab:temporal_ablation_spearman} report the results.
 \begin{table}[ht]
-\caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. The Middle column reproduces the main evaluation (Table~2). Model ranking is \emph{identical} across all four strategies (SD $>$ Echo $>$ VGoT $>$ VIC).}
+\caption{Temporal frame sampling ablation: PTM by model $\times$ strategy. The Middle column reproduces the main evaluation (Table~2). Model ranking is \emph{identical} across all four strategies (StoryDiff $>$ EchoShot $>$ VGoT $>$ VIC).}
 \label{tab:temporal_ablation_ptm}
 \centering
 \small
@@ -1209,8 +1209,8 @@ A potential concern is whether extracting a \emph{single} frame per shot introdu
 \toprule
 Model & Early & Middle & Late & Multi-3 \\
 \midrule
-SD & .271 & \textbf{.243} & .196 & .228 \\
-Echo  & .167 & \textbf{.167} & .171 & .162 \\
+StoryDiff & .271 & \textbf{.243} & .196 & .228 \\
+EchoShot  & .167 & \textbf{.167} & .171 & .162 \\
 VGoT      & .099 & \textbf{.094} & .086 & .085 \\
 VIC       & .073 & \textbf{.070} & .058 & .051 \\
 \bottomrule
@@ -1226,8 +1226,8 @@ VIC       & .073 & \textbf{.070} & .058 & .051 \\
 \toprule
 Model & Early & Middle & Late & Multi-3 \\
 \midrule
-SD & .586 & \textbf{.593} & .568 & .591 \\
-Echo  & .567 & \textbf{.563} & .569 & .569 \\
+StoryDiff & .586 & \textbf{.593} & .568 & .591 \\
+EchoShot  & .567 & \textbf{.563} & .569 & .569 \\
 VGoT      & .550 & \textbf{.554} & .553 & .552 \\
 VIC       & .551 & \textbf{.546} & .542 & .547 \\
 \bottomrule
@@ -1252,8 +1252,8 @@ Multi-3 & .713 & .796 & .688 & 1.000 \\
 \end{table}
 
 \paragraph{Key findings.}
-(1)~The model ranking SD $>$ Echo $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
-(2)~The middle frame achieves the highest PTM for SD (.243) and the highest EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
+(1)~The model ranking StoryDiff $>$ EchoShot $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
+(2)~The middle frame achieves the highest PTM for StoryDiff (.243) and the highest EPA overall (Table~\ref{tab:temporal_ablation_epa}), consistent with our design rationale that mid-shot frames maximize distance from transition artifacts at shot boundaries.
 (3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.447$), with the middle--multi3 pair reaching $\rho_s = 0.796$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
 (4)~The marginal PTM gain from multi-frame voting does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
@@ -1268,8 +1268,8 @@ To quantify VLM inference stability, we repeated the full temporal ablation thre
 \toprule
 Model & Run 1 & Run 2 & Run 3 & $\sigma$ \\
 \midrule
-SD    & .243 & .239 & .239 & .003 \\
-Echo  & .167 & .168 & .168 & .001 \\
+StoryDiff    & .243 & .239 & .239 & .003 \\
+EchoShot  & .167 & .168 & .168 & .001 \\
 VGoT  & .094 & .091 & .091 & .002 \\
 VIC   & .070 & .060 & .060 & .006 \\
 \bottomrule
@@ -1283,10 +1283,10 @@ VIC   & .070 & .060 & .060 & .006 \\
 %% ============================================================
 
 To verify that model rankings are not driven by a single easy/hard pattern, we compute per-pattern model rankings and actual PTM values (Table~\ref{tab:rank_pattern}) and measure concordance via Kendall's coefficient of concordance $W$. Kendall's $W = 0.869$ ($\chi^2 = 18.3$, $p = 3.9 \times 10^{-4}$), indicating strong concordance.
-SD ranks 1st in 6/7 patterns; Echo claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
+StoryDiff ranks 1st in 6/7 patterns; EchoShot claims 1st only on Reverse Relay (the simplest 2-transition derived pattern).
 The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's DynamiCrafter I2V stage struggling to introduce entities absent from the initial keyframe on entry-heavy patterns (Appendix~\ref{app:entry_exit}).
 \begin{table}[H]
-\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (SD\,$>$\,Echo\,$>$\,VGoT\,$>$\,VIC).}
+\caption{Per-pattern PTM values and rankings (1 = best). \textbf{Bold}: rank deviating from the overall ranking (StoryDiff\,$>$\,EchoShot\,$>$\,VGoT\,$>$\,VIC).}
 \label{tab:rank_pattern}
 \centering
 \small
@@ -1295,7 +1295,7 @@ The VGoT/VIC swap in Accumulation and Convergence is consistent with VGoT's Dyna
 \toprule
 & \multicolumn{4}{c}{PTM} & \multicolumn{4}{c}{Rank} \\
 \cmidrule(lr){2-5} \cmidrule(lr){6-9}
-Pattern & SD & Echo & VGoT & VIC & SD & Echo & VGoT & VIC \\
+Pattern & StoryDiff & EchoShot & VGoT & VIC & StoryDiff & EchoShot & VGoT & VIC \\
 \midrule
 Relay          & .190 & .138 & .085 & .080 & 1 & 2 & 3 & 4 \\
 Split          & .233 & .165 & .108 & .048 & 1 & 2 & 3 & 4 \\
