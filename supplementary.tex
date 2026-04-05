@@ -138,6 +138,14 @@
 
 In Theorem~3.1 (main text), we established that the set $\{\calB_1, \calB_2\}$ spans the canonical local space $\mathbb{Z}^{2 \times 3}$. Here, we prove that $\calB_1$ (Relay) alone is strictly insufficient, thereby necessitating the introduction of $\calB_2$ (Split).
 
+\noindent \textbf{Additional notations.} Before proceeding, we introduce notations used throughout the theoretical appendices (Appendices~A--B):
+\begin{itemize}[nosep,leftmargin=*]
+\item $\Sigma_N$ denotes the \emph{symmetric group} of degree $N$, i.e., the set of all $N!$ permutations of entity indices $\{1, \ldots, N\}$. A permutation $\sigma \in \Sigma_N$ acts on a matrix by reordering its columns, thereby reassigning which entity occupies which position. In the local canonical space ($N = 3$), $\Sigma_3$ contains the 6 column permutations used to enumerate all role assignments.
+\item $c_{\tau,m} \in \mathbb{Z}$ are \emph{integer coefficients} (typically $+1$, $-1$, or $0$) that determine the activation and directional sign of basis matrix $\calB_m$ within temporal window $\tau$. These serve as scalar weights in the linear combination that reconstructs each local transition sub-matrix.
+\end{itemize}
+
+\noindent \textbf{Example.} For $N=3$ entities, consider the Relay basis $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$. A permutation $\sigma \in \Sigma_3$ swapping columns 1 and 3 yields $\sigma \circ \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ 0 & 0 & -1 \end{smallmatrix}\bigr]$. Applying coefficient $c = -1$ inverts the transition direction: $-1 \cdot (\sigma \circ \calB_1) = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ 0 & 0 & 1 \end{smallmatrix}\bigr]$.
+
 \begin{lemma}[Row-Sum Invariance of $\calB_1$]
 Let $R_i(M)$ denote the sum of elements in the $i$-th row of a matrix $M$. For any character role swapping operator $\sigma \in \Sigma_3$, the permuted Relay matrix $M = \sigma \circ \calB_1$ strictly preserves the following topological invariant:
 \begin{equation}
@@ -164,15 +172,6 @@ However, the standard single-entry matrix $J_{11} = \bigl[\begin{smallmatrix} 1 
 %% ============================================================
 
 
-
-\noindent \textbf{Additional notations} To express how local basis matrices linearly compose into a global narrative transition $\Delta S$, we introduce two operational parameters:
-\begin{itemize}[nosep,leftmargin=*]
-\item $\Sigma_N$ denotes the symmetric group of degree $N$. A permutation $\sigma_{\tau,m} \in \Sigma_N$ acts as a column-reordering operator, mapping the generic entity positions of a basis matrix $\calB_m$ to the specific characters involved in the transition at window $\tau$.
-\item $c_{\tau,m} \in \mathbb{Z}$ are integer coefficients (typically $+1$, $-1$, or $0$) that determine the activation and directional sign of the basis matrix $\calB_m$ within the temporal window $\tau$.
-\end{itemize}
-
-\vspace{0.5em}
-\noindent \textbf{Example:} For $N=3$ entities, consider the Relay basis $\calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ -1 & 0 & 0 \end{smallmatrix}\bigr]$. A permutation $\sigma \in \Sigma_3$ swapping columns 1 and 3 reorders the entities to yield $\sigma \circ \calB_1 = \bigl[\begin{smallmatrix} 0 & 1 & 0 \\ 0 & 0 & -1 \end{smallmatrix}\bigr]$. Subsequently, applying a coefficient $c = -1$ inverts the direction of the transition, resulting in $-1 \cdot (\sigma \circ \calB_1) = \bigl[\begin{smallmatrix} 0 & -1 & 0 \\ 0 & 0 & 1 \end{smallmatrix}\bigr]$.
 
 \subsection{Linear Mapping Operators}
 To formalize the dimensional expansion from the canonical local space ($\mathbb{Z}^{2\times 3}$) to the global narrative space ($\mathbb{Z}^{(T-1) \times N}$), we define two structure-preserving linear operators.
