@@ -1083,7 +1083,7 @@ The distribution is heavily left-skewed: VIC has 84.8\% of videos at PTM $= 0$ (
 %% ============================================================
 
 Failure rates are computed from the VLM-based $E$ matrix, with Type~IV (reversal, $|E|=2$) separated from Types~I/II (Table~\ref{tab:failure_rates}). Patterns with more prescribed transitions (Split, Convergence, Sliding Window: 3 each) show the highest failure rates across all types.
-Amnesia (Type~II) dominates across all patterns, consistent with the entity entry vs.\ exit asymmetry (\S\ref{app:entry_exit}).
+Amnesia (Type~II) dominates across most of the patterns, consistent with the entity entry vs.\ exit asymmetry (\S\ref{app:entry_exit}).
 
 
 \begin{table}[H]
@@ -1098,8 +1098,9 @@ Pattern & $|\Delta S^* \neq 0|$ & I & II & III & IV \\
 \midrule
 Relay         & 2 & 63.4 & 68.6 & 34.9 & 11.5 \\
 Split         & 3 & 73.1 & 70.8 & 37.3 & 13.4 \\
-Accumulation  & 2 & 63.9 & \textbf{80.8} & 33.9 & 8.4 \\
-Convergence   & 3 & \textbf{78.8} & 81.0 & \textbf{47.5} & \textbf{14.3} \\
+Accumulation  & 2 & 63.9 & 80.8 & 33.9 & 8.4 \\
+Convergence   & 3 & \textbf{78.8} &         
+\textbf{81.0} & \textbf{47.5} & \textbf{14.3} \\
 Sliding Win.  & 3 & 77.3 & 77.5 & 37.3 & 12.5 \\
 Reduction     & 2 & 63.3 & 68.8 & 28.5 & 8.0 \\
 Rev.\ Relay   & 2 & 68.3 & 70.3 & 33.3 & 11.0 \\
