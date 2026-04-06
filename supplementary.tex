@@ -1318,13 +1318,13 @@ Figure~\ref{fig:qualitative_gallery} illustrates the full spectrum of narrative 
 Models demonstrate robust object permanence in two-entity scenarios: entrances and exits are executed without visual cross-contamination. Each entity is distinctly rendered and correctly absent/present per shot.
 
 \paragraph{Tier 2: Partial compliance (\textcolor{orange!80!black}{PTM $\approx 0.67$}).}
-Models can synthesize the required entities but struggle with dynamic boundaries. Two dominant failure modes emerge: (i)~\emph{amnesia} (Type~II)---where a prescribed entity fails to appear---and (ii)~\emph{context bleeding} (Type~I)---where an entity that should have exited persists. In the gallery examples, a Convergence scenario prescribes rabbit $\to$ fox $\to$ rabbit+fox, but the final shot renders only the fox---the rabbit fails to re-enter. Similarly, a Split scenario prescribes swimmer+crab $\to$ swimmer $\to$ crab, but the crab is absent from shot~1.
+Models can synthesize the required entities but struggle with dynamic boundaries. In the gallery examples, a Convergence scenario prescribes rabbit $\to$ fox $\to$ rabbit+fox, but the final shot renders only the fox---the rabbit fails to re-enter. Similarly, a Split scenario prescribes swimmer+crab $\to$ swimmer $\to$ crab, but the crab is absent from shot~1.
 
 \paragraph{Tier 3: Low compliance (\textcolor{red!70!black}{PTM $\approx 0.33$}).}
 Temporal dynamics break down more severely, with multiple transitions failing simultaneously. In the gallery examples, a Convergence scenario prescribes cook $\to$ dishwasher $\to$ cook+dishwasher, but the observed sequence is cook $\to$ cook+dishwasher $\to$ (empty)---the narrative is shifted by one shot and the final shot loses all entities. A Split scenario prescribes cat+dog $\to$ cat $\to$ dog, but produces dog $\to$ cat $\to$ cat---entity roles are swapped and the dog fails to exit, resulting in a complete reversal of the intended dynamics.
 
 \paragraph{Tier 4: Complete failure (\textcolor{red!70!black}{PTM $= 0.0$}).}
-A total disconnect from the prompt's entity requirements. Models render backgrounds but completely fail to generate the requested subjects, producing scenery-only frames throughout all shots. In the gallery examples, only empty indoor environments (e.g., a dojo-like room) are rendered across all three shots, with no recognizable entity generated in any frame despite clear entity prescriptions in the prompt.
+A total disconnect from the prompt's entity requirements. Models render backgrounds but completely fail to generate the requested subjects, producing scenery-only frames or unidentifiable objects throughout all shots.
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\columnwidth]{figures/qualitative_gallery.png}
