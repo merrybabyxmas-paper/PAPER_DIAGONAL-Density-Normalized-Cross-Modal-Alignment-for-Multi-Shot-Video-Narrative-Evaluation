@@ -648,7 +648,7 @@ To further isolate VLM performance from generative noise, we evaluated the Qwen2
 
 \subsection{VLM Detector Comparison}
 \begin{table}[H]
-\caption{VLM detector comparison on MEMS-1K. Qwen2-VL-7B-Instruct provides the best balance of TPR and TNR.}
+\caption{VLM detector comparison on MEMS-1K. Qwen2-VL-7B-Instruct (shown in \textbf{bold}) provides the best balance of TPR and TNR.}
 \label{tab:vlm_comparison}
 \centering
 \small
@@ -663,7 +663,7 @@ Qwen2-VL-2B-Instruct & 40.1\% & 58.2\% \\
 \end{tabular}
 \end{table}
 
-\noindent As shown in Table~\ref{tab:vlm_comparison}, Grounding DINO's extremely low TNR (4\%) means it reports nearly every entity as ``present'' regardless of actual content, rendering it useless for measuring entity \emph{absence}---the core signal for narrative transition evaluation. The 2B VLM variant shows markedly lower TPR (40.1\%) than the 7B model (52.1\%), confirming that instruction-following capacity scales with model size for this binary detection task.
+\noindent As shown in Table~\ref{tab:vlm_comparison}, Grounding DINO's extremely low TNR (4\%) indicates that it reports nearly every entity as ``present'' regardless of the actual visual content. Specifically, it frequently predicts ``True'' even when objects fail to be generated in the video, leading to an unnaturally high TPR that misleadingly aligns with the prescribed matrix. This lack of discriminative power renders it useless for measuring entity \emph{absence}---the core signal for narrative transition evaluation. In contrast, the 2B VLM variant shows markedly lower TPR (40.1\%) than the 7B model (52.1\%), confirming that instruction-following capacity scales with model size for this binary detection task.
 
 
 %% ============================================================
@@ -1318,7 +1318,7 @@ Figure~\ref{fig:qualitative_gallery} illustrates the full spectrum of narrative 
 Models demonstrate robust object permanence in two-entity scenarios: entrances and exits are executed without visual cross-contamination. Each entity is distinctly rendered and correctly absent/present per shot.
 
 \paragraph{Tier 2: Partial compliance (\textcolor{orange!80!black}{PTM $\approx 0.67$}).}
-Models can synthesize the required entities but struggle with dynamic boundaries. Two dominant failure modes emerge: (i)~\emph{chimeras}---distinct subjects unnaturally blend into a single composite figure---and (ii)~\emph{context bleeding} (Type~I)---exiting entities inappropriately persist in subsequent shots.
+Models can synthesize the required entities but struggle with dynamic boundaries. Two dominant failure modes emerge: (i)~\emph{context bleeding} (Type~I)---where exiting entities inappropriately persist in subsequent shots---and (ii)~\emph{chimeras}---where distinct subjects unnaturally blend into a single composite figure.
 
 \paragraph{Tier 3: Low compliance (\textcolor{red!70!black}{PTM $\approx 0.33$}).}
 Temporal dynamics break down more severely. The narrative either stagnates with frozen visual states across shots, or suffers from \emph{amnesia} (Type~II), entirely omitting newly prescribed entities.
