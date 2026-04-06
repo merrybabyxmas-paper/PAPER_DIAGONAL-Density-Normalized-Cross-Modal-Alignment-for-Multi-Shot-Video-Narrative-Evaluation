@@ -1150,7 +1150,7 @@ The VLM achieves 100\% detection accuracy on these unambiguous, real-world image
 \label{app:metric_discriminability}
 %% ============================================================
 
-We compare the discriminative power of three candidate metrics: PTM ($\ell_0$-norm on prescribed cells), EPA (entity presence accuracy), and raw Frobenius distance $\|E\|_F$ (Table~\ref{tab:discriminability}).
+We compare the discriminative power of three candidate metrics: PTM ($\ell_0$-norm on prescribed cells), EPA (entity presence accuracy), and raw Frobenius distance $\|E\|_F$ (Table~\ref{tab:discriminability}). With 4 models, there are $\binom{4}{2} = 6$ unique pairwise comparisons (StoryDiff--EchoShot, StoryDiff--VGoT, StoryDiff--VIC, EchoShot--VGoT, EchoShot--VIC, VGoT--VIC). For each pair, we apply a Mann--Whitney $U$ test at $\alpha = 0.005$; the ``Sig.\ pairs'' column reports how many of these 6 pairs are statistically significant.
 \begin{table}[ht]
 \caption{Discriminability of candidate metrics. $H$: Kruskal--Wallis statistic across 4 models. Sig.\ pairs: number of pairwise Mann--Whitney $U$ tests significant at $\alpha = 0.005$ (out of 6).}
 \label{tab:discriminability}
