@@ -253,7 +253,7 @@ A block matrix insertion operator that embeds local transitions into the tempora
 Figure~\ref{fig:operator_pipeline} provides a conceptual diagram of how the two operators compose to embed a local basis matrix into the global narrative space.
 \begin{figure*}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/operator_pipeline.png}
+\includegraphics[width=\textwidth]{figures/operator_fixed.png}
 \caption{Visual overview of the algebraic operator pipeline. \textbf{(I)}~Definitions of the two linear operators: the spatial expansion operator $\Pi_N$ appends zero-columns for additional entities, and the temporal shift operator $\Phi_\tau$ embeds a $2 \times N$ local block into the correct row position of the global $(T{-}1) \times N$ matrix. \textbf{(II)}~The Grand Spanning Theorem (Theorem~B.1): any global transition matrix $\Delta S$ is reconstructed as a linear combination of shifted, permuted, expanded basis matrices. \textbf{(III)}~Worked example: a 4-shot, 3-entity relay chain $A \!\to\! AB \!\to\! BC \!\to\! C$ is decomposed into two local windows ($\tau = 1, 2$), each synthesized from basis matrices ($\calB_1$, $J_{23}$, $-J_{22}$), temporally shifted, and summed to recover the full $\Delta S$.}
 \label{fig:operator_pipeline}
 \Description{Three-panel diagram: (I) spatial and temporal operator definitions with matrix examples, (II) Grand Spanning Theorem flowchart and equation, (III) worked decomposition example for a 4-shot relay chain.}
@@ -350,7 +350,7 @@ Prompts that describe ambiguous scenarios (e.g., entities that could plausibly b
 \label{app:prompts}
 %% ============================================================
 
-Each scenario stores an \texttt{eval\_prompt} (concise scene description used for generation) and a set of \texttt{core\_entities} (e.g., $A$: ``toddler'', $B$: ``mother'') that define the named entity roles. For VLM evaluation, entity names are extracted directly from \texttt{core\_entities}---not from the scene descriptions---ensuring unambiguous binary presence queries (Eq.~5, main text). Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
+Each scenario stores an \texttt{eval\_prompt} (concise scene description used for generation) and a set of \texttt{core\_entities} (e.g., $A$: ``toddler'', $B$: ``mother'') that define the named entity roles. For VLM evaluation, entity names are extracted directly from \texttt{core\_entities}---not from the scene descriptions---ensuring unambiguous binary presence queries. Tables~\ref{tab:sample_relay}, \ref{tab:sample_accum}, and~\ref{tab:sample_slidwin} show representative examples for three patterns.
 \begin{table}[H]
 \caption{Relay pattern sample ($A \to AB \to B$).}
 \label{tab:sample_relay}
@@ -438,7 +438,7 @@ We report two standard binary-classification rates over all $(t, k)$ cells where
     \text{TNR} &= \frac{\sum_{t,k} \mathbbm{1}[S_\text{obs}[t,k]{=}0 \;\wedge\; S^*[t,k]{=}0]}{\sum_{t,k} \mathbbm{1}[S^*[t,k]{=}0]}.
 \end{aligned}
 \end{equation}
-Across 4,000 videos (28,800 cells): $\text{TPR} = 52.1\%$, $\text{TNR} = 66.7\%$.
+Across 4,000 videos: $\text{TPR} = 52.1\%$, $\text{TNR} = 66.7\%$.
 The low TPR reflects entity ambiguity in generated images rather than VLM failure---manual inspection confirms that the majority of false-negative cases are genuine generation failures (see \S\ref{app:vlm_quality} for the full Human--VLM agreement analysis). The same VLM achieves 100\% accuracy on unambiguous GT cat videos (Appendix~\ref{app:gt_failures}).
 
 
@@ -501,7 +501,7 @@ All four video generation models share the following fixed settings from the sce
 
 Table~\ref{tab:full_pattern} reports the complete per-pattern results for all 7 patterns across 4 models.
 \begin{table}[H]
-\caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.}
+\caption{Complete per-pattern results (VLM-based). Best per pattern in \textbf{bold}.(B: basis, D: derived}
 \label{tab:full_pattern}
 \centering
 \small
@@ -564,7 +564,7 @@ All   & 36.2 & 45.3 & 10.4 & 5.2 & 2.8 & 1.93 & 0.96 \\
 \end{table}
 
 \begin{table}[H]
-\caption{Head-to-head preferences (\%). M1 win / MutualFail / M2 win.}
+\caption{Head-to-head preferences (\%). M1 win / MutualFail / M2 win. (matchups with a win margin $\ge$ 2\%; winners are \textbf{bolded}.)}
 \label{tab:head_to_head}
 \centering
 \small
@@ -573,12 +573,10 @@ All   & 36.2 & 45.3 & 10.4 & 5.2 & 2.8 & 1.93 & 0.96 \\
 \toprule
 Matchup & Preference (\%) & $n$ \\
 \midrule
-StoryDiff vs.\ EchoShot  & 21 / 61 / 18 & 284 \\
-StoryDiff vs.\ VGoT  & \textbf{29} / 51 / 19 & 268 \\
-StoryDiff vs.\ VIC   & \textbf{23} / 60 / 17 & 309 \\
-EchoShot vs.\ VGoT & 19 / 67 / 13 & 335 \\
-EchoShot vs.\ VIC & 17 / 66 / 18 & 308 \\
-VGoT vs.\ VIC & 16 / 68 / 17 & 296 \\
+StoryDiff vs.\ EchoShot  & \textbf{21} / 61 / 18 & 284 \\
+StoryDiff vs.\ VGoT      & \textbf{29} / 51 / 19 & 268 \\
+StoryDiff vs.\ VIC       & \textbf{23} / 60 / 17 & 309 \\
+EchoShot vs.\ VGoT       & \textbf{19} / 67 / 13 & 335 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -603,10 +601,9 @@ To disentangle detector error from generation failure, we manually inspected 100
 Category & Frequency (\%) \\
 \midrule
 Generation Failure & 65\% \\
-ambiguous & 19\% \\
+Ambiguous & 19\% \\
 VLM Detection Error & 16\% \\
-\midrule
-\textbf{Total Validated ``Failure'' Rate} & \textbf{84\%} \\
+
 \bottomrule
 \end{tabular}
 \end{table}
@@ -676,7 +673,7 @@ Qwen2-VL-2B-Instruct & 40.1\% & 58.2\% \\
 
 We decompose PTM into entry (prescribed $\Delta S^* = +1$) and exit (prescribed $\Delta S^* = -1$) operations (Table~\ref{tab:entry_exit}).
 \begin{table}[H]
-\caption{PTM decomposed by operation type. $\Delta$ = entry $-$ exit accuracy.}
+\caption{PTM decomposed by operation type. $\Delta$ = entry $-$ exit accuracy.(Best performance in Entry, Exit \textbf{bolded}}
 \label{tab:entry_exit}
 \centering
 \small
@@ -693,7 +690,7 @@ VIC   & .068 & .069 & $-$.001 & 2,400 \\
 \end{table}
 
 \textbf{VGoT exhibits a pronounced entity entry vs.\ exit asymmetry} ($\Delta = -0.052$): exit accuracy (0.120) is nearly double entry accuracy (0.068), confirming that DynamiCrafter's I2V rendering stage cannot introduce new entities absent from the initial keyframe layout.
-StoryDiff is the only model where entry accuracy slightly exceeds exit accuracy ($\Delta = +0.014$), suggesting CSA's shared attention can introduce new entities.
+StoryDiff is the only model where entry accuracy slightly exceeds exit accuracy.
 VIC is approximately symmetric ($\Delta \approx 0$) but both entry and exit accuracy are near-chance (0.068--0.069).
 
 
@@ -1015,12 +1012,12 @@ Table~\ref{tab:ptm_dist} and Figure~\ref{fig:ptm_dist} show the complete PTM dis
 \small
 \begin{tabular}{@{}l c ccccc@{}}
 \toprule
-Model & $\mu \pm \sigma$ & PTM$=$0 & 0.33 & $0.5 & $0.67 & $1.0 \\
+Model & Mean ($\mu$) & PTM$=$0 & 0.33 & 0.5 & 0.67 & 1.0 \\
 \midrule
-StoryDiff    & .243$\pm$.292 & 53.5 & 13.7 & 21.5 & 6.8 & 4.5 \\
-EchoShot  & .167$\pm$.260 & 67.1 & 10.6 & 15.3 & 4.4 & 2.6 \\
-VGoT  & .094$\pm$.197 & 79.5 &  8.4 & 10.2 & 1.1 & 0.8 \\
-VIC   & .070$\pm$.173 & 84.8 &  5.2 &  8.7 & 1.0 & 0.3 \\
+StoryDiff    & .243 & 53.5 & 13.7 & 21.5 & 6.8 & 4.5 \\
+EchoShot  & .167 & 67.1 & 10.6 & 15.3 & 4.4 & 2.6 \\
+VGoT  & .094 & 79.5 &  8.4 & 10.2 & 1.1 & 0.8 \\
+VIC   & .070 & 84.8 &  5.2 &  8.7 & 1.0 & 0.3 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1272,7 +1269,7 @@ Multi-3 & .713 & .796 & .688 & 1.000 \\
 
 \paragraph{Key findings.}
 (1)~The model ranking StoryDiff $>$ EchoShot $>$ VGoT $>$ VIC is \emph{perfectly preserved} across all four strategies (Table~\ref{tab:temporal_ablation_ptm}), confirming that \stem{}'s discriminative power is robust to temporal sampling choice.
-(2)~Although the early frame yields marginally higher PTM for some models (e.g., StoryDiff: .271 vs.\ .243), we adopt the middle frame as the default because it best captures the \emph{representative visual state} of each shot. Frames near shot boundaries (early/late) risk sampling transition artifacts---partial fades, motion blur, or incomplete scene changes---that do not reflect the intended narrative content of the shot. The middle frame maximizes temporal distance from these boundaries, providing the most faithful snapshot for entity presence detection.
+(2)~Although the early frame yields marginally higher PTM for some models (e.g., StoryDiff: .271 vs.\ .243), we adopt the middle frame as the default because it best captures the \emph{representative visual state} of each shot. Frames near shot boundaries (early/late) risk sampling transition artifacts---partial fades, motion blur, or incomplete scene changes---that do not reflect the intended narrative content of the shot.
 (3)~Per-video Spearman correlations (Table~\ref{tab:temporal_ablation_spearman}) are strongly positive across all strategy pairs ($\rho_s \geq 0.447$), with the middle--multi3 pair reaching $\rho_s = 0.796$, demonstrating that multi-frame majority voting closely mirrors the single middle-frame baseline.
 (4)~The marginal PTM gain from multi-frame voting does not justify tripling the VLM query cost, validating the single middle-frame design as both efficient and sufficient.
 
