@@ -1104,3 +1104,321 @@ outputs/{model}/logs/
 
 ---
 
+
+---
+
+## 24. 가상환경 설정 (Conda Environments)
+
+각 모델은 별도의 conda 환경에서 실행되었을 가능성이 높습니다.
+
+### 24.1 사용 가능한 Conda 환경
+
+**서버: dongwoo38@server**
+
+```bash
+# Conda 환경 리스트
+base                      /home/dongwoo38/miniconda3
+allinone                  /home/dongwoo38/miniconda3/envs/allinone
+allinone_py39             /home/dongwoo38/miniconda3/envs/allinone_py39
+diagonal                  /home/dongwoo38/miniconda3/envs/diagonal
+jelly                     /home/dongwoo38/miniconda3/envs/jelly
+myenv                     /home/dongwoo38/miniconda3/envs/myenv
+```
+
+### 24.2 환경별 주요 패키지
+
+#### **allinone** (기본 환경)
+```
+Python: 3.10.20
+torch: 2.0.1 (CUDA 11.7)
+torchaudio: 2.0.2
+einops: 0.8.2
+```
+- 용도: 기본 실험, 간단한 테스트
+- 특징: 안정적인 torch 2.0.1
+
+#### **allinone_py39** (Python 3.9)
+```
+Python: 3.9.25
+torch: 2.0.1
+torchaudio: 2.0.2
+```
+- 용도: Python 3.9 호환성 필요 시
+- 특징: allinone과 동일한 torch 버전
+
+#### **diagonal** (최신 torch)
+```
+Python: 3.10.19
+torch: 2.7.1+cu118 (CUDA 11.8)
+torchvision: 0.22.1+cu118
+transformers: 5.3.0
+einops: 0.8.2
+```
+- 용도: 최신 모델 테스트
+- 특징: 매우 최신 torch (2.7.1), transformers 5.3.0 (비정상적으로 높은 버전)
+- ⚠️ 주의: transformers 5.3.0은 비표준 (2025년 1월 기준 최신은 4.x)
+
+#### **jelly** (추천 환경)
+```
+Python: 3.10.20
+torch: 2.5.1+cu121 (CUDA 12.1)
+torchvision: 0.20.1+cu121
+transformers: 4.40.0
+accelerate: 1.13.0
+```
+- 용도: diffusers 기반 모델 (StoryDiffusion, VIC)
+- 특징: accelerate 포함, 안정적인 torch 2.5.1
+
+### 24.3 모델별 Requirements
+
+#### **EchoShot**
+
+**Requirements**: `/home/dongwoo38/papers/paper_DIAGONAL/codes/diagonal_experiment/multi_shot_eval_repos/EchoShot_official/requirements.txt`
+
+```
+Python: 3.10.16
+torch: 2.5.1+cu121
+torchvision: 0.20.1+cu121
+torchaudio: 2.5.1+cu121
+transformers: 4.49.0
+diffusers: 0.32.2
+accelerate: 1.4.0
+flash-attn: 2.7.4.post1
+einops: 0.8.1
+decord: 0.6.0
+```
+
+**추정 사용 환경**: `jelly` 또는 별도 EchoShot 전용 환경
+- torch 2.5.1+cu121 일치
+- transformers 4.49.0 (jelly는 4.40.0이므로 약간 다름)
+
+**환경 생성 방법**:
+```bash
+conda create -n echoshot python=3.10
+conda activate echoshot
+pip install -r multi_shot_eval_repos/EchoShot_official/requirements.txt
+```
+
+#### **VGoT (VideoGen-of-Thought)**
+
+**Requirements**: `/home/dongwoo38/papers/paper_DIAGONAL/codes/diagonal_experiment/multi_shot_eval_repos/VideoGen-of-Thought/requirements.txt`
+
+```
+torch: 2.2.2+cu121
+torchvision: 0.17.2+cu121
+xformers: 0.0.25.post1
+transformers: 4.42.4
+diffusers: 0.31.0
+accelerate: 1.1.1
+einops: 0.8.0
+decord: 0.6.0
+open-clip-torch: 2.12.0
+omegaconf
+opencv-python
+```
+
+**추정 사용 환경**: 별도 VGoT 전용 환경
+- ⚠️ **중요**: 하드코딩된 경로 `/home/dongwoo44/`
+- 다른 서버 또는 다른 사용자 계정에서 실행된 것으로 추정
+
+**환경 생성 방법**:
+```bash
+conda create -n vgot python=3.10
+conda activate vgot
+pip install torch==2.2.2 torchvision==0.17.2 xformers==0.0.25.post1 \
+  --index-url https://download.pytorch.org/whl/cu121
+pip install -r multi_shot_eval_repos/VideoGen-of-Thought/requirements.txt
+```
+
+#### **StoryDiffusion**
+
+**Requirements**: `/home/dongwoo38/papers/paper_DIAGONAL/codes/diagonal_experiment/multi_shot_eval_repos/ComfyUI_StoryDiffusion/requirements.txt`
+
+```
+spaces
+peft
+diffusers
+opencv-python
+omegaconf
+```
+
+**실제 사용**: SCENE 레포지토리의 wrappers.py 사용
+- Path: `/home/dongwoo38/papers/paper_SCENE/SCENE-.../wrappers.py`
+- Import: `from wrappers import StoryDiffusionWrapper`
+
+**추정 사용 환경**: `allinone` 또는 `jelly`
+- 최소 요구사항: diffusers, peft
+- ComfyUI 기반이므로 추가 의존성 있을 수 있음
+
+#### **VIC (Video-In-Context)**
+
+**Requirements**: 별도 requirements.txt 없음 (HuggingFace 기반)
+
+```
+torch: 2.x (bfloat16 지원 필요)
+diffusers: 0.30+
+transformers: 4.40+
+accelerate: 0.20+
+```
+
+**추정 사용 환경**: `jelly`
+- accelerate 포함
+- torch 2.5.1+cu121로 bfloat16 지원
+- diffusers 최신 버전
+
+**환경 생성 방법**:
+```bash
+conda create -n vic python=3.10
+conda activate vic
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+pip install diffusers transformers accelerate
+```
+
+### 24.4 환경 활성화 및 실행 방법
+
+#### **권장 실행 방법** (모델별)
+
+**EchoShot**:
+```bash
+conda activate echoshot  # 또는 jelly
+cd /home/dongwoo38/papers/paper_DIAGONAL/codes/diagonal_experiment
+CUDA_VISIBLE_DEVICES=1 python generate_all_videos.py \
+  --start_idx 0 --end_idx 1000 --gpu_id 1 --seed 42
+```
+
+**VGoT**:
+```bash
+conda activate vgot
+cd /home/dongwoo38/papers/paper_DIAGONAL/codes/diagonal_experiment
+# 주의: 경로 수정 필요 (dongwoo44 -> dongwoo38)
+CUDA_VISIBLE_DEVICES=3 python generate_all_videos_vgot.py \
+  --start_idx 0 --end_idx 1000 --gpu_id 3 --seed 42
+```
+
+**StoryDiffusion**:
+```bash
+conda activate allinone  # 또는 jelly
+cd /home/dongwoo38/papers/paper_DIAGONAL/codes/diagonal_experiment
+CUDA_VISIBLE_DEVICES=2 python generate_all_videos_storydiff.py \
+  --gpu_id 2 --start_idx 0 --end_idx 1000
+```
+
+**VIC**:
+```bash
+conda activate jelly  # 또는 vic
+cd ~/diagonal_rebuttal
+CUDA_VISIBLE_DEVICES=1 python generate_vic_fast.py \
+  --start_idx 500 --end_idx 567 --gpu_id 0 --seed 42
+```
+
+### 24.5 환경 재현 방법
+
+#### **Option 1: Requirements.txt 사용**
+
+```bash
+# EchoShot
+conda create -n echoshot python=3.10
+conda activate echoshot
+cd /home/dongwoo38/papers/paper_DIAGONAL/codes/diagonal_experiment
+pip install -r multi_shot_eval_repos/EchoShot_official/requirements.txt
+
+# VGoT
+conda create -n vgot python=3.10
+conda activate vgot
+pip install -r multi_shot_eval_repos/VideoGen-of-Thought/requirements.txt
+```
+
+#### **Option 2: Conda Export (정확한 재현)**
+
+```bash
+# 기존 환경에서 export
+conda activate jelly
+conda env export > jelly_environment.yml
+
+# 새 환경에서 import
+conda env create -f jelly_environment.yml
+```
+
+#### **Option 3: 최소 환경 (빠른 시작)**
+
+```bash
+# 범용 환경 (모든 모델 지원)
+conda create -n diagonal_all python=3.10
+conda activate diagonal_all
+pip install torch==2.5.1 torchvision==0.20.1 \
+  --index-url https://download.pytorch.org/whl/cu121
+pip install diffusers transformers accelerate einops decord \
+  opencv-python omegaconf peft
+```
+
+### 24.6 문제 해결
+
+#### **CUDA 버전 불일치**
+```bash
+# 현재 CUDA 확인
+nvidia-smi  # Driver CUDA version
+nvcc --version  # Toolkit CUDA version
+
+# PyTorch CUDA 확인
+python -c "import torch; print(torch.version.cuda)"
+
+# 해결: CUDA 11.8 사용 시
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+```
+
+#### **Import 에러**
+```bash
+# 예: ModuleNotFoundError: No module named 'wrappers'
+# 해결: 경로 추가
+export PYTHONPATH="/home/dongwoo38/papers/paper_SCENE/SCENE-.../:$PYTHONPATH"
+```
+
+#### **OOM (Out of Memory)**
+```bash
+# 환경 변수로 메모리 관리
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+export CUDA_LAUNCH_BLOCKING=1
+
+# 또는 코드에서
+torch.cuda.empty_cache()
+gc.collect()
+```
+
+### 24.7 현재 CUDA 문제 (2026-05-31)
+
+**증상**:
+```
+CUDA initialization: CUDA driver initialization failed
+PyTorch CUDA available: False
+```
+
+**영향받는 환경**: 모든 환경 (base, allinone, diagonal, jelly)
+
+**추정 원인**:
+1. NVIDIA Driver 535 + PyTorch 2.6.0+cu124 호환성 문제
+2. Python 3.13 관련 이슈
+3. 시스템 레벨 CUDA 런타임 문제
+
+**해결 시도**:
+- [x] 여러 conda 환경 테스트 → 모두 실패
+- [x] PyTorch CUDA 초기화 테스트 → 모두 False
+- [ ] 시스템 재부팅 (권장)
+- [ ] PyTorch 재설치 (CUDA 11.8)
+- [ ] Python 3.10 환경으로 다운그레이드
+
+### 24.8 환경별 추천 용도 요약
+
+| 환경 | Python | Torch | CUDA | 추천 모델 | 상태 |
+|------|--------|-------|------|-----------|------|
+| **allinone** | 3.10.20 | 2.0.1 | 11.7 | 기본 테스트 | ✅ 안정 |
+| **allinone_py39** | 3.9.25 | 2.0.1 | 11.7 | Python 3.9 필요 시 | ✅ 안정 |
+| **diagonal** | 3.10.19 | 2.7.1 | 11.8 | 최신 실험 | ⚠️ transformers 비정상 |
+| **jelly** | 3.10.20 | 2.5.1 | 12.1 | VIC, StoryDiffusion | ✅ 권장 |
+| **base** | 3.13 | 2.6.0 | 12.4 | - | ❌ CUDA 실패 |
+
+**현재 작동하는 환경**: 없음 (CUDA 문제)
+
+**VIC 재생성 시 권장**: `jelly` 환경 (CUDA 복구 후)
+
+---
+
