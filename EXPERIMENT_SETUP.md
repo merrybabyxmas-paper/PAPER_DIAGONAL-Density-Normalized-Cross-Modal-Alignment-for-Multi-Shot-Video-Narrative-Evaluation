@@ -1422,3 +1422,480 @@ PyTorch CUDA available: False
 
 ---
 
+
+---
+
+## 25. EchoShot 생성 프로세스 상세 분석
+
+### 25.1 EchoShot 아키텍처 개요
+
+EchoShot은 **단일 forward pass**로 멀티샷 비디오를 생성하는 Text-to-Video 모델입니다.
+
+**핵심 구조**:
+```
+Input: 3 text prompts
+  ↓
+[T5 Encoder] → Context embeddings (512 tokens each)
+  ↓
+[Flow-based Diffusion] → Latent noise → Denoised latent
+  ↓  
+[VideoVAE Decoder] → RGB video frames (93 frames)
+  ↓
+Output: Single MP4 video (3 shots concatenated)
+```
+
+**모델 구성 요소**:
+1. **T5-XXL Encoder** (UMT5): Text → Embedding
+2. **Transformer** (1.3B params): Diffusion denoising
+3. **VideoVAE**: Latent ↔ Pixel space
+4. **FlowDPMSolver**: Flow-based sampling
+
+### 25.2 생성 프로세스 (단계별)
+
+#### **Step 1: Text Encoding**
+
+```python
+# 3개 shot prompts 입력
+gen_prompts = [
+    "A video of a chef cooking in a kitchen",
+    "A video of a chef and a waiter in a kitchen", 
+    "A video of a waiter serving food"
+]
+
+# T5-XXL로 인코딩 (각각 512 tokens)
+context = t5_encoder(gen_prompts)  # List[Tensor(512, 4096)]
+# 4096 = T5-XXL hidden dimension
+
+# Negative prompt도 인코딩
+context_null = t5_encoder([negative_prompt] * 3)
+```
+
+**T5 메모리 최적화**:
+- T5는 인코딩 시에만 필요 → GPU로 이동
+- 인코딩 완료 후 → CPU로 오프로드
+- 나머지 생성 과정에서는 메모리 절약
+
+```python
+# GPU로 이동 (인코딩 시)
+self.t5.model = self.t5.model.to(self.device)
+context = self.t5(prompts)
+
+# CPU로 오프로드 (생성 시)
+self.t5.model = self.t5.model.to('cpu')
+gc.collect()
+torch.cuda.empty_cache()
+```
+
+#### **Step 2: Latent Shape 계산**
+
+```python
+# 비디오 해상도
+H, W = 480, 832  # pixels
+T = 93           # total frames
+
+# Latent space (8x 압축)
+h, w = H // 8, W // 8  # 60 x 104
+t = (T - 1) // 4 + 1   # 23 temporal frames
+
+# Latent shape
+target_shape = (16, 23, 60, 104)
+# 16 = latent channels
+# 23 = temporal dimension
+# 60 x 104 = spatial dimension
+```
+
+#### **Step 3: Shot Length 분할 (Inner Temporal)**
+
+EchoShot의 핵심: **inner_t 파라미터**로 멀티샷 처리
+
+```python
+# 3-shot 비디오의 temporal 분할
+t = 23  # total temporal frames
+num_shots = 3
+
+# Shot length 계산
+shot_lens = [t // 3, t // 3, t - 2*(t//3)]
+# 예: [7, 7, 9]
+# Shot 1: 7 frames, Shot 2: 7 frames, Shot 3: 9 frames
+
+# 각 shot에 context 매핑
+arg_c = {
+    'context': [context],      # 3개 prompt embeddings
+    'seq_len': t * h * w,      # total sequence length
+    'inner_t': [shot_lens]     # [7, 7, 9]
+}
+```
+
+**Inner Temporal Dimension의 의미**:
+- Transformer가 각 shot을 구분하여 처리
+- Shot boundary에서 attention mask 적용
+- Shot 간 transition 자연스럽게 학습됨
+
+#### **Step 4: Noise 초기화**
+
+```python
+# Random noise (latent space)
+seed_g = torch.Generator(device=device).manual_seed(42)
+
+noise = torch.randn(
+    16, 23, 60, 104,  # (C, T, H, W)
+    dtype=torch.float32,
+    device=device,
+    generator=seed_g
+)
+# shape: [16, 23, 60, 104]
+```
+
+#### **Step 5: Flow-based Diffusion Sampling**
+
+EchoShot은 **Flow Matching** 기반 diffusion 사용 (DDPM이 아님)
+
+```python
+# Flow DPM Solver
+scheduler = FlowDPMSolverMultistepScheduler(
+    num_train_timesteps=1000,
+    shift=5.0,  # sample_shift
+    use_dynamic_shifting=False
+)
+
+# Sampling sigmas (continuous time)
+sigma = np.linspace(1, 0, 30)  # 30 steps
+sigma = (5.0 * sigma / (1 + 4.0 * sigma))  # shift 적용
+scheduler.set_timesteps(sigmas=sigma, device=device)
+```
+
+**30-step Denoising Loop**:
+
+```python
+latent = noise  # 초기 latent
+
+for timestep in scheduler.timesteps:  # 30 iterations
+    # 1. Conditional prediction (with text)
+    noise_pred_cond = model(
+        latent, 
+        t=timestep,
+        context=context,           # 3 prompts
+        seq_len=t * h * w,
+        inner_t=shot_lens          # [7, 7, 9]
+    )
+    
+    # 2. Unconditional prediction (null text)
+    noise_pred_uncond = model(
+        latent,
+        t=timestep, 
+        context=context_null,      # negative prompts
+        seq_len=t * h * w,
+        inner_t=shot_lens
+    )
+    
+    # 3. Classifier-Free Guidance (CFG)
+    guidance_scale = 5.0
+    noise_pred = noise_pred_uncond + guidance_scale * (
+        noise_pred_cond - noise_pred_uncond
+    )
+    
+    # 4. Scheduler step (flow-based update)
+    latent = scheduler.step(
+        noise_pred, 
+        timestep, 
+        latent,
+        return_dict=False,
+        generator=seed_g
+    )[0]
+
+# 최종 latent shape: [16, 23, 60, 104]
+```
+
+**Transformer Forward Pass 내부**:
+- Input: latent [16, 23, 60, 104]
+- Reshape: [16, 23*60*104] → sequence
+- Patch embedding: (1, 2, 2) patches
+- Self-attention with inner_t mask:
+  - Shot 1 (frames 0-6): self-attention 내부
+  - Shot 2 (frames 7-13): self-attention 내부  
+  - Shot 3 (frames 14-22): self-attention 내부
+  - Shot boundary에서 약한 cross-attention
+- Cross-attention with text context
+- Output: denoised prediction
+
+#### **Step 6: VAE Decoding**
+
+```python
+# Latent → Pixel space
+fake_video = vae.decode(
+    [latent],           # [16, 23, 60, 104]
+    inner_t=[shot_lens] # [7, 7, 9]
+)
+
+# Output shape: [3, 93, 480, 832]
+# 3 = RGB channels
+# 93 = frames
+# 480 x 832 = resolution
+```
+
+**VAE Decoder**:
+- Temporal upsampling: 23 → 93 frames (4x)
+- Spatial upsampling: 60x104 → 480x832 (8x)
+- Inner_t 정보로 shot boundary 유지
+
+#### **Step 7: Video Saving**
+
+```python
+# Normalize to [0, 255]
+video = (fake_video + 1.0) / 2.0 * 255
+video = video.clamp(0, 255).to(torch.uint8)
+
+# Save as MP4
+cache_video(
+    tensor=video,
+    save_file=output_path,
+    fps=16,
+    normalize=True,
+    value_range=(-1, 1)
+)
+```
+
+### 25.3 멀티샷 처리의 핵심: Inner Temporal Dimension
+
+**Why Inner_t?**
+
+일반 T2V 모델:
+- 단일 프롬프트 → 단일 비디오
+- Temporal coherence만 고려
+
+EchoShot (Inner_t):
+- 3개 프롬프트 → 3-shot 비디오
+- **Shot-level coherence** + **Cross-shot transition**
+
+**Inner_t Attention Mask**:
+
+```python
+# Pseudo-code
+def apply_inner_t_attention(q, k, v, inner_t):
+    """
+    inner_t = [7, 7, 9]
+    Total frames: 23
+    """
+    # Shot 1: frames 0-6
+    # Shot 2: frames 7-13  
+    # Shot 3: frames 14-22
+    
+    # Self-attention within each shot
+    for shot_idx, shot_len in enumerate(inner_t):
+        start = sum(inner_t[:shot_idx])
+        end = start + shot_len
+        
+        # Strong attention within shot
+        attn[start:end, start:end] = full_attention
+        
+        # Weak attention across shot boundary
+        if shot_idx > 0:
+            attn[start-1:start+1, start-1:start+1] = weak_attention
+```
+
+**결과**:
+- Shot 내부: 높은 temporal coherence
+- Shot boundary: 자연스러운 transition
+- Shot 간: entity 일관성 유지
+
+### 25.4 메모리 최적화 전략
+
+#### **1. T5 CPU Offloading**
+
+```python
+# Before encoding
+self.t5.model.to(device)  # ~12GB VRAM
+
+# Encode
+context = self.t5(prompts)
+
+# After encoding  
+self.t5.model.to('cpu')   # Free ~12GB VRAM
+gc.collect()
+torch.cuda.empty_cache()
+```
+
+#### **2. Bfloat16 Precision**
+
+```python
+# T5, Transformer 모두 bf16
+torch.bfloat16  # 16-bit floating point
+
+# 메모리 절약: ~50%
+# 정확도 손실: minimal (T5 학습도 bf16)
+```
+
+#### **3. Gradient Checkpointing** (학습 시)
+
+```python
+# Inference에서는 사용 안함
+model.eval()  # No gradients
+with torch.no_grad():
+    output = model(...)
+```
+
+#### **4. Periodic Memory Cleanup**
+
+```python
+# 매 10 videos마다
+if video_count % 10 == 0:
+    gc.collect()
+    torch.cuda.empty_cache()
+    torch.cuda.synchronize()
+```
+
+#### **5. OOM Recovery**
+
+```python
+try:
+    video = generator.generate(prompts, output_path)
+except RuntimeError as e:
+    if 'CUDA out of memory' in str(e):
+        # T5를 CPU로 이동 (혹시 GPU에 있으면)
+        generator.t5.model = generator.t5.model.to('cpu')
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.cuda.synchronize()
+        
+        # Retry
+        video = generator.generate(prompts, output_path)
+```
+
+### 25.5 실제 생성 예시
+
+**Input Prompts**:
+```json
+{
+  "shot_1": "A video of a chef cooking pasta in a restaurant kitchen",
+  "shot_2": "A video of a chef and a waiter talking in a kitchen",
+  "shot_3": "A video of a waiter serving pasta to customers"
+}
+```
+
+**Generation Process**:
+
+1. **T5 Encoding** (0.5초)
+   - 3 prompts → 3 x [512, 4096] embeddings
+
+2. **Diffusion Sampling** (140초, 30 steps)
+   - Step 1: noise → slightly denoised
+   - Step 15: recognizable shapes
+   - Step 30: final latent
+   - Each step: 2 forward passes (cond + uncond)
+   - Inner_t ensures shot transitions
+
+3. **VAE Decoding** (5초)
+   - Latent [16,23,60,104] → Video [3,93,480,832]
+
+4. **Saving** (1초)
+   - Encode to MP4 (H.264, fps=16)
+
+**Total Time**: ~147초 (2.5분) per video
+
+**Memory Usage**:
+- T5 encoding: 12GB (temporary)
+- Diffusion: 8GB (persistent)
+- VAE decoding: 4GB (temporary)
+- **Peak**: ~12GB VRAM
+
+### 25.6 EchoShot vs 다른 모델
+
+| Aspect | EchoShot | VGoT | StoryDiffusion |
+|--------|----------|------|----------------|
+| **Pipeline** | 1-stage (T2V) | 2-stage (T2I→I2V) | 2-stage (CSA T2I→I2V) |
+| **Multi-shot** | Inner_t (native) | Sequential I2V | Sequential I2V |
+| **Coherence** | Temporal attention | IP-Adapter | CSA (self-attn) |
+| **Forward pass** | 1x (3 prompts) | 6x (3 T2I + 3 I2V) | 4x (1 CSA + 3 I2V) |
+| **Memory** | 12GB | 27GB | 18GB |
+| **Speed** | 2.5분 | 5분 | 4분 |
+
+**EchoShot 장점**:
+- ✅ Single-stage (빠름)
+- ✅ Inner_t로 shot transition 자연스러움
+- ✅ 메모리 효율적 (T5 offload)
+
+**EchoShot 단점**:
+- ❌ Character consistency 약함 (CSA/IP-Adapter 없음)
+- ❌ Shot 개수 고정 (3-shot만)
+- ❌ Temporal length 제한 (93 frames)
+
+**논문 결과**:
+- PTM: 0.1672 (2위)
+- EPA: 0.5634
+- VIC보다는 낮지만, StoryDiffusion보다 높음
+
+### 25.7 Flow-based Diffusion 상세
+
+**Why Flow Matching?**
+
+DDPM (Discrete):
+```
+x_T (noise) → x_T-1 → ... → x_1 → x_0 (data)
+```
+
+Flow Matching (Continuous):
+```
+z_1 (noise) ─────→ z_0 (data)
+      continuous path
+      learned by model
+```
+
+**장점**:
+- Fewer steps for same quality
+- Smoother interpolation
+- Better temporal coherence
+
+**Sigma Schedule**:
+```python
+# Linear in [0, 1]
+sigma = [1.0, 0.966, 0.933, ..., 0.033, 0.0]
+
+# Apply shift (5.0)
+sigma_shifted = 5.0 * sigma / (1 + 4.0 * sigma)
+# Effect: more steps near data (sigma→0)
+```
+
+**Update Rule**:
+```python
+# Predicted velocity
+v_pred = model(z_t, t, context)
+
+# Flow ODE
+dz/dt = v_pred
+
+# Euler step
+z_{t-Δt} = z_t + Δt * v_pred
+```
+
+### 25.8 Transformer Architecture 상세
+
+```python
+Transformer(
+    patch_size=(1, 2, 2),      # Temporal=1, Spatial=2x2
+    in_dim=16,                  # VAE latent channels
+    dim=1536,                   # Hidden dimension
+    ffn_dim=8960,               # Feed-forward dimension
+    freq_dim=256,               # Frequency embedding
+    text_dim=4096,              # T5 dimension
+    out_dim=16,                 # Output channels
+    num_heads=12,               # Attention heads
+    num_layers=30,              # Transformer layers
+    window_size=(-1, -1),       # Global attention
+    qk_norm=True,               # Query-Key normalization
+    cross_attn_norm=True        # Cross-attention normalization
+)
+```
+
+**30 Transformer Layers**:
+- Each layer: Self-Attn → Cross-Attn → FFN
+- Self-Attn: Temporal coherence + Inner_t
+- Cross-Attn: Text conditioning
+- FFN: Non-linear transformation
+
+**Parameters**: 1.3B
+- Embedding: 100M
+- 30 x Transformer block: 1.1B
+- Output projection: 100M
+
+---
+
